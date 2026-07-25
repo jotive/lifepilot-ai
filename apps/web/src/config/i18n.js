@@ -7,7 +7,65 @@ export const translations = {
     householdSolo: 'Finanzas & Tareas Solitario',
     householdCouple: 'Finanzas & Convivencia',
     documents: 'Bóveda de Documentos & Salud',
-    aiAssistantTitle: 'Asistente de Voz & Chat RoomIA'
+    aiAssistantTitle: 'Asistente de Voz & Chat RoomIA',
+
+    // City Explorer
+    cityHeroTitle: 'Explorar Ciudad & Radar de Eventos',
+    cityHeroSub: 'Descubre qué hacer en tiempo real, conciertos y actividades culturales en',
+    radarStatus: 'Radar de Ciudad Activo',
+    searchPlaceholder: 'Ej: Conciertos este fin de semana, festivales...',
+    searchBtn: 'Buscar Eventos',
+    featuredEvents: 'Eventos Destacados en la Ciudad',
+    plannerTitle: 'Planificador de Fin de Semana',
+    generateRutaBtn: 'Generar Ruta de Fin de Semana',
+
+    // Relocation Ops
+    relocationTitle: 'Guía de Asentamiento & Trámites',
+    relocationSub: 'Checklist inteligente y simulador de costos para mudarse e independizarse en',
+    checklistTitle: 'Checklist de Mudanza & Trámites',
+    calcTitle: 'Calculadora de Instalación Inicial',
+    calcSub: 'Estimación de costos al mudar o independizarse en',
+    rentLabel: 'Renta mensual estimada ($)',
+    depositLabel: 'Depósito de garantía ($)',
+    utilitiesLabel: 'Servicios iniciales ($)',
+    furnitureLabel: 'Alacena & Amoblado inicial ($)',
+    totalMonth1: 'Inversión total para el mes 1:',
+    emergencyTitle: 'Teléfonos de Emergencia',
+
+    // Kitchen Ops
+    kitchenTitle: 'Refrigerador Inteligente & Recetas Anti-Desperdicio',
+    kitchenSub: 'Escanea tus ingredientes con cámara o dictado por voz para que RoomIA genere recetas sin gastar de más.',
+    inventoryTitle: 'Inventario de Refrigerador & Alacena',
+    scanCamBtn: 'Escanear con Cámara',
+    addBtn: 'Agregar',
+    generateRecipesBtn: 'Generar Recetas Anti-Desperdicio',
+    suggestedRecipesTitle: 'Recetas Sugeridas por RoomIA',
+
+    // Household Ops
+    householdTitle: 'Finanzas & Convivencia en Pareja / Roomies',
+    householdSub: 'Calculadora transparente de gastos compartidos y asignador equitativo de tareas del hogar.',
+    expenseRegTitle: 'Registro & División de Gastos',
+    expDescLabel: 'Descripción del Gasto',
+    expAmountLabel: 'Monto ($)',
+    expPayerLabel: 'Pagado por',
+    expSplitLabel: 'División',
+    addExpenseBtn: 'Agregar Gasto Compartido',
+    recentHistory: 'Historial Reciente',
+    accountsStatus: 'Estado de Cuentas:',
+    taskWheelTitle: 'TaskWheel: Sorteo de Tareas del Hogar',
+    randomizeBtn: 'Sortear Tareas',
+
+    // Doc Vault
+    vaultTitle: 'Bóveda de Documentos & Ficha de Salud',
+    vaultSub: 'Guarda tus contratos, identificaciones y recibos en el navegador de forma segura (Offline & Encriptado Local).',
+    analyzeContractBtn: 'Analizar Contrato con IA',
+    storedDocsTitle: 'Documentos Guardados en RoomIA',
+    medCardTitle: 'Tarjeta de Emergencia Personal',
+    exportCardBtn: 'Exportar Ficha',
+    fullNameLabel: 'Nombre Completo',
+    bloodLabel: 'Tipo de Sangre',
+    allergiesLabel: 'Alergias / Condiciones',
+    emergencyContactLabel: 'Contacto de Emergencia en la Ciudad'
   },
   en: {
     tagline: 'Your Intelligent Roommate & Life Copilot',
@@ -17,7 +75,65 @@ export const translations = {
     householdSolo: 'Personal Finances & Chores',
     householdCouple: 'Finances & Household Sharing',
     documents: 'Document Vault & Health Card',
-    aiAssistantTitle: 'RoomIA AI Voice & Chat Assistant'
+    aiAssistantTitle: 'RoomIA AI Voice & Chat Assistant',
+
+    // City Explorer
+    cityHeroTitle: 'Explore City & Event Radar',
+    cityHeroSub: 'Discover real-time activities, concerts, and cultural events in',
+    radarStatus: 'City Radar Active',
+    searchPlaceholder: 'Ex: Weekend concerts, food festivals...',
+    searchBtn: 'Search Events',
+    featuredEvents: 'Featured Events in the City',
+    plannerTitle: 'Weekend Itinerary Planner',
+    generateRutaBtn: 'Generate Weekend Route',
+
+    // Relocation Ops
+    relocationTitle: 'Settlement & Official Tasks Guide',
+    relocationSub: 'Smart checklist and cost simulator for moving and settling in',
+    checklistTitle: 'Moving & Setup Checklist',
+    calcTitle: 'Initial Setup Cost Calculator',
+    calcSub: 'Estimated costs for moving into',
+    rentLabel: 'Estimated monthly rent ($)',
+    depositLabel: 'Security deposit ($)',
+    utilitiesLabel: 'Initial utilities ($)',
+    furnitureLabel: 'Groceries & Furnishing ($)',
+    totalMonth1: 'Total Month 1 Investment:',
+    emergencyTitle: 'Emergency Phone Directory',
+
+    // Kitchen Ops
+    kitchenTitle: 'Smart Fridge & Anti-Waste Recipes',
+    kitchenSub: 'Scan ingredients via camera or voice dictation to generate anti-waste recipes with RoomIA.',
+    inventoryTitle: 'Fridge & Pantry Inventory',
+    scanCamBtn: 'Scan with Camera',
+    addBtn: 'Add',
+    generateRecipesBtn: 'Generate Anti-Waste Recipes',
+    suggestedRecipesTitle: 'Recipes Suggested by RoomIA',
+
+    // Household Ops
+    householdTitle: 'Finances & Household Sharing',
+    householdSub: 'Transparent shared expense splitter and fair chore allocator.',
+    expenseRegTitle: 'Expense Log & Splitter',
+    expDescLabel: 'Expense Description',
+    expAmountLabel: 'Amount ($)',
+    expPayerLabel: 'Paid By',
+    expSplitLabel: 'Split Type',
+    addExpenseBtn: 'Add Shared Expense',
+    recentHistory: 'Recent History',
+    accountsStatus: 'Balance Status:',
+    taskWheelTitle: 'TaskWheel: Household Chore Spinner',
+    randomizeBtn: 'Shuffle Chores',
+
+    // Doc Vault
+    vaultTitle: 'Document Vault & Health Card',
+    vaultSub: 'Securely store contracts, IDs, and receipts locally in your browser (Offline & Encrypted).',
+    analyzeContractBtn: 'Analyze Lease with AI',
+    storedDocsTitle: 'Stored Documents in RoomIA',
+    medCardTitle: 'Personal Emergency Health Card',
+    exportCardBtn: 'Export Card',
+    fullNameLabel: 'Full Name',
+    bloodLabel: 'Blood Type',
+    allergiesLabel: 'Allergies / Conditions',
+    emergencyContactLabel: 'Local Emergency Contact'
   },
   pt: {
     tagline: 'Seu Roomie Inteligente & Copiloto de Vida',
@@ -27,6 +143,64 @@ export const translations = {
     householdSolo: 'Finanças & Tarefas Individuais',
     householdCouple: 'Finanças & Convivência',
     documents: 'Cofre de Documentos & Saúde',
-    aiAssistantTitle: 'Assistente RoomIA de Voz & Chat'
+    aiAssistantTitle: 'Assistente RoomIA de Voz & Chat',
+
+    // City Explorer
+    cityHeroTitle: 'Explorar Cidade & Radar de Eventos',
+    cityHeroSub: 'Descubra atividades em tempo real, shows e cultura em',
+    radarStatus: 'Radar da Cidade Ativo',
+    searchPlaceholder: 'Ex: Shows no fim de semana, feiras culturais...',
+    searchBtn: 'Buscar Eventos',
+    featuredEvents: 'Eventos em Destaque na Cidade',
+    plannerTitle: 'Roteiro do Fim de Semana',
+    generateRutaBtn: 'Gerar Roteiro do Fim de Semana',
+
+    // Relocation Ops
+    relocationTitle: 'Guia de Mudança & Trâmites',
+    relocationSub: 'Checklist inteligente e simulador de custos de instalação em',
+    checklistTitle: 'Checklist de Mudança & Documentos',
+    calcTitle: 'Calculadora de Instalacao Inicial',
+    calcSub: 'Estimativa de custos ao se mudar para',
+    rentLabel: 'Aluguel mensal estimado ($)',
+    depositLabel: 'Depósito de garantia ($)',
+    utilitiesLabel: 'Serviços iniciais ($)',
+    furnitureLabel: 'Alimentação & Móveis ($)',
+    totalMonth1: 'Investimento total no 1º mês:',
+    emergencyTitle: 'Telefones de Emergência',
+
+    // Kitchen Ops
+    kitchenTitle: 'Geladeira Inteligente & Receitas Sem Desperdício',
+    kitchenSub: 'Escaneie ingredientes com a câmera ou voz para o RoomIA criar receitas sem desperdício.',
+    inventoryTitle: 'Inventário da Geladeira & Despensa',
+    scanCamBtn: 'Escanear com Câmera',
+    addBtn: 'Adicionar',
+    generateRecipesBtn: 'Gerar Receitas Sem Desperdício',
+    suggestedRecipesTitle: 'Receitas Sugeridas pelo RoomIA',
+
+    // Household Ops
+    householdTitle: 'Finanças & Convivência em Casa',
+    householdSub: 'Calculadora transparente de despesas compartilhadas e organizador de tarefas.',
+    expenseRegTitle: 'Registro & Divisão de Despesas',
+    expDescLabel: 'Descrição da Despesa',
+    expAmountLabel: 'Valor ($)',
+    expPayerLabel: 'Pago por',
+    expSplitLabel: 'Tipo de Divisão',
+    addExpenseBtn: 'Adicionar Despesa Compartilhada',
+    recentHistory: 'Histórico Recente',
+    accountsStatus: 'Status de Contas:',
+    taskWheelTitle: 'TaskWheel: Sorteio de Tarefas da Casa',
+    randomizeBtn: 'Sortear Tarefas',
+
+    // Doc Vault
+    vaultTitle: 'Cofre de Documentos & Saúde',
+    vaultSub: 'Garde contratos e recibos no seu navegador com segurança (Offline & Criptografado).',
+    analyzeContractBtn: 'Analisar Contrato com IA',
+    storedDocsTitle: 'Documentos Salvos no RoomIA',
+    medCardTitle: 'Cartão de Emergência Pessoal',
+    exportCardBtn: 'Exportar Ficha',
+    fullNameLabel: 'Nome Completo',
+    bloodLabel: 'Tipo Sanguíneo',
+    allergiesLabel: 'Alergias / Condições',
+    emergencyContactLabel: 'Contato de Emergência Local'
   }
 };

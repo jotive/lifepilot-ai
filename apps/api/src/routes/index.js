@@ -12,6 +12,9 @@ const router = Router();
 const searchController = new SearchController();
 const visionController = new VisionController();
 
+// In-memory Realtime Channels Store for cross-device roomie sync
+const realtimeStore = new Map();
+
 const validateBody = (schema) => (req, res, next) => {
   const result = schema.safeParse(req.body);
   if (!result.success) {
@@ -44,6 +47,36 @@ router.post('/api/v1/contracts/analyze', (req, res) => {
   }
   const result = ContractAnalyzerService.analyzeContractText(contractText);
   return ResponseUtil.success(res, result);
+});
+
+// REALTIME CLOUD SYNC ENDPOINTS (Distances Sync)
+router.post('/api/v1/realtime/broadcast', (req, res) => {
+  const { pairCode, channelKey, payload } = req.body;
+  if (!pairCode || !channelKey) {
+    return ResponseUtil.error(res, 'pairCode and channelKey are required', 400);
+  }
+
+  if (!realtimeStore.has(pairCode)) {
+    realtimeStore.set(pairCode, new Map());
+  }
+  const room = realtimeStore.get(pairCode);
+  room.set(channelKey, { payload, updatedAt: new Date().toISOString() });
+
+  return ResponseUtil.success(res, { synced: true, pairCode, channelKey });
+});
+
+router.get('/api/v1/realtime/sync/:pairCode', (req, res) => {
+  const { pairCode } = req.params;
+  const room = realtimeStore.get(pairCode);
+  if (!room) {
+    return ResponseUtil.success(res, { state: {} });
+  }
+
+  const state = {};
+  for (const [key, val] of room.entries()) {
+    state[key] = val;
+  }
+  return ResponseUtil.success(res, { pairCode, state });
 });
 
 export default router;
