@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { ContractAnalyzerModal } from './ContractAnalyzerModal';
 
 export function DocVault({ documents, currentCity, onAddDoc }) {
   const [medName, setMedName] = useState('Alex R. González');
   const [medBlood, setMedBlood] = useState('O+ Positive');
   const [medAllergies, setMedAllergies] = useState('Penicilina, Polvos');
   const [medContact, setMedContact] = useState('Sam M. (Roomie / Cel: 555-0192)');
+  const [isContractModalOpen, setIsContractModalOpen] = useState(false);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -45,6 +47,9 @@ Generado en: ${new Date().toLocaleString()}
           <h2><i className="fa-solid fa-vault"></i> Bóveda de Documentos & Ficha de Salud</h2>
           <p>Guarda tus contratos, identificaciones y recibos en el navegador de forma segura (Offline & Encriptado Local).</p>
         </div>
+        <button className="btn btn-gradient" onClick={() => setIsContractModalOpen(true)}>
+          <i className="fa-solid fa-file-contract"></i> Analizar Contrato con IA
+        </button>
       </div>
 
       <div className="vault-grid">
@@ -106,6 +111,11 @@ Generado en: ${new Date().toLocaleString()}
           </form>
         </div>
       </div>
+
+      <ContractAnalyzerModal
+        isOpen={isContractModalOpen}
+        onClose={() => setIsContractModalOpen(false)}
+      />
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { SearchController } from '../controllers/search.controller.js';
 import { VisionController } from '../controllers/vision.controller.js';
+import { ContractAnalyzerService } from '../services/contract.service.js';
 import { ResponseUtil } from '../utils/response.util.js';
 import { SUPPORTED_CITIES, APP_NAME } from '../config/constants.js';
 import { envConfig } from '../config/env.config.js';
@@ -20,7 +21,6 @@ const validateBody = (schema) => (req, res, next) => {
   next();
 };
 
-// RESTful v1 Endpoints
 router.get('/health', (req, res) => {
   return ResponseUtil.success(res, {
     status: 'online',
@@ -36,5 +36,14 @@ router.get('/api/v1/cities', (req, res) => {
 router.post('/api/v1/events/search', validateBody(eventSearchSchema), (req, res, next) => searchController.handleTavilySearch(req, res, next));
 router.post('/api/v1/vision/fridge-scans', validateBody(fridgeScanSchema), (req, res, next) => visionController.handleFridgeScan(req, res, next));
 router.post('/api/v1/vision/receipt-scans', validateBody(receiptScanSchema), (req, res, next) => visionController.handleReceiptScan(req, res, next));
+
+router.post('/api/v1/contracts/analyze', (req, res) => {
+  const { contractText } = req.body;
+  if (!contractText) {
+    return ResponseUtil.error(res, 'Contract text is required for analysis', 400);
+  }
+  const result = ContractAnalyzerService.analyzeContractText(contractText);
+  return ResponseUtil.success(res, result);
+});
 
 export default router;
