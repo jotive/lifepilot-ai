@@ -4,7 +4,7 @@ export class ContractAnalyzerService {
   static async analyzeContractText(contractText) {
     const prompt = `
 Analyze the following rental lease contract fragment and evaluate it for abusive clauses, unexpected fee increases, or tenant privacy violations.
-Return a valid JSON object with keys:
+Return ONLY a valid JSON object without markdown formatting with keys:
 - "riskLevel": "HIGH", "MEDIUM", or "LOW"
 - "score": number between 0 and 100
 - "findings": array of objects with keys "type" ("DANGER" | "WARNING" | "SUCCESS"), "title", "description", "recommendation"
@@ -15,12 +15,16 @@ ${contractText}
 
     const adapterResult = await LLMAdapterFactory.executeWithFallback(
       prompt, 
-      'You are an expert real estate lawyer assistant. Return ONLY valid JSON.'
+      'You are an expert real estate lawyer assistant. Return ONLY raw JSON.'
     );
 
     if (adapterResult && adapterResult.responseText) {
       try {
-        const parsed = JSON.parse(adapterResult.responseText);
+        const cleanJsonText = adapterResult.responseText
+          .replace(/```json/gi, '')
+          .replace(/```/g, '')
+          .trim();
+        const parsed = JSON.parse(cleanJsonText);
         return {
           riskLevel: parsed.riskLevel || 'LOW',
           score: parsed.score || 90,
