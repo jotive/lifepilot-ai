@@ -1,11 +1,8 @@
-import { GeminiService } from './gemini.service.js';
-import { OpenRouterService } from './openrouter.service.js';
-import { GroqService } from './groq.service.js';
-import { envConfig } from '../config/env.config.js';
+import { LLMAdapterFactory } from '../adapters/llm/llmFactory.js';
 
 export class ContractAnalyzerService {
   static async analyzeContractText(contractText) {
-    const groqPrompt = `
+    const prompt = `
 Analyze the following rental lease contract fragment and evaluate it for abusive clauses, unexpected fee increases, or tenant privacy violations.
 Return a valid JSON object with keys:
 - "riskLevel": "HIGH", "MEDIUM", or "LOW"
@@ -16,51 +13,23 @@ Contract Fragment:
 ${contractText}
     `;
 
-    if (envConfig.geminiApiKey) {
-      try {
-        const responseText = await GeminiService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
-        const parsed = JSON.parse(responseText);
-        return {
-          riskLevel: parsed.riskLevel || 'LOW',
-          score: parsed.score || 90,
-          findings: parsed.findings || [],
-          source: 'gemini-flash-ai',
-          timestamp: new Date().toISOString()
-        };
-      } catch (error) {
-        console.warn('Gemini contract analysis fallback:', error.message);
-      }
-    }
+    const adapterResult = await LLMAdapterFactory.executeWithFallback(
+      prompt, 
+      'You are an expert real estate lawyer assistant. Return ONLY valid JSON.'
+    );
 
-    if (envConfig.openrouterApiKey || envConfig.openrouterToken1) {
+    if (adapterResult && adapterResult.responseText) {
       try {
-        const responseText = await OpenRouterService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
-        const parsed = JSON.parse(responseText);
+        const parsed = JSON.parse(adapterResult.responseText);
         return {
           riskLevel: parsed.riskLevel || 'LOW',
           score: parsed.score || 90,
           findings: parsed.findings || [],
-          source: 'openrouter-ai',
+          source: adapterResult.source,
           timestamp: new Date().toISOString()
         };
       } catch (error) {
-        console.warn('OpenRouter contract analysis fallback:', error.message);
-      }
-    }
-
-    if (envConfig.groqApiKey) {
-      try {
-        const responseText = await GroqService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
-        const parsed = JSON.parse(responseText);
-        return {
-          riskLevel: parsed.riskLevel || 'LOW',
-          score: parsed.score || 90,
-          findings: parsed.findings || [],
-          source: 'groq-llama-3',
-          timestamp: new Date().toISOString()
-        };
-      } catch (error) {
-        console.warn('Groq AI contract analysis fallback:', error.message);
+        console.warn('[ContractAnalyzerService] Adapter response JSON parsing failed, using rule engine:', error.message);
       }
     }
 
