@@ -1,47 +1,58 @@
 # 📐 Handbook: Architecture (Arquitectura & Estructura)
 
 > **Proyecto:** RoomIA  
-> **Patrón:** Layered Architecture (Separación de Responsabilidades: Config, Repositories, Services, Controllers, Routes)
+> **Patrón:** Layered Architecture & Microservices Decoupling (Frontend, REST API, Inference Worker, Cron Worker)
 
 ---
 
-## 🛠️ Capas de Arquitectura (Separation of Concerns)
-
-Every module follows clean separation of concerns:
+## 🛠️ Desacoplamiento de Servicios & Workers
 
 ```
-[Presentation Layer] -> [Controllers / UI] -> [Services (Business Logic)] -> [Repositories (Data Access)] -> [Config / Settings]
+                               ┌─────────────────────────┐
+                               │   apps/web (Frontend)   │
+                               │  React 18 + Zustand     │
+                               └────────────┬────────────┘
+                                            │ REST API v1
+                               ┌────────────▼────────────┐
+                               │    apps/api (Backend)   │
+                               │    Express & Zod API    │
+                               └──────┬────────────┬─────┘
+                                      │            │
+             ┌────────────────────────┘            └────────────────────────┐
+             │                                                              │
+┌────────────▼──────────────────────────┐      ┌────────────────────────────▼────────────┐
+│ apps/workers/inference-worker         │      │ apps/workers/cron-worker                │
+│ AI Vision & OCR Heavy Inference       │      │ Scheduled Jobs & Pantry Expire Alerts   │
+└───────────────────────────────────────┘      └─────────────────────────────────────────┘
 ```
 
-### 1. `config/` & `settings/`
-- Encapsula constantes globales, claves de entorno y parámetros de la aplicación.
-- Archivos: `config/constants.js`, `config/settings.js`.
+### 1. `apps/web` (Frontend React)
+- SPA moderna construida con React 18, Vite, Zustand, Zod y TailwindCSS.
 
-### 2. `repositories/` (Capa de Acceso a Datos / APIs)
-- Abstrae llamadas a APIs externas (Tavily, Vision LLMs) y persistencia (`LocalStorage`, `IndexedDB`).
-- Archivos: `repositories/tavily.repository.js`.
+### 2. `apps/api` (Backend Express RESTful v1)
+- Servidor Express estructurado por capas (`config`, `repositories`, `services`, `controllers`, `routes`, `schemas`, `middlewares`, `utils`).
 
-### 3. `services/` (Capa de Lógica de Negocio)
-- Contiene reglas de negocio, cálculo de presupuestos, motores de liquidación de deudas y formateo de datos.
-- Archivos: `services/search.service.js`, `services/vision.service.js`.
+### 3. `apps/workers/inference-worker` (Worker de Inferencia & Visión IA)
+- Servicio independiente especializado en el procesamiento pesado asíncrono de Visión por Computadora (fotos de refrigerador) e inferencia OCR de recibos.
+- Desplegable como microservicio dedicado o función Serverless (AWS Lambda / GCP Cloud Run).
 
-### 4. `controllers/` & `routes/` (Capa de Presentación / API)
-- Maneja peticiones HTTP, validaciones de entrada y respuestas JSON.
-- Archivos: `controllers/search.controller.js`, `controllers/vision.controller.js`, `routes/index.js`.
+### 4. `apps/workers/cron-worker` (Worker de Tareas Programadas)
+- Proceso programado responsable del escaneo periódico de alimentos en alacena próximos a vencer y caché de eventos culturales en la ciudad.
 
 ---
 
-## 📂 Estructura Limpia del Repositorio
+## 📂 Estructura Completa de Carpetas
 
 ```
 roomIA/
 ├── apps/
-│   ├── web/                     # Frontend Application
-│   ├── api/                     # Layered Backend API (config, repositories, services, controllers, routes)
-│   └── workers/                 # Background Worker
-├── infra/                       # Infrastructure IaC (AWS SAM, Docker, GCP)
-├── docs/                        # Handbook & Research
-├── .env.example
-├── .gitignore
+│   ├── web/                         # React 18 + Vite Frontend App
+│   ├── api/                         # Layered RESTful Express API
+│   └── workers/
+│       ├── inference-worker/        # Dedicated AI Vision & OCR Worker
+│       └── cron-worker/             # Scheduled Background Jobs Worker
+├── infra/                           # Docker Compose, AWS SAM, GCP Configs
+├── docs/                            # Handbook & Architecture Guides
+├── Makefile                         # Domain-oriented Automation
 └── README.md
 ```

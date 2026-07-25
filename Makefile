@@ -2,34 +2,38 @@
 # RoomIA — Product Component Automation Interface
 # ==============================================================================
 
-.PHONY: help web-dev web-build web-start api-dev api-build api-start workers-dev workers-build workers-start all-dev all-build all-start all-stop logs clean
+.PHONY: help web-dev web-build web-start api-dev api-build api-start inference-dev inference-build inference-start cron-dev cron-build cron-start all-dev all-build all-start all-stop logs clean
 
-# Default Help Target
 help:
 	@echo "🏠 RoomIA Product Commands (Organized by Component):"
 	@echo ""
 	@echo "  --- WEB Component (apps/web) ---"
-	@echo "  make web-dev         - Run Web frontend local dev server (http://localhost:3000)"
-	@echo "  make web-build       - Compile Web frontend production bundle"
-	@echo "  make web-start       - Launch Web production container"
+	@echo "  make web-dev            - Run Web React frontend local dev server (http://localhost:3000)"
+	@echo "  make web-build          - Compile Web frontend production bundle"
+	@echo "  make web-start          - Launch Web production container"
 	@echo ""
 	@echo "  --- API Component (apps/api) ---"
-	@echo "  make api-dev         - Run API backend local dev server (http://localhost:4000)"
-	@echo "  make api-build       - Build API production image"
-	@echo "  make api-start       - Launch API production container"
+	@echo "  make api-dev            - Run RESTful API backend local dev server (http://localhost:4000)"
+	@echo "  make api-build          - Build API production image"
+	@echo "  make api-start          - Launch API production container"
 	@echo ""
-	@echo "  --- WORKERS Component (apps/workers) ---"
-	@echo "  make workers-dev     - Run Workers background process locally"
-	@echo "  make workers-build   - Build Workers production image"
-	@echo "  make workers-start   - Launch Workers container"
+	@echo "  --- INFERENCE WORKER Component (apps/workers/inference-worker) ---"
+	@echo "  make inference-dev      - Run AI Vision Inference Worker locally"
+	@echo "  make inference-build    - Build Inference Worker production image"
+	@echo "  make inference-start    - Launch Inference Worker container"
+	@echo ""
+	@echo "  --- CRON WORKER Component (apps/workers/cron-worker) ---"
+	@echo "  make cron-dev           - Run Scheduled Jobs Cron Worker locally"
+	@echo "  make cron-build         - Build Cron Worker production image"
+	@echo "  make cron-start         - Launch Cron Worker container"
 	@echo ""
 	@echo "  --- GLOBAL System Orchestration ---"
-	@echo "  make all-dev         - Start all product parts in dev mode"
-	@echo "  make all-build       - Build production artifacts for all components"
-	@echo "  make all-start       - Launch full production stack"
-	@echo "  make all-stop        - Stop all running product containers"
-	@echo "  make logs            - Stream live logs from all running parts"
-	@echo "  make clean           - Remove build artifacts"
+	@echo "  make all-dev            - Start all product parts in dev mode"
+	@echo "  make all-build          - Build production artifacts for all components"
+	@echo "  make all-start          - Launch full production stack"
+	@echo "  make all-stop           - Stop all running product containers"
+	@echo "  make logs               - Stream live logs from all running parts"
+	@echo "  make clean              - Remove build artifacts"
 
 # WEB Component Targets
 web-dev:
@@ -51,21 +55,31 @@ api-build:
 api-start:
 	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml up -d api; else cd apps/api && npm run start; fi
 
-# WORKERS Component Targets
-workers-dev:
-	cd apps/workers && npm run dev
+# INFERENCE WORKER Targets
+inference-dev:
+	cd apps/workers/inference-worker && npm run dev
 
-workers-build:
-	@if command -v docker >/dev/null 2>&1; then docker build -t roomia-workers -f apps/workers/Dockerfile apps/workers; fi
+inference-build:
+	@if command -v docker >/dev/null 2>&1; then docker build -t roomia-inference-worker -f infra/docker/Dockerfile.inference-worker .; fi
 
-workers-start:
-	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml up -d workers; else cd apps/workers && npm run start; fi
+inference-start:
+	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml up -d inference-worker; else cd apps/workers/inference-worker && npm run start; fi
+
+# CRON WORKER Targets
+cron-dev:
+	cd apps/workers/cron-worker && npm run dev
+
+cron-build:
+	@if command -v docker >/dev/null 2>&1; then docker build -t roomia-cron-worker -f infra/docker/Dockerfile.cron-worker .; fi
+
+cron-start:
+	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml up -d cron-worker; else cd apps/workers/cron-worker && npm run start; fi
 
 # GLOBAL System Orchestration Targets
 all-dev:
 	cd apps/web && npm run dev
 
-all-build: web-build api-build workers-build
+all-build: web-build api-build inference-build cron-build
 
 all-start:
 	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml up -d; fi

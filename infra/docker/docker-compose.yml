@@ -6,7 +6,9 @@ services:
       context: ../../apps/web
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
     restart: always
 
   api:
@@ -16,14 +18,22 @@ services:
     ports:
       - "4000:4000"
     environment:
+      - NODE_ENV=production
       - PORT=4000
-      - TAVILY_API_KEY=${TAVILY_API_KEY}
     restart: always
 
-  workers:
+  inference-worker:
     build:
-      context: ../../apps/workers
-      dockerfile: Dockerfile
+      context: ../../apps/workers/inference-worker
+      dockerfile: ../../infra/docker/Dockerfile.inference-worker
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  cron-worker:
+    build:
+      context: ../../apps/workers/cron-worker
+      dockerfile: ../../infra/docker/Dockerfile.cron-worker
     environment:
       - NODE_ENV=production
     restart: always
