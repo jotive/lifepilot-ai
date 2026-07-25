@@ -1,0 +1,14 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package*.json ./
+COPY apps/api/package*.json ./apps/api/
+COPY packages/shared/package*.json ./packages/shared/
+
+RUN npm install --workspace=@roomia/api --workspace=@roomia/shared
+
+COPY packages/shared ./packages/shared
+COPY apps/api ./apps/api
+
+EXPOSE 4000
+CMD ["npm", "run", "start", "--workspace=@roomia/api"]
