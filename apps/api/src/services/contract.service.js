@@ -1,5 +1,34 @@
+import { GroqService } from './groq.service.js';
+import { envConfig } from '../config/env.config.js';
+
 export class ContractAnalyzerService {
-  static analyzeContractText(contractText) {
+  static async analyzeContractText(contractText) {
+    if (envConfig.groqApiKey) {
+      try {
+        const groqPrompt = `
+Analyze the following rental lease contract fragment and evaluate it for abusive clauses, unexpected fee increases, or tenant privacy violations.
+Return a valid JSON object with keys:
+- "riskLevel": "HIGH", "MEDIUM", or "LOW"
+- "score": number between 0 and 100
+- "findings": array of objects with keys "type" ("DANGER" | "WARNING" | "SUCCESS"), "title", "description", "recommendation"
+
+Contract Fragment:
+${contractText}
+        `;
+        const responseText = await GroqService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
+        const parsed = JSON.parse(responseText);
+        return {
+          riskLevel: parsed.riskLevel || 'LOW',
+          score: parsed.score || 90,
+          findings: parsed.findings || [],
+          source: 'groq-llama-3',
+          timestamp: new Date().toISOString()
+        };
+      } catch (error) {
+        console.warn('Groq AI contract analysis fallback:', error.message);
+      }
+    }
+
     const textLower = contractText.toLowerCase();
     const findings = [];
     let riskLevel = 'LOW';
@@ -47,6 +76,7 @@ export class ContractAnalyzerService {
       riskLevel,
       score: riskLevel === 'HIGH' ? 45 : riskLevel === 'MEDIUM' ? 75 : 95,
       findings,
+      source: 'local-rule-engine',
       timestamp: new Date().toISOString()
     };
   }
