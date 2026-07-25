@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TavilyService } from '../services/tavily.service';
+import { SkeletonLoader } from './SkeletonLoader';
 
 export function CityExplorer({ currentCity, mode, apiKey }) {
   const [searchInput, setSearchInput] = useState('Eventos y conciertos destacados este fin de semana');
@@ -93,14 +94,11 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
         <div className="events-main">
           <div className="section-title-wrap">
             <h3><i className="fa-solid fa-fire"></i> Eventos Destacados en la Ciudad</h3>
-            <span className="results-count">{events.length} Eventos encontrados en {currentCity}</span>
+            <span className="results-count">{loading ? 'Explorando...' : `${events.length} Eventos encontrados en ${currentCity}`}</span>
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-              <i className="fa-solid fa-spinner fa-spin text-2xl"></i>
-              <p style={{ marginTop: '0.5rem' }}>RoomIA explorando actividades en tiempo real en {currentCity}...</p>
-            </div>
+            <SkeletonLoader count={4} />
           ) : (
             <div className="events-grid">
               {events.map((evt, idx) => (

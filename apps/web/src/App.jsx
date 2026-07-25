@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { CityExplorer } from './components/CityExplorer';
@@ -7,78 +7,59 @@ import { KitchenOps } from './components/KitchenOps';
 import { HouseholdOps } from './components/HouseholdOps';
 import { DocVault } from './components/DocVault';
 import { SettingsModal } from './components/SettingsModal';
-import { StorageUtil } from './utils/storage.util';
-import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS } from './config/constants';
+import { ToastContainer } from './components/ToastContainer';
+import { useRoomiaStore } from './store/useRoomiaStore';
+import { useToastStore } from './store/useToastStore';
 
 export function App() {
-  const [currentCity, setCurrentCity] = useState(StorageUtil.getString('roomia_city', 'Ciudad de México'));
-  const [mode, setMode] = useState(StorageUtil.getString('roomia_mode', 'couple'));
-  const [apiKey, setApiKey] = useState(StorageUtil.getString('roomia_tavily_key', ''));
-  const [activeTab, setActiveTab] = useState('city-events');
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const {
+    currentCity,
+    mode,
+    tavilyApiKey,
+    activeTab,
+    isSettingsOpen,
+    ingredients,
+    expenses,
+    tasks,
+    documents,
+    setCurrentCity,
+    setMode,
+    setTavilyApiKey,
+    setActiveTab,
+    setIsSettingsOpen,
+    addIngredient,
+    removeIngredient,
+    addExpense,
+    randomizeTasks,
+    addDocument
+  } = useRoomiaStore();
 
-  const [ingredients, setIngredients] = useState(() => StorageUtil.get('roomia_ingredients', INITIAL_INGREDIENTS));
-  const [expenses, setExpenses] = useState(() => StorageUtil.get('roomia_expenses', INITIAL_EXPENSES));
-  const [tasks, setTasks] = useState(() => StorageUtil.get('roomia_tasks', INITIAL_TASKS));
-  const [documents, setDocuments] = useState(() => StorageUtil.get('roomia_docs', INITIAL_DOCS));
-
-  useEffect(() => {
-    StorageUtil.setString('roomia_city', currentCity);
-  }, [currentCity]);
-
-  useEffect(() => {
-    StorageUtil.setString('roomia_mode', mode);
-  }, [mode]);
-
-  useEffect(() => {
-    StorageUtil.setString('roomia_tavily_key', apiKey);
-  }, [apiKey]);
-
-  useEffect(() => {
-    StorageUtil.set('roomia_ingredients', ingredients);
-  }, [ingredients]);
-
-  useEffect(() => {
-    StorageUtil.set('roomia_expenses', expenses);
-  }, [expenses]);
-
-  useEffect(() => {
-    StorageUtil.set('roomia_tasks', tasks);
-  }, [tasks]);
-
-  useEffect(() => {
-    StorageUtil.set('roomia_docs', documents);
-  }, [documents]);
+  const { addToast } = useToastStore();
 
   const handleAddIngredient = (item) => {
-    if (!ingredients.includes(item)) {
-      setIngredients([...ingredients, item]);
-    }
+    addIngredient(item);
+    addToast(`Ingrediente "${item}" agregado a la alacena`, 'success');
   };
 
-  const handleRemoveIngredient = (index) => {
-    setIngredients(ingredients.filter((_, i) => i !== index));
-  };
-
-  const handleAddExpense = (newExpense) => {
-    setExpenses([...expenses, newExpense]);
+  const handleAddExpense = (expense) => {
+    addExpense(expense);
+    addToast(`Gasto "${expense.desc}" registrado ($${expense.amount})`, 'success');
   };
 
   const handleRandomizeTasks = () => {
-    const people = mode === 'couple' ? ['Roomie 1 (Alex)', 'Roomie 2 (Sam)'] : ['Asignado a ti'];
-    setTasks(tasks.map(t => ({
-      ...t,
-      assigned: people[Math.floor(Math.random() * people.length)]
-    })));
+    randomizeTasks();
+    addToast('Sorteo de tareas del hogar completado', 'info');
   };
 
-  const handleAddDoc = (newDoc) => {
-    setDocuments([...documents, newDoc]);
+  const handleAddDoc = (doc) => {
+    addDocument(doc);
+    addToast(`Documento "${doc.name}" guardado en la bóveda`, 'success');
   };
 
   const handleSaveSettings = (newCity, newKey) => {
     setCurrentCity(newCity || 'Ciudad de México');
-    setApiKey(newKey || '');
+    setTavilyApiKey(newKey || '');
+    addToast('Configuración de ciudad y API guardada', 'success');
   };
 
   return (
@@ -87,7 +68,10 @@ export function App() {
         currentCity={currentCity}
         mode={mode}
         onCityClick={() => setIsSettingsOpen(true)}
-        onModeChange={setMode}
+        onModeChange={(newMode) => {
+          setMode(newMode);
+          addToast(`Modo cambiado a: ${newMode === 'solo' ? 'Solo Expat' : 'Roomies / Pareja'}`, 'info');
+        }}
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
@@ -99,7 +83,7 @@ export function App() {
 
       <main className="main-content">
         {activeTab === 'city-events' && (
-          <CityExplorer currentCity={currentCity} mode={mode} apiKey={apiKey} />
+          <CityExplorer currentCity={currentCity} mode={mode} apiKey={tavilyApiKey} />
         )}
         {activeTab === 'relocation' && (
           <RelocationOps currentCity={currentCity} />
@@ -108,7 +92,7 @@ export function App() {
           <KitchenOps
             ingredients={ingredients}
             onAddIngredient={handleAddIngredient}
-            onRemoveIngredient={handleRemoveIngredient}
+            onRemoveIngredient={removeIngredient}
           />
         )}
         {activeTab === 'couple-expenses' && (
@@ -132,10 +116,12 @@ export function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         currentCity={currentCity}
-        apiKey={apiKey}
+        apiKey={tavilyApiKey}
         onClose={() => setIsSettingsOpen(false)}
         onSave={handleSaveSettings}
       />
+
+      <ToastContainer />
 
       <footer className="main-footer">
         <div className="footer-content">
