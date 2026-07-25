@@ -1,11 +1,10 @@
+import { OpenRouterService } from './openrouter.service.js';
 import { GroqService } from './groq.service.js';
 import { envConfig } from '../config/env.config.js';
 
 export class ContractAnalyzerService {
   static async analyzeContractText(contractText) {
-    if (envConfig.groqApiKey) {
-      try {
-        const groqPrompt = `
+    const groqPrompt = `
 Analyze the following rental lease contract fragment and evaluate it for abusive clauses, unexpected fee increases, or tenant privacy violations.
 Return a valid JSON object with keys:
 - "riskLevel": "HIGH", "MEDIUM", or "LOW"
@@ -14,7 +13,26 @@ Return a valid JSON object with keys:
 
 Contract Fragment:
 ${contractText}
-        `;
+    `;
+
+    if (envConfig.openrouterApiKey || envConfig.openrouterToken1) {
+      try {
+        const responseText = await OpenRouterService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
+        const parsed = JSON.parse(responseText);
+        return {
+          riskLevel: parsed.riskLevel || 'LOW',
+          score: parsed.score || 90,
+          findings: parsed.findings || [],
+          source: 'openrouter-ai',
+          timestamp: new Date().toISOString()
+        };
+      } catch (error) {
+        console.warn('OpenRouter contract analysis fallback:', error.message);
+      }
+    }
+
+    if (envConfig.groqApiKey) {
+      try {
         const responseText = await GroqService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
         const parsed = JSON.parse(responseText);
         return {
@@ -48,7 +66,7 @@ ${contractText}
         type: 'WARNING',
         title: 'Aumento de Renta Superior a la Inflación',
         description: 'Se detectó un incremento de alquiler por encima del índice de precios al consumidor (IPC).',
-        recommendation: 'Negociar un tope de ajuste anual ligado estrictamente a la inflación oficial.'
+        recommendation: 'Negociar un tope de ajuste anual ligado strictly a la inflación oficial.'
       });
       if (riskLevel !== 'HIGH') riskLevel = 'MEDIUM';
     }
