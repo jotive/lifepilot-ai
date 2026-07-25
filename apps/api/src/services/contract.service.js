@@ -1,3 +1,4 @@
+import { GeminiService } from './gemini.service.js';
 import { OpenRouterService } from './openrouter.service.js';
 import { GroqService } from './groq.service.js';
 import { envConfig } from '../config/env.config.js';
@@ -14,6 +15,22 @@ Return a valid JSON object with keys:
 Contract Fragment:
 ${contractText}
     `;
+
+    if (envConfig.geminiApiKey) {
+      try {
+        const responseText = await GeminiService.completeChat(groqPrompt, 'You are an expert real estate lawyer assistant. Return ONLY valid JSON.');
+        const parsed = JSON.parse(responseText);
+        return {
+          riskLevel: parsed.riskLevel || 'LOW',
+          score: parsed.score || 90,
+          findings: parsed.findings || [],
+          source: 'gemini-flash-ai',
+          timestamp: new Date().toISOString()
+        };
+      } catch (error) {
+        console.warn('Gemini contract analysis fallback:', error.message);
+      }
+    }
 
     if (envConfig.openrouterApiKey || envConfig.openrouterToken1) {
       try {
@@ -66,7 +83,7 @@ ${contractText}
         type: 'WARNING',
         title: 'Aumento de Renta Superior a la Inflación',
         description: 'Se detectó un incremento de alquiler por encima del índice de precios al consumidor (IPC).',
-        recommendation: 'Negociar un tope de ajuste anual ligado strictly a la inflación oficial.'
+        recommendation: 'Negociar un tope de ajuste anual ligado estrictamente a la inflación oficial.'
       });
       if (riskLevel !== 'HIGH') riskLevel = 'MEDIUM';
     }
