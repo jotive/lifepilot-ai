@@ -1,11 +1,6 @@
-/* ==========================================================================
-   RoomIA — User-Centric Web Application Logic
-   Created for Hackatón de IA con Qiro (Código Facilito & AWS)
-   ========================================================================== */
-
 const state = {
   currentCity: localStorage.getItem('roomia_city') || 'Ciudad de México',
-  mode: localStorage.getItem('roomia_mode') || 'couple', // 'solo' | 'couple'
+  mode: localStorage.getItem('roomia_mode') || 'couple',
   tavilyApiKey: localStorage.getItem('roomia_tavily_key') || import.meta.env.VITE_TAVILY_API_KEY || '',
   ingredients: JSON.parse(localStorage.getItem('roomia_ingredients') || '["3 Huevos", "Pechuga de Pollo", "Tomates", "Arroz", "Cebolla", "Queso"]'),
   expenses: JSON.parse(localStorage.getItem('roomia_expenses') || '[{"id":1, "desc":"Supermercado Inicial", "amount":85.50, "payer":"Roomie 1", "split":"50-50"},{"id":2, "desc":"Pago de Internet", "amount":45.00, "payer":"Roomie 2", "split":"50-50"}]'),
@@ -230,8 +225,8 @@ async function performEventSearch(query) {
           location: state.currentCity
         }));
       }
-    } catch (err) {
-      console.warn('Live API search fallback:', err);
+    } catch (error) {
+      console.warn('Search API fallback:', error);
     }
   }
 

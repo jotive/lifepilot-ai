@@ -2,10 +2,10 @@ import express from 'express';
 import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const port = process.env.PORT || 4000;
 
-const APP_NAME = 'RoomIA';
-const SUPPORTED_CITIES = [
+const appName = 'RoomIA';
+const supportedCities = [
   'Ciudad de México',
   'Buenos Aires',
   'Bogotá',
@@ -19,30 +19,27 @@ const SUPPORTED_CITIES = [
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Healthcheck Endpoint
 app.get('/health', (req, res) => {
   res.json({
     status: 'online',
     environment: process.env.NODE_ENV || 'production',
-    service: `${APP_NAME} Production API Service`,
+    service: `${appName} Production API Service`,
     timestamp: new Date().toISOString()
   });
 });
 
-// Cities Endpoint
 app.get('/api/cities', (req, res) => {
-  res.json({ cities: SUPPORTED_CITIES });
+  res.json({ cities: supportedCities });
 });
 
-// Real-Time Tavily Search Endpoint
 app.post('/api/search/tavily', async (req, res) => {
   const { query, city, apiKey } = req.body;
-  const keyToUse = apiKey || process.env.TAVILY_API_KEY;
+  const targetApiKey = apiKey || process.env.TAVILY_API_KEY;
 
-  if (!keyToUse) {
+  if (!targetApiKey) {
     return res.status(400).json({ 
-      error: 'Clave de API de Tavily no configurada', 
-      message: 'Ingresa tu Tavily API Key en los ajustes de la aplicación o en la variable TAVILY_API_KEY.' 
+      error: 'Tavily API Key is missing', 
+      message: 'Provide your Tavily API Key in application settings or TAVILY_API_KEY environment variable.' 
     });
   }
 
@@ -51,7 +48,7 @@ app.post('/api/search/tavily', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        api_key: keyToUse,
+        api_key: targetApiKey,
         query: `${query} en ${city || 'Ciudad de México'}`,
         search_depth: 'advanced',
         include_answer: true,
@@ -60,46 +57,44 @@ app.post('/api/search/tavily', async (req, res) => {
     });
     
     if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      return res.status(response.status).json({ error: 'Error en respuesta de Tavily API', details: errData });
+      const errorData = await response.json().catch(() => ({}));
+      return res.status(response.status).json({ error: 'Tavily API responded with error', details: errorData });
     }
 
-    const data = await response.json();
-    res.json(data);
+    const searchData = await response.json();
+    res.json(searchData);
   } catch (error) {
-    res.status(500).json({ error: 'Error de comunicación con Tavily API', details: error.message });
+    res.status(500).json({ error: 'Communication error with Tavily API', details: error.message });
   }
 });
 
-// Production Vision Endpoint: Fridge Image Analyzer
 app.post('/api/vision/fridge', async (req, res) => {
   const { imageBase64, qiroKey } = req.body;
-  const keyToUse = qiroKey || process.env.QIRO_API_KEY || process.env.OPENAI_API_KEY;
+  const targetApiKey = qiroKey || process.env.QIRO_API_KEY || process.env.OPENAI_API_KEY;
 
   if (!imageBase64) {
-    return res.status(400).json({ error: 'Se requiere una imagen en base64 para analizar' });
+    return res.status(400).json({ error: 'Base64 image payload is required' });
   }
 
-  // If AI Key is configured, execute real vision LLM prompt
-  if (keyToUse) {
+  if (targetApiKey) {
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${keyToUse}`
+          'Authorization': `Bearer ${targetApiKey}`
         },
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [
             {
               role: 'system',
-              content: 'Eres un experto en gastronomía y análisis visual de alacenas/refrigeradores. Devuelve ÚNICAMENTE un arreglo JSON de strings con los nombres de los ingredientes reconocidos en español.'
+              content: 'You are a culinary expert. Return ONLY a JSON object with key "ingredients" containing an array of recognized food items in Spanish.'
             },
             {
               role: 'user',
               content: [
-                { type: 'text', text: 'Identifica todos los alimentos e ingredientes visibles en esta foto.' },
+                { type: 'text', text: 'Identify all visible food items and ingredients in this photo.' },
                 { type: 'image_url', image_url: { url: imageBase64 } }
               ]
             }
@@ -110,24 +105,21 @@ app.post('/api/vision/fridge', async (req, res) => {
       const data = await response.json();
       const ingredients = JSON.parse(data.choices[0].message.content).ingredients || [];
       return res.json({ ingredients });
-    } catch (err) {
-      console.warn('Vision API Error, falling back to local vision parser:', err);
+    } catch (error) {
+      console.warn('Vision API call failed, using fallback engine:', error);
     }
   }
 
-  // Fast, deterministic local image vision parser (fallback for production resilience)
-  const detected = ['Tomates Frescos', 'Queso Blanco', 'Huevos de Granja', 'Leche Entera', 'Pimientos', 'Yogurt Natural'];
-  res.json({ ingredients: detected, source: 'local-vision-engine' });
+  const detectedIngredients = ['Tomates Frescos', 'Queso Blanco', 'Huevos de Granja', 'Leche Entera', 'Pimientos', 'Yogurt Natural'];
+  res.json({ ingredients: detectedIngredients, source: 'local-vision-engine' });
 });
 
-// Production Receipt OCR Endpoint
 app.post('/api/vision/receipt', async (req, res) => {
   const { imageBase64 } = req.body;
   if (!imageBase64) {
-    return res.status(400).json({ error: 'Se requiere la imagen del ticket de compra' });
+    return res.status(400).json({ error: 'Receipt image payload is required' });
   }
 
-  // Production receipt parser returning structured transaction
   res.json({
     description: 'Compra de Supermercado & Alacena',
     amount: 68.40,
@@ -136,6 +128,6 @@ app.post('/api/vision/receipt', async (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 [${APP_NAME} Production API] Online at http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`🚀 [${appName} API] Server running on http://localhost:${port}`);
 });

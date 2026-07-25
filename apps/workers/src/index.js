@@ -1,10 +1,10 @@
-const APP_NAME = 'RoomIA';
+const appName = 'RoomIA';
 
-console.log(`⚙️ [${APP_NAME} Worker] Background Job Worker Initialized.`);
-console.log(`📡 Ready for scheduled cron jobs (City Events scraping & Pantry Expiration alerts).`);
+console.log(`⚙️ [${appName} Worker] Background Job Worker Initialized.`);
+console.log(`📡 Ready for scheduled background jobs.`);
 
 function runPeriodicCheck() {
-  console.log(`[${new Date().toISOString()}] Checking background tasks & notifications...`);
+  console.log(`[${new Date().toISOString()}] Running background task check...`);
 }
 
 runPeriodicCheck();

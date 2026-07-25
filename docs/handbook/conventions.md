@@ -5,10 +5,22 @@
 
 ---
 
+## 🚫 Código Semántico y Auto-Documentado (Evitar Comentarios y Docstrings)
+
+1. **Sin Comentarios Redundantes ni Docstrings:**
+   * El código debe ser 100% semántico y auto-explicativo. Evitar bloques de comentarios en línea, docstrings o aclaraciones obvias.
+   * Si un bloque requiere un comentario para entenderse, debe refactorizarse en variables o funciones con nombres expresivos que hagan el comentario innecesario.
+
+2. **Código en Inglés (English Code Standard):**
+   * Todo el código interno (nombres de variables, funciones, clases, constantes, archivos y logs de terminal) debe estar escrito estrictamente en **Inglés**.
+   * El texto orientado al usuario final (etiquetas de UI, botones, notificaciones) se mantiene en el idioma del usuario (Español).
+
+---
+
 ## 🛠️ Principio de Automatización por Parte del Producto
 
-1. **Comandos Organizados por Componente del Producto (`componente-acción`):**
-   * El `Makefile` organiza sus objetivos de desarrollo, compilación e inicio explícitamente **por cada parte del producto** (`web`, `api`, `workers`, `all`):
+1. **Comandos Organizados por Componente del Producto (`component-action`):**
+   * El `Makefile` organiza sus objetivos explícitamente **por cada parte del producto** (`web`, `api`, `workers`, `all`):
      * `make web-dev`, `make web-build`, `make web-start`
      * `make api-dev`, `make api-build`, `make api-start`
      * `make workers-dev`, `make workers-build`, `make workers-start`
@@ -41,11 +53,11 @@
 
 ## 🏷️ Convenciones de Naming (Nomenclatura)
 
-* **Archivos HTML / CSS / JS:** `kebab-case` o `lowercase` simple (ej: `styles.css`, `app.js`, `sam-template.yaml`).
+* **Archivos HTML / CSS / JS:** `kebab-case` o `lowercase` simple en inglés (ej: `styles.css`, `app.js`, `sam-template.yaml`).
 * **Variables CSS (Tokens):** `--component-property-modifier` (ej: `--bg-dark`, `--border-glow`, `--radius-md`).
 * **Clases HTML (BEM simplificado):** `.block-element` o `.element--modifier` (ej: `.event-card`, `.nav-tab.active`).
-* **IDs en el DOM:** `camelCase` descriptivo (ej: `eventSearchInput`, `generateRecipeBtn`).
-* **Funciones JS:** Verbo + Objeto en `camelCase` (ej: `performEventSearch`, `calculateRelocationCost`).
+* **IDs en el DOM:** `camelCase` descriptivo en inglés (ej: `eventSearchInput`, `generateRecipeBtn`).
+* **Funciones JS:** Verbo + Objeto en `camelCase` en inglés (ej: `performEventSearch`, `calculateRelocationCost`).
 
 ---
 
