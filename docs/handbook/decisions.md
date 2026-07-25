@@ -1,39 +1,25 @@
-# 📜 Handbook: Decisions (Registro de Decisiones - ADR)
+# 🧠 Handbook: Decisions (Decisiones de Arquitectura ADR)
 
 > **Proyecto:** RoomIA  
+> **Registro de Decisiones de Arquitectura (ADR)**
 
 ---
 
-## ADR-001: Selección de Marca "RoomIA" en lugar de "LifePilot AI"
-* **Fecha:** 2026-07-25  
-* **Estado:** ✅ Aprobado / Implementado  
-* **Contexto:** Se necesitaba una identidad de marca cercana y memorable que hiciera alusión directa al concepto de un compañero de cuarto (*Roomie*) inteligente para parejas e independientes.  
-* **Decisión:** Renombrar la solución a **RoomIA**.  
-* **Alternativas Descartadas:** `LifePilot AI` (demasiado genérico), `RelocateOS` (enfocado solo en mudanzas).
+## ADR-001: Almacenamiento Híbrido Local-First + Amazon S3 / PostgreSQL
+* **Fecha:** 2026-07-25
+* **Decisión:** Usar `LocalStorage` e `IndexedDB` para funcionamiento Offline First instantáneo en el cliente, sincronizando con PostgreSQL / S3 en la nube.
+* **¿Por qué?:** Garantiza cero latencia en la UI y privacidad absoluta en documentos mediante cifrado local previo.
 
 ---
 
-## ADR-002: Estructura Multi-Carpeta Limpia sin Workspaces Raíz
-* **Fecha:** 2026-07-25  
-* **Estado:** ✅ Aprobado / Implementado  
-* **Contexto:** Se evaluó el uso de monorepos con workspaces izados (`node_modules` en raíz con Turborepo). El usuario solicitó mantener un repositorio multi-carpeta limpio sin archivos o paquetes sobrantes en la raíz.  
-* **Decisión:** Organizar el proyecto en carpetas independientes (`apps/`, `infra/`, `docs/`) sin `package.json` o `node_modules` en la raíz.  
-* **Alternativas Descartadas:** Turborepo / npm workspaces con izamiento de paquetes en raíz.
+## ADR-002: Autenticación Híbrida (Guest 1-Click + JWT Sync)
+* **Fecha:** 2026-07-25
+* **Decisión:** Permitir entrada instantánea en modo invitado y upgrade a cuenta compartida mediante JWT.
+* **¿Por qué?:** Elimina la fricción de registro inicial para la demo/MVP funcional desde el Día 1.
 
 ---
 
-## ADR-003: Uso de Tavily AI Search para Radar de Eventos en Tiempo Real
-* **Fecha:** 2026-07-25  
-* **Estado:** ✅ Aprobado / Implementado  
-* **Contexto:** El módulo de exploración de la ciudad requería información actualizada sobre eventos, conciertos y actividades culturales locales.  
-* **Decisión:** Integrar **Tavily AI Search API** con fallback a simulación inteligente para asegurar funcionamiento continuo en la demo evaluada por los jueces de AWS.  
-* **Alternativas Descartadas:** Web scrapers estáticos locales (información desactualizada).
-
----
-
-## ADR-004: Persistencia Local (LocalStorage & IndexedDB) en el Cliente
-* **Fecha:** 2026-07-25  
-* **Estado:** ✅ Aprobado / Implementado  
-* **Contexto:** Maximizar la privacidad del usuario y asegurar que la demo funcione sin depender de bases de datos remotas costosas o de alta latencia.  
-* **Decisión:** Almacenar datos de despensa, gastos y documentos cifrados localmente en el navegador del usuario.  
-* **Alternativas Descartadas:** Base de datos PostgreSQL/MongoDB remota obligatoria para el MVP.
+## ADR-003: Notificaciones vía Web Push API + Service Worker
+* **Fecha:** 2026-07-25
+* **Decisión:** Implementar Service Worker (`public/sw.js`) y VAPID Keys en el servidor.
+* **¿Por qué?:** Permite enviar notificaciones nativas en el sistema operativo del usuario sin obligar a instalar una app de tienda.
