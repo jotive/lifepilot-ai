@@ -1,5 +1,9 @@
 export const APP_NAME = 'RoomIA';
 
+export const SUPPORTED_CITIES = [
+  'Ciudad de México', 'Madrid', 'Bogotá', 'Buenos Aires', 'Santiago', 'Lima', 'Medellín'
+];
+
 export const INITIAL_INGREDIENTS = [
   '3 Huevos', 'Pechuga de Pollo', 'Tomates', 'Arroz', 'Cebolla', 'Queso'
 ];
