@@ -8,6 +8,7 @@ import { HouseholdOps } from './components/HouseholdOps';
 import { DocVault } from './components/DocVault';
 import { SettingsModal } from './components/SettingsModal';
 import { ToastContainer } from './components/ToastContainer';
+import { AIAssistantWidget } from './components/AIAssistantWidget';
 import { useRoomiaStore } from './store/useRoomiaStore';
 import { useToastStore } from './store/useToastStore';
 
@@ -121,6 +122,7 @@ export function App() {
         onSave={handleSaveSettings}
       />
 
+      <AIAssistantWidget />
       <ToastContainer />
 
       <footer className="main-footer">

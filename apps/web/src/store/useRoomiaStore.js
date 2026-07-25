@@ -5,6 +5,7 @@ import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS } fr
 export const useRoomiaStore = create((set, get) => ({
   currentCity: StorageUtil.getString('roomia_city', 'Ciudad de México'),
   mode: StorageUtil.getString('roomia_mode', 'couple'),
+  language: StorageUtil.getString('roomia_lang', 'es'),
   tavilyApiKey: StorageUtil.getString('roomia_tavily_key', ''),
   activeTab: 'city-events',
   isSettingsOpen: false,
@@ -22,6 +23,11 @@ export const useRoomiaStore = create((set, get) => ({
   setMode: (mode) => {
     StorageUtil.setString('roomia_mode', mode);
     set({ mode });
+  },
+
+  setLanguage: (lang) => {
+    StorageUtil.setString('roomia_lang', lang);
+    set({ language: lang });
   },
 
   setTavilyApiKey: (key) => {

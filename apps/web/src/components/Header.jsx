@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { RealtimeService } from '../services/realtime.service';
+import { useRoomiaStore } from '../store/useRoomiaStore';
+import { translations } from '../config/i18n';
 
 export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSettings }) {
   const [pairInfo, setPairInfo] = useState(null);
+  const { language, setLanguage } = useRoomiaStore();
+  const t = translations[language] || translations.es;
 
   const handlePairClick = () => {
     const info = RealtimeService.createPairingCode();
@@ -17,7 +21,7 @@ export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSet
         </div>
         <div className="logo-text">
           <h1>Room<span className="logo-highlight">IA</span> <span className="badge-ai">PRO</span></h1>
-          <p className="tagline">Tu Roomie Inteligente & Copiloto de Vida</p>
+          <p className="tagline">{t.tagline}</p>
         </div>
       </div>
 
@@ -27,6 +31,16 @@ export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSet
           <span>{currentCity}</span>
           <i className="fa-solid fa-chevron-down text-xs"></i>
         </button>
+
+        <select 
+          value={language} 
+          onChange={(e) => setLanguage(e.target.value)}
+          style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}
+        >
+          <option value="es">🇲🇽 ES</option>
+          <option value="en">🇺🇸 EN</option>
+          <option value="pt">🇧🇷 PT</option>
+        </select>
 
         <div className="mode-toggle-group">
           <button 
