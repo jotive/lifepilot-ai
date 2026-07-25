@@ -29,12 +29,6 @@
 
   --border-light: rgba(226, 232, 240, 0.8);
   --border-glow: rgba(255, 107, 74, 0.3);
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-blur: blur(16px);
-
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 16px 40px -8px rgba(255, 107, 74, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 8px 24px rgba(255, 107, 74, 0.35);
 
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -78,11 +72,11 @@ body {
   gap: 1.25rem;
 }
 
-/* Left Sidebar Navigation */
+/* Left Sidebar Navigation (Dribbble Reference Match) */
 .app-sidebar {
-  width: 90px;
+  width: 80px;
   background: var(--primary);
-  border-radius: var(--radius-lg);
+  border-radius: 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -93,33 +87,33 @@ body {
 }
 
 .sidebar-logo {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   background: #ffffff;
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--primary);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.1rem;
   align-items: center;
 }
 
 .sidebar-nav-item {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 1.35rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.25rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -136,7 +130,7 @@ body {
   background: #ffffff;
   color: var(--primary);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 /* Main Canvas Body */
@@ -265,49 +259,6 @@ body {
 
 .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-/* Horizontal Category Navigation Tabs */
-.main-nav {
-  background: #f8fafc;
-  border-radius: var(--radius-lg);
-  padding: 0.5rem;
-  border: 1px solid #f1f5f9;
-}
-
-.nav-track {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.nav-track::-webkit-scrollbar { display: none; }
-
-.nav-tab {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.95rem;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: var(--transition-fast);
-}
-
-.nav-tab:hover { color: var(--text-main); background: rgba(255, 107, 74, 0.08); }
-
-.nav-tab.active {
-  background: var(--primary);
-  color: #ffffff;
-  box-shadow: 0 6px 18px rgba(255, 107, 74, 0.35);
-}
-.nav-tab.active i { color: #ffffff; }
-
 /* Panels Layout */
 .main-content { flex: 1; }
 
@@ -356,11 +307,11 @@ body {
   font-weight: 700;
 }
 
-/* 3D Hero Widget Banner */
+/* 3D Hero Widget Banner (Claymorphic) */
 .hero-3d-banner {
   background: linear-gradient(135deg, #fff5f2 0%, #fff0eb 100%);
   border-radius: 28px;
-  padding: 1.5rem;
+  padding: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -369,14 +320,15 @@ body {
   box-shadow: 0 10px 30px rgba(255, 107, 74, 0.06);
 }
 
-.hero-3d-text { max-width: 50%; }
-.hero-3d-text h3 { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 800; color: var(--text-main); line-height: 1.25; margin-bottom: 0.5rem; }
-.hero-3d-text p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+.hero-3d-text { max-width: 55%; }
+.hero-3d-text h3 { font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--text-main); line-height: 1.25; margin-bottom: 0.6rem; }
+.hero-3d-text p { font-size: 0.98rem; color: var(--text-muted); margin-bottom: 1.25rem; }
 
 .hero-3d-img {
-  max-width: 45%;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  max-width: 40%;
+  height: 200px;
+  border-radius: 22px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
   object-fit: cover;
 }
 

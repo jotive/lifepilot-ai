@@ -127,12 +127,6 @@ export function App() {
           onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
-        <Navigation
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          mode={mode}
-        />
-
         <main className="main-content">
           {activeTab === 'city-events' && (
             <CityExplorer currentCity={currentCity} mode={mode} apiKey={tavilyApiKey} />
