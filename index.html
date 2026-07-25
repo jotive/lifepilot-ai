@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifePilot AI — Copiloto de Vida Cotidiana, Relocalización y Parejas</title>
+  <meta name="description" content="Plataforma inteligente para relocalización en nuevas ciudades, gestión de refrigerador anti-desperdicio, radar de eventos en vivo con Tavily y control de finanzas en pareja o individual.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div id="app" class="app-container">
+    
+    <!-- Top Header -->
+    <header class="main-header">
+      <div class="header-brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-compass-drafting"></i>
+        </div>
+        <div class="logo-text">
+          <h1>LifePilot <span class="badge-ai">AI</span></h1>
+          <p class="tagline">Copiloto de Vida & Relocalización</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- City Selector Badge -->
+        <button id="cityBtn" class="city-selector-btn" title="Cambiar Ciudad">
+          <i class="fa-solid fa-location-dot"></i>
+          <span id="currentCityLabel">Ciudad de México</span>
+          <i class="fa-solid fa-chevron-down text-xs"></i>
+        </button>
+
+        <!-- Mode Toggle (Solo vs Couple) -->
+        <div class="mode-toggle-group">
+          <button id="modeSoloBtn" class="mode-btn active" title="Modo Individual / Expat">
+            <i class="fa-solid fa-user"></i>
+            <span>Individual</span>
+          </button>
+          <button id="modeCoupleBtn" class="mode-btn" title="Modo Pareja / Independientes">
+            <i class="fa-solid fa-heart"></i>
+            <span>Pareja</span>
+          </button>
+        </div>
+
+        <!-- Settings Button -->
+        <button id="openSettingsBtn" class="icon-btn" title="Configurar APIs y Preferencias">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="main-nav">
+      <div class="nav-track">
+        <button class="nav-tab active" data-tab="tavily-events">
+          <i class="fa-solid fa-bolt-lightning"></i>
+          <span>Radar de Eventos (Tavily)</span>
+        </button>
+
+        <button class="nav-tab" data-tab="relocation">
+          <i class="fa-solid fa-city"></i>
+          <span>Trámites & Ciudad</span>
+        </button>
+
+        <button class="nav-tab" data-tab="fridge-kitchen">
+          <i class="fa-solid fa-utensils"></i>
+          <span>Refrigerador & Recetas</span>
+        </button>
+
+        <button class="nav-tab" data-tab="couple-expenses">
+          <i class="fa-solid fa-wallet"></i>
+          <span id="householdTabLabel">Finanzas & Tareas</span>
+        </button>
+
+        <button class="nav-tab" data-tab="documents">
+          <i class="fa-solid fa-folder-closed"></i>
+          <span>Documentos & Salud</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- TAB 1: TAVILY EVENT RADAR & CITY EXPLORER -->
+      <section id="tab-tavily-events" class="tab-panel active">
+        <div class="panel-hero">
+          <div class="hero-text">
+            <h2><i class="fa-solid fa-compass"></i> Radar de Eventos & Vida Cultural</h2>
+            <p>Búsquedas en tiempo real alimentadas por <strong>Tavily AI Search</strong> para descubrir actividades en <span class="city-highlight">Ciudad de México</span>.</p>
+          </div>
+          <div class="tavily-status-badge" id="tavilyStatusBadge">
+            <i class="fa-solid fa-circle-check"></i> Tavily AI Conectado
+          </div>
+        </div>
+
+        <!-- Search Bar & Filters -->
+        <div class="search-section">
+          <div class="search-bar-wrap">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="eventSearchInput" placeholder="Ej: Conciertos este fin de semana, festivales gastronómicos, meetups tech..." value="Eventos y conciertos destacados este fin de semana">
+            <button id="searchEventsBtn" class="btn btn-primary">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Buscar con Tavily
+            </button>
+          </div>
+
+          <div class="filter-chips">
+            <span class="chip-label">Categorías rápidas:</span>
+            <button class="chip active" data-query="Eventos y festivales culturales">🎭 Cultura & Festivales</button>
+            <button class="chip" data-query="Conciertos y música en vivo">🎵 Conciertos & Música</button>
+            <button class="chip" data-query="Ferias gastronómicas y comida">🍲 Gastronomía & Mercados</button>
+            <button class="chip" data-query="Meetups de tecnología e inteligencia artificial">💻 Tech & Meetups</button>
+            <button class="chip" data-query="Actividades gratuitas al aire libre parques">🌳 Aire Libre (Gratis)</button>
+            <button class="chip" data-query="Planes románticos citas fin de semana">❤️ Planes en Pareja</button>
+          </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="results-layout">
+          <div class="events-main">
+            <div class="section-title-wrap">
+              <h3><i class="fa-solid fa-fire"></i> Resultados en Tiempo Real</h3>
+              <span class="results-count" id="resultsCount">Cargando sugerencias...</span>
+            </div>
+
+            <div id="eventsGrid" class="events-grid">
+              <!-- Event cards will be dynamically rendered here -->
+            </div>
+          </div>
+
+          <!-- Weekend Planner Sidebar -->
+          <aside class="planner-sidebar">
+            <div class="sidebar-card gradient-border">
+              <div class="card-header">
+                <h3><i class="fa-solid fa-calendar-heart"></i> Planificador de Fin de Semana</h3>
+                <span class="badge-mode-indicator" id="plannerModeBadge">Modo Pareja</span>
+              </div>
+              <p class="sidebar-desc">La IA combina búsquedas de Tavily con tu perfil para recomendar un itinerario ideal.</p>
+              
+              <button id="generateItineraryBtn" class="btn btn-gradient full-width">
+                <i class="fa-solid fa-sparkles"></i> Generar Itinerario Personalizado
+              </button>
+
+              <div id="itineraryOutput" class="itinerary-output">
+                <div class="itinerary-empty-state">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                  <p>Haz clic en generar para armar tu ruta del fin de semana.</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- TAB 2: CITY & RELOCATION OPS -->
+      <section id="tab-relocation" class="tab-panel">
+        <div class="panel-hero">
+          <div class="hero-text">
+            <h2><i class="fa-solid fa-building-flag"></i> Guía de Asentamiento & Trámites</h2>
+            <p>Checklist inteligente y simulador de costos para mudarse e independizarse en <span class="city-highlight">Ciudad de México</span>.</p>
+          </div>
+        </div>
+
+        <div class="relocation-grid">
+          <!-- Step-by-Step Settling Checklist -->
+          <div class="relocation-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-list-check"></i> Checklist de Mudanza & Trámites</h3>
+              <div class="progress-bar-wrap">
+                <div id="relocationProgressBar" class="progress-bar-fill" style="width: 35%;"></div>
+              </div>
+              <span id="progressPercentage" class="progress-text">35% Completado</span>
+            </div>
+
+            <div class="checklist-groups">
+              <div class="check-category">
+                <h4><i class="fa-solid fa-house-key"></i> Fase 1: Vivienda & Servicios Base</h4>
+                <div class="check-item">
+                  <input type="checkbox" id="check1" checked>
+                  <label for="check1">Firmar inventario y contrato de arrendamiento (guardar copia digital).</label>
+                </div>
+                <div class="check-item">
+                  <input type="checkbox" id="check2" checked>
+                  <label for="check2">Hacer cambio de titularidad / contratación de Internet de alta velocidad.</label>
+                </div>
+                <div class="check-item">
+                  <input type="checkbox" id="check3">
+                  <label for="check3">Verificar medidores de electricidad y agua al ingresar.</label>
+                </div>
+              </div>
+
+              <div class="check-category">
+                <h4><i class="fa-solid fa-bus"></i> Fase 2: Transporte & Movilidad Local</h4>
+                <div class="check-item">
+                  <input type="checkbox" id="check4">
+                  <label for="check4">Obtener tarjeta oficial de transporte público (Metro/Bus local).</label>
+                </div>
+                <div class="check-item">
+                  <input type="checkbox" id="check5">
+                  <label for="check5">Mapear las 2 rutas principales hacia el trabajo o universidad.</label>
+                </div>
+              </div>
+
+              <div class="check-category">
+                <h4><i class="fa-solid fa-shield-heart"></i> Fase 3: Salud & Conexiones Locales</h4>
+                <div class="check-item">
+                  <input type="checkbox" id="check6">
+                  <label for="check6">Ubicar la farmacia de turno 24h y el centro médico más cercano.</label>
+                </div>
+                <div class="check-item">
+                  <input type="checkbox" id="check7">
+                  <label for="check7">Registrar números de emergencia locales en la app.</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cost of Living & Move Calculator -->
+          <div class="relocation-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-calculator"></i> Calculadora de Instalación Inicial</h3>
+            </div>
+            <p class="card-subtitle">Estimación de costos al mudar o independizarse:</p>
+
+            <form id="costCalcForm" class="calc-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Renta mensual estimada ($)</label>
+                  <input type="number" id="calcRent" value="650" min="0">
+                </div>
+                <div class="form-group">
+                  <label>Depósito de garantía ($)</label>
+                  <input type="number" id="calcDeposit" value="650" min="0">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Servicios iniciales ($)</label>
+                  <input type="number" id="calcUtilities" value="120" min="0">
+                </div>
+                <div class="form-group">
+                  <label>Alacena & Amoblado inicial ($)</label>
+                  <input type="number" id="calcFurniture" value="300" min="0">
+                </div>
+              </div>
+
+              <div class="calc-total-box">
+                <span>Inversión total para el mes 1:</span>
+                <strong id="calcTotalOutput">$1,720 USD</strong>
+              </div>
+            </form>
+
+            <div class="emergency-directory">
+              <h4><i class="fa-solid fa-phone-flip"></i> Teléfonos de Emergencia (CDMX / Local)</h4>
+              <div class="emergency-pills">
+                <div class="pill-item"><i class="fa-solid fa-truck-medical"></i> Emergencias: <strong>911</strong></div>
+                <div class="pill-item"><i class="fa-solid fa-user-shield"></i> Locatel: <strong>55 5658 1111</strong></div>
+                <div class="pill-item"><i class="fa-solid fa-fire-extinguisher"></i> Bomberos: <strong>55 5768 3700</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: FRIDGE & KITCHEN OPS -->
+      <section id="tab-fridge-kitchen" class="tab-panel">
+        <div class="panel-hero">
+          <div class="hero-text">
+            <h2><i class="fa-solid fa-refrigerator"></i> Refrigerador Inteligente & Recetas Anti-Desperdicio</h2>
+            <p>Escanea tus ingredientes con la cámara o dictado por voz para generar recetas sin gastar de más.</p>
+          </div>
+        </div>
+
+        <div class="kitchen-layout">
+          <!-- Inventory Manager -->
+          <div class="kitchen-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-basket-shopping"></i> Inventario de Refrigerador & Alacena</h3>
+              <button id="triggerCamBtn" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-camera"></i> Escanear con Cámara
+              </button>
+            </div>
+
+            <!-- Add Item Controls -->
+            <div class="add-item-bar">
+              <input type="text" id="newIngredientInput" placeholder="Ej: 3 Huevos, Pechuga de Pollo, Tomates, Arroz...">
+              <button id="addIngredientBtn" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Agregar
+              </button>
+              <button id="voiceDictateBtn" class="btn btn-icon-only" title="Dictar por voz">
+                <i class="fa-solid fa-microphone"></i>
+              </button>
+            </div>
+
+            <div id="ingredientChips" class="ingredient-chips-wrap">
+              <!-- Dynamically populated ingredient tags -->
+            </div>
+
+            <div class="recipe-action-box">
+              <button id="generateRecipeBtn" class="btn btn-gradient full-width">
+                <i class="fa-solid fa-kitchen-set"></i> Generar Recetas Anti-Desperdicio
+              </button>
+            </div>
+          </div>
+
+          <!-- Recipe Output Section -->
+          <div class="kitchen-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-book-bookmark"></i> Recetas Recomendadas por IA</h3>
+            </div>
+
+            <div id="recipesContainer" class="recipes-container">
+              <!-- Recipes dynamically generated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: HOUSEHOLD & EXPENSES (SOLO OR COUPLE) -->
+      <section id="tab-couple-expenses" class="tab-panel">
+        <div class="panel-hero">
+          <div class="hero-text">
+            <h2 id="expensesTitle"><i class="fa-solid fa-scale-balanced"></i> Finanzas & Convivencia en Pareja</h2>
+            <p id="expensesSubtitle">Calculadora transparente de gastos compartidos y asignador equitativo de tareas del hogar.</p>
+          </div>
+        </div>
+
+        <div class="expenses-layout">
+          <!-- Shared Expense Splitter -->
+          <div class="expense-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-receipt"></i> Registro & División de Gastos</h3>
+            </div>
+
+            <form id="addExpenseForm" class="expense-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Descripción del Gasto</label>
+                  <input type="text" id="expDesc" placeholder="Ej: Compra de supermercado, Pago de luz..." required>
+                </div>
+                <div class="form-group">
+                  <label>Monto ($)</label>
+                  <input type="number" id="expAmount" placeholder="0.00" step="0.01" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Pagado por</label>
+                  <select id="expPayer">
+                    <option value="Persona 1">Persona 1 (Alex)</option>
+                    <option value="Persona 2">Persona 2 (Sam)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>División</label>
+                  <select id="expSplitType">
+                    <option value="50-50">50% / 50% Equitativo</option>
+                    <option value="proportional">Proporcional por Ingreso</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary full-width">
+                <i class="fa-solid fa-plus-circle"></i> Agregar Gasto Compartido
+              </button>
+            </form>
+
+            <div class="expense-list-wrap">
+              <h4>Historial Reciente</h4>
+              <ul id="expenseList" class="expense-list">
+                <!-- Dynamically populated expenses -->
+              </ul>
+            </div>
+
+            <div class="settlement-summary-box" id="settlementBox">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <div class="summary-info">
+                <span>Estado de Cuentas:</span>
+                <strong id="settlementResult">Cuentas al día (Sin deudas pendientes)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- TaskWheel (Household Chores Generator) -->
+          <div class="expense-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-rotate-left"></i> Asignador de Tareas del Hogar</h3>
+              <button id="randomizeTasksBtn" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-dice"></i> Sortear Tareas
+              </button>
+            </div>
+            <p class="card-subtitle">Organizador semanal para evitar desacuerdos de limpieza y cocina:</p>
+
+            <div id="tasksList" class="tasks-list">
+              <!-- Dynamically populated chores -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: DOCUMENT VAULT & HEALTH HUB -->
+      <section id="tab-documents" class="tab-panel">
+        <div class="panel-hero">
+          <div class="hero-text">
+            <h2><i class="fa-solid fa-vault"></i> Bóveda de Documentos & Ficha de Salud</h2>
+            <p>Guarda tus contratos, identificaciones y recibos en el navegador de forma segura (Offline & Encriptado Local).</p>
+          </div>
+        </div>
+
+        <div class="vault-grid">
+          <!-- Document Storage -->
+          <div class="vault-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-file-shield"></i> Bóveda de Documentos de Mudanza</h3>
+            </div>
+
+            <div class="upload-dropzone" id="dropZone">
+              <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+              <p>Arrastra tus contratos (PDF/Imagen) o haz clic para subir</p>
+              <input type="file" id="fileInput" hidden accept=".pdf,.png,.jpg,.jpeg">
+            </div>
+
+            <div class="doc-list-wrap">
+              <h4>Documentos Guardados en el Navegador</h4>
+              <div id="docList" class="doc-list">
+                <!-- Stored docs list -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Health Card Exporter -->
+          <div class="vault-card">
+            <div class="card-title-bar">
+              <h3><i class="fa-solid fa-id-card-clip"></i> Tarjeta de Emergencia Personal</h3>
+              <button id="exportMedicalCardBtn" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-download"></i> Exportar Ficha
+              </button>
+            </div>
+
+            <form id="medicalCardForm" class="medical-form">
+              <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" id="medName" value="Alex R. González">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Tipo de Sangre</label>
+                  <input type="text" id="medBlood" value="O+ Positive">
+                </div>
+                <div class="form-group">
+                  <label>Alergias / Condiciones</label>
+                  <input type="text" id="medAllergies" value="Penicilina, Polvos">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Contacto de Emergencia en la Ciudad</label>
+                <input type="text" id="medContact" value="Sam M. (Pareja / Cel: 555-0192)">
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modal: Settings & APIs -->
+    <div id="settingsModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-sliders"></i> Ajustes & Claves de API</h3>
+          <button id="closeSettingsBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="alert-info">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span><strong>Seguridad Garantizada:</strong> Tus API Keys se guardan únicamente en el <code>localStorage</code> de tu propio navegador. Nunca se envían a ningún servidor externo no autorizado.</span>
+          </div>
+
+          <div class="form-group">
+            <label>Ciudad Actual de Relocalización</label>
+            <input type="text" id="settingsCityInput" placeholder="Ej: Ciudad de México, Buenos Aires, Bogotá, Madrid">
+          </div>
+
+          <div class="form-group">
+            <label>Tavily AI Search API Key (Gratuita en tavily.com)</label>
+            <input type="password" id="settingsTavilyKey" placeholder="tvly-xxxxxxxxxxxxxxxxxxxxxxxx">
+            <small class="help-text">Si se deja vacío, la app utilizará el simulador de eventos en tiempo real.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="saveSettingsBtn" class="btn btn-primary full-width">
+            <i class="fa-solid fa-check"></i> Guardar Configuración
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        <p>Proyecto desarrollado para el <strong>Hackatón de IA con Qiro (Código Facilito & AWS)</strong>. Creado por <strong>jotive</strong>.</p>
+      </div>
+    </footer>
+
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
