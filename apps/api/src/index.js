@@ -1,9 +1,20 @@
 import express from 'express';
 import cors from 'cors';
-import { APP_NAME, SUPPORTED_CITIES } from '@roomia/shared';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+const APP_NAME = 'RoomIA';
+const SUPPORTED_CITIES = [
+  'Ciudad de México',
+  'Buenos Aires',
+  'Bogotá',
+  'Madrid',
+  'Santiago de Chile',
+  'Lima',
+  'Montevideo',
+  'São Paulo'
+];
 
 app.use(cors());
 app.use(express.json());

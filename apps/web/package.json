@@ -1,5 +1,5 @@
 {
-  "name": "@roomia/web",
+  "name": "roomia-web",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -7,9 +7,6 @@
     "dev": "vite --host --port 3000",
     "build": "vite build",
     "preview": "vite preview"
-  },
-  "dependencies": {
-    "@roomia/shared": "*"
   },
   "devDependencies": {
     "vite": "^5.4.1"

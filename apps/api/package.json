@@ -1,5 +1,5 @@
 {
-  "name": "@roomia/api",
+  "name": "roomia-api",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -7,7 +7,6 @@
     "dev": "node --watch src/index.js"
   },
   "dependencies": {
-    "@roomia/shared": "*",
     "cors": "^2.8.5",
     "express": "^4.19.2"
   }

@@ -3,35 +3,35 @@
 > **Proyecto desarrollado para el Hackatón de IA con Qiro & AWS (organizado por Código Facilito y Amazon Web Services)**  
 > **Categoría / Reto:** 🌐 Aplicaciones Web (Resolver problemas de la vida cotidiana)  
 > **Participante:** jotive (Modalidad Individual)  
-> **Arquitectura:** Monorepo Workspace (Web, API, Workers, Shared Packages & Docs)
+> **Estructura:** Repositorio Multi-Carpeta (Apps independientes, Infraestructura AWS y Documentación)
 
 ---
 
 ## 🌟 Visión del Producto: RoomIA
 
-**RoomIA** (haciendo alusión a un *Roomie* o compañero de hogar impulsado por IA) es un copiloto inteligente omnicanal diseñado para resolver el estrés, la fricción financiera y la desorganización cuando una persona se mudan solo a una nueva ciudad, o cuando una pareja/roomies se independiza.
+**RoomIA** (haciendo alusión a un *Roomie* o compañero de hogar impulsado por IA) es un copiloto inteligente diseñado para resolver el estrés, la fricción financiera y la desorganización cuando una persona se muda a una nueva ciudad, o cuando una pareja/roomies se independiza.
 
 ---
 
-## 🏗️ Estructura del Monorepo
+## 📂 Estructura Limpia del Repositorio
 
 ```
 roomIA/
-├── apps/
-│   ├── web/                     # 🌐 Aplicación Web Frontend (Vite + HTML5 / CSS Dark Mode / JS)
-│   ├── api/                     # ⚡ Backend API Service (Express.js Proxy & Microservices)
-│   └── workers/                 # ⚙️ Background Workers & Scheduled Jobs
-├── packages/
-│   └── shared/                  # 📦 Constantes, DTOs y utilidades compartidas (@roomia/shared)
-├── docs/                        # 📑 Documentación & Investigación del Proyecto
+├── apps/                        # 🚀 Aplicaciones y Servicios independientes
+│   ├── web/                     # Frontend SPA (Vite + HTML/CSS Dark Mode / JS)
+│   ├── api/                     # Backend API Service (Express.js Proxy para Tavily)
+│   └── workers/                 # Background Worker (Crons en segundo plano)
+├── infra/                       # ☁️ Infraestructura & Despliegue AWS / Docker
+│   ├── aws/                     # Plantilla AWS SAM / CloudFormation (S3 + CloudFront + Lambda)
+│   └── docker/                  # Dockerfile.web, Dockerfile.api y docker-compose.yml
+├── docs/                        # 📑 Investigación & Contexto
 │   ├── hackathon_context.md     # Reglas y entregables del Hackatón de Qiro & AWS
-│   ├── idea_research.md         # Investigación y concepto de producto RoomIA
-│   ├── architecture.md          # Especificaciones de la arquitectura monorepo
-│   └── raw_context.txt          # Transcripción de la sesión de arranque
-├── package.json                 # Configuración Root de npm workspaces
-├── README.md                    # Documentación del Monorepo
-├── .gitignore                   # Exclusiones de Git globales
-└── .env.example                 # Plantilla de variables de entorno
+│   ├── idea_research.md         # Investigación del concepto de producto RoomIA
+│   ├── architecture.md          # Especificaciones de la estructura del repositorio
+│   └── raw_context.txt          # Transcripción del Kickoff
+├── .env.example                 # Plantilla de variables de entorno
+├── .gitignore                   # Exclusiones de Git
+└── README.md                    # Documentación principal del repositorio
 ```
 
 ---
@@ -47,7 +47,7 @@ roomIA/
 * **Calculadora de Instalación:** Estimador del costo total del Mes 1 (renta, depósito, servicios y alacena).
 * **Directorio de Emergencias Locales:** Teléfonos de emergencia según la ciudad.
 
-### 3. Refrigerador Inteligente & Recetas Anti-Desperdicio (Kitchen Ops)
+### 🧊 3. Refrigerador Inteligente & Recetas Anti-Desperdicio (Kitchen Ops)
 * **Gestor de Alimentos & Dictado por Voz:** Permite agregar ingredientes mediante teclado o dictado por voz usando la **Web Speech API**.
 * **Smart Meal Planner:** Genera recetas paso a paso utilizando únicamente los ingredientes disponibles para evitar desperdicios.
 
@@ -61,49 +61,22 @@ roomIA/
 
 ---
 
-## 🔒 Privacidad & Seguridad de Credenciales
-
-En estricto cumplimiento de las instrucciones de seguridad del hackatón:
-* **Ninguna API Key o credencial privada se encuentra en el repositorio.**
-* Las API Keys (como **Tavily AI Search**) se configuran en el panel de **Ajustes** y se guardan exclusivamente en el `localStorage` del usuario o mediante variables de entorno en [.env.example](file:///F:/jotive/hackathon-codigofacilito-2026jul/.env.example).
-* Se incluye una simulación inteligente con datos dinámicos como *fallback* si no se provee clave.
-
----
-
 ## 💻 Instrucciones para Ejecutar en Local
 
-### 1. Clonar el repositorio e instalar dependencias monorepo
+### 1. Aplicación Web Frontend (`apps/web`)
 ```bash
-git clone https://github.com/jotive/lifepilot-ai.git
-cd lifepilot-ai
+cd apps/web
 npm install
-```
-
-### 2. Iniciar la aplicación Web (Frontend)
-```bash
 npm run dev
 ```
 Abre en tu navegador `http://localhost:3000`.
 
-### 3. (Opcional) Iniciar el Backend API o Workers
+### 2. Backend API (`apps/api`)
 ```bash
-npm run dev:api       # Inicia Express API en http://localhost:4000
-npm run dev:workers   # Inicia el Worker de segundo plano
+cd apps/api
+npm install
+npm run start
 ```
-
-### 4. Compilar para producción
-```bash
-npm run build
-```
-
----
-
-## 📑 Documentación del Proyecto (`/docs`)
-
-Toda la investigación, contexto del hackatón y diseño arquitectónico se encuentra preservado en la carpeta `docs/`:
-* [docs/hackathon_context.md](file:///F:/jotive/hackathon-codigofacilito-2026jul/docs/hackathon_context.md): Reglas del hackatón Qiro & AWS.
-* [docs/idea_research.md](file:///F:/jotive/hackathon-codigofacilito-2026jul/docs/idea_research.md): Investigación de la idea RoomIA.
-* [docs/architecture.md](file:///F:/jotive/hackathon-codigofacilito-2026jul/docs/architecture.md): Detalles del Monorepo.
 
 ---
 
