@@ -1,14 +1,17 @@
 {
-  "name": "lifepilot-ai",
+  "name": "roomia-monorepo",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite --host --port 3000",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "vite": "^5.4.1"
+    "dev": "npm run dev --workspace=@roomia/web",
+    "dev:api": "npm run dev --workspace=@roomia/api",
+    "dev:workers": "npm run dev --workspace=@roomia/workers",
+    "build": "npm run build --workspace=@roomia/web",
+    "preview": "npm run preview --workspace=@roomia/web"
   }
 }

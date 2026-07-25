@@ -1,0 +1,3 @@
+Created At: 2026-07-25T13:48:07-05:00
+File Path: `file:///F:/jotive/hackathon-codigofacilito-2026jul/context.txt`
+Transcripción completa de la transmisión de arranque del Hackatón de IA con Qiro (Código Facilito & AWS).
