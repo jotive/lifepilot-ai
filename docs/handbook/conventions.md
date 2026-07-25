@@ -1,7 +1,15 @@
 # 🎨 Handbook: Conventions (Estilo, Naming, Patrones & Taste)
 
 > **Proyecto:** RoomIA  
-> **Estándares:** Taste & Impeccable Design (Inspirado en Emil Kowalski & Modern UI Standards)
+> **Estándares:** Taste & Impeccable Design (Inspirado en Emil Kowalski & Clean Architecture Standards)
+
+---
+
+## 🛠️ Principio de Desacoplamiento de Infraestructura & Automatización
+
+1. **Comandos por Intención / Dominio (No por Tecnología):**
+   * El `Makefile` y las herramientas de automatización deben exponer intenciones de dominio puras (`make dev`, `make build`, `make start`, `make stop`, `make logs`) en lugar de acoplar la herramienta en el nombre (evitar `docker-up`, `docker-build`, `npm-start`).
+   * La infraestructura o runtime subyacente (Docker, Podman, Kubernetes, Serverless o Node.js) queda encapsulada detrás de la interfaz sin afectar al desarrollador.
 
 ---
 
@@ -42,4 +50,4 @@
 1. **Estado Inmutable & Local Storage:**
    * El estado vive en un objeto centralizado `state`. Cada mutación guarda inmediatamente en `localStorage` mediante funciones puras de renderizado.
 2. **Defensa contra Errores (Graceful Degradation):**
-   * Si una API externa no está configurada o falla (ej: Tavily API), la aplicación ejecuta una **simulación con datos dinámicos** para mantener una demo 100% funcional.
+   * Si una API externa no está configurada o falla (ej: Tavily API), la aplicación ejecuta una **simulación con datos dinámicos** para mantener una aplicación 100% funcional.

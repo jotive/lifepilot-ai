@@ -1,48 +1,38 @@
 # ==============================================================================
-# RoomIA — Project Automation Makefile
+# RoomIA — Domain-Oriented Automation Interface
 # ==============================================================================
 
-.PHONY: help dev-web dev-api dev-workers build-web docker-build docker-up docker-down docker-logs clean
+.PHONY: help dev build start stop restart logs clean
 
 # Default Target
 help:
-	@echo "🏠 RoomIA Commands:"
-	@echo "  make dev-web       - Run frontend web dev server (http://localhost:3000)"
-	@echo "  make dev-api       - Run backend API server (http://localhost:4000)"
-	@echo "  make dev-workers   - Run background worker service"
-	@echo "  make build-web     - Compile production build for web frontend"
-	@echo "  make docker-build  - Build Docker containers for all services"
-	@echo "  make docker-up     - Start all Docker containers (web, api, workers)"
-	@echo "  make docker-down   - Stop all running Docker containers"
-	@echo "  make docker-logs   - Stream live logs from Docker containers"
-	@echo "  make clean         - Clean build output directories"
+	@echo "🏠 RoomIA Domain Interface Commands:"
+	@echo "  make dev      - Start local development environment"
+	@echo "  make build    - Compile production artifacts & container images"
+	@echo "  make start    - Launch all production services"
+	@echo "  make stop     - Halt all running services"
+	@echo "  make restart  - Restart all services"
+	@echo "  make logs     - Stream live logs from active services"
+	@echo "  make clean    - Remove build artifacts and temporary files"
 
-# Local Development Commands
-dev-web:
+# Intent-Driven Domain Targets (Technology Agnostic)
+dev:
 	cd apps/web && npm run dev
 
-dev-api:
-	cd apps/api && npm run dev
-
-dev-workers:
-	cd apps/workers && npm run dev
-
-build-web:
+build:
 	cd apps/web && npm run build
+	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml build; fi
 
-# Docker Automation Commands
-docker-build:
-	docker compose -f infra/docker/docker-compose.yml build
+start:
+	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml up -d; else cd apps/web && npm run dev; fi
 
-docker-up:
-	docker compose -f infra/docker/docker-compose.yml up -d
+stop:
+	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml down; fi
 
-docker-down:
-	docker compose -f infra/docker/docker-compose.yml down
+restart: stop start
 
-docker-logs:
-	docker compose -f infra/docker/docker-compose.yml logs -f
+logs:
+	@if command -v docker >/dev/null 2>&1; then docker compose -f infra/docker/docker-compose.yml logs -f; fi
 
-# Maintenance Commands
 clean:
 	rm -rf apps/web/dist
