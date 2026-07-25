@@ -3,21 +3,27 @@ version: '3.8'
 services:
   web:
     build:
-      context: ../..
-      dockerfile: infra/docker/Dockerfile.web
+      context: ../../apps/web
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
-    environment:
-      - NODE_ENV=production
     restart: always
 
   api:
     build:
-      context: ../..
-      dockerfile: infra/docker/Dockerfile.api
+      context: ../../apps/api
+      dockerfile: Dockerfile
     ports:
       - "4000:4000"
     environment:
       - PORT=4000
       - TAVILY_API_KEY=${TAVILY_API_KEY}
+    restart: always
+
+  workers:
+    build:
+      context: ../../apps/workers
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
     restart: always
