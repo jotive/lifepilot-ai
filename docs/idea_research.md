@@ -1,37 +1,68 @@
-# 💡 Investigación & Concepto de Producto: RoomIA
+# 📊 Estudio de Mercado & Análisis Competitivo: RoomIA
 
-> **Nombre del Producto:** `RoomIA` (Haciendo alusión a tu *Roomie* o compañero de hogar impulsado por IA)  
-> **Slogan:** Tu compañero inteligente para relocalización, convivencia y gestión del hogar.
-
----
-
-## 🎯 El Problema a Resolver
-
-El proceso de mudarse a una nueva ciudad, independizarse o iniciar la convivencia en pareja/roomies es uno de los momentos de mayor **estrés, fricción financiera y desorganización cotidiana**:
-
-1. **Aislamiento & Falta de Información Local:** Al llegar a una nueva ciudad, las personas no saben qué eventos hay, qué zonas explorar ni cómo realizar los trámites básicos (contratar internet, luz, transporte).
-2. **Desperdicio de Comida & Alacena:** Las personas gastan de más pidiendo delivery porque no saben qué cocinar con los ingredientes sueltos que tienen en el refrigerador.
-3. **Fricciones de Convivencia:** En parejas o roomies, dividir cuentas (50/50 o proporcional) y asignar tareas del hogar suele generar discusiones si no hay transparencia.
-4. **Perdida de Documentos:** Contratos de arrendamiento, facturas y fichas de emergencia suelen estar dispersos en chats o correos.
+> **Proyecto:** RoomIA  
+> **Fecha:** 2026-07-25  
+> **Objetivo:** Identificar competidores existentes, qué ofrecen, de qué se quejan sus usuarios y cómo RoomIA resuelve sus dolores principales.
 
 ---
 
-## 🤖 La Solución: RoomIA
+## 🔍 1. Mapeo de Competidores por Categoria
 
-**RoomIA** actúa como el *roomie* perfecto: un asistente virtual omnicanal que organiza la vida del hogar, la convivencia y la integración en una nueva ciudad.
-
-### Personas Objetivo:
-* 👤 **Solo Expat / Independiente:** Personas que se mudan solas a una nueva ciudad.
-* 👩‍❤️‍👨 **Parejas & Roomies:** Parejas o jóvenes que se independizan o conviven por primera vez.
+| Categoria | Soluciones Existentes | Qué ofrecen |
+| :--- | :--- | :--- |
+| **Finanzas Compartidas & Roomies** | **Splitwise**, Tricount, FlatUp | División de gastos 50/50, simplificación de deudas. |
+| **Gestión de Alacena & Recetas** | **SuperCook**, Nosh, CozZo | Búsqueda de recetas ingresando ingredientes manualmente. |
+| **Relocalización & Estilo de Vida** | **Nomad List**, Relocately, Movinga | Índices de costo de vida, velocidad de internet por ciudad. |
+| **Vida Cultural & Eventos Locales** | **Eventbrite**, Meetup, Fever | Listados comerciales de eventos y compras de boletos. |
 
 ---
 
-## 🧩 Módulos Clave de RoomIA
+## 😡 2. ¿De Qué Se Quejan los Usuarios? (Puntos de Dolor en el Mercado)
 
-| Módulo | Nombre | Función Principal | Tecnología / API |
-| :--- | :--- | :--- | :--- |
-| 🎟️ | **Tavily Radar** | Descubrimiento de eventos en tiempo real y vida cultural en la ciudad | **Tavily AI Search API** |
-| 🌆 | **City Settling** | Roadmap de trámites de mudanza, calculadora de instalación e info de emergencias | IA / Algoritmo Local |
-| 🧊 | **Fridge Ops** | Escáner de refrigerador (voz/foto) y recetas anti-desperdicio | Web Speech API + Vision AI |
-| 👩‍❤️‍👨 | **Home & Splitter** | División de gastos compartidos y asignador de tareas de convivencia (TaskWheel) | LocalStorage Math Engine |
-| 📄 | **Doc Vault** | Bóveda local segura de contratos y generador de Ficha Médica de Emergencia | IndexedDB / Offline Storage |
+### ❌ A. Frustración por Fragmentación ("App Fatigue")
+* **Queja del usuario:** *"Tengo que usar 5 aplicaciones distintas: Splitwise para los gastos, SuperCook para la comida, Eventbrite para salir, Google Docs para el contrato y un Excel para la mudanza. Es agotador pasar de una app a otra."*
+* **Impacto:** Abandono del 70% de las apps después del primer mes de independencia o relocalización.
+
+### ❌ B. Muros de Pago Agresivos ("Paywalls")
+* **Queja del usuario:** *"Splitwise recortó el uso gratuito y ahora limita la cantidad de gastos que puedes ingresar al día si no pagas suscripción mensual."*
+* **Impacto:** Resentimiento de los usuarios y búsqueda activa de alternativas gratuitas y transparentes.
+
+### ❌ C. Carga de Entrada Manual de Datos ("Manual Data Entry Friction")
+* **Queja del usuario:** *"Ingresar ingrediente por ingrediente o escribir cada producto de la compra de supermercado a mano toma demasiado tiempo y da flojera."*
+* **Impacto:** Las personas dejan de actualizar su alacena y terminan tirando comida echada a perder.
+
+### ❌ D. Eventos Desactualizados o Recomendaciones Genéricas
+* **Queja del usuario:** *"Eventbrite solo me muestra eventos comerciales con boletería costosa, no actividades locales reales, conciertos pequeños o ferias gastronómicas de fin de semana."*
+* **Impacto:** Los recién llegados a una ciudad se sienten aislados y desorientados.
+
+### ❌ E. Preocupaciones de Privacidad & Seguridad
+* **Queja del usuario:** *"No me da confianza subir fotos de mi contrato de arrendamiento o mi ficha médica a servidores desconocidos sin saber si están cifrados."*
+* **Impacto:** Desconfianza en soluciones de nube tradicionales.
+
+---
+
+## 🚀 3. ¿Cómo RoomIA Resuelve Todo Esto? (Ventaja Competitiva Pura)
+
+| Queja del Usuario | Solución Unica de RoomIA |
+| :--- | :--- |
+| **Fragmentación de Apps** | **All-in-One Copilot:** Una sola plataforma unificada para Mudanza + Alacena + Gastos + Eventos + Documentos. |
+| **Paywalls Agresivos** | **Local-First & Gratuito:** Sin límites de uso diario, almacenamiento local offline inmediato en el navegador. |
+| **Entrada Manual Pesada** | **Entrada Multimodal con IA:** Escaneo por cámara (visión por computadora de refrigerador/recibos) + Dictado por voz. |
+| **Eventos Genéricos** | **Radar en Vivo Tavily:** Búsqueda activa en tiempo real de eventos culturales frescos en la ciudad específica. |
+| **Falta de Privacidad** | **Bóveda Cifrada en Cliente:** Cifrado local AES-GCM en el navegador antes de cualquier guardado. |
+
+---
+
+## 🎯 4. Matriz Comparativa Directa
+
+```
+                     [ Splitwise ]  [ SuperCook ]  [ Eventbrite ]     [ RoomIA ]
+----------------------------------------------------------------------------------
+Gastos Compartidos       ✅              ❌             ❌               ✅ (50/50 + Proporcional)
+Alacena / Recetas        ❌              ✅             ❌               ✅ (Anti-Desperdicio)
+Entrada por Cámara/Voz   ❌              ❌             ❌               ✅ (IA Visión + Voice)
+Eventos en Tiempo Real   ❌              ❌             ✅ (Comercial)   ✅ (Radar Cultural Tavily)
+Guía de Mudanza          ❌              ❌             ❌               ✅ (Checklist + Calc)
+Bóveda Cifrada           ❌              ❌             ❌               ✅ (Offline AES-GCM)
+Sin Registro Obligatorio ❌              ❌             ❌               ✅ (1-Click Guest)
+```
