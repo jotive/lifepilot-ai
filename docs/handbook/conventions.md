@@ -5,11 +5,15 @@
 
 ---
 
-## 🛠️ Principio de Desacoplamiento de Infraestructura & Automatización
+## 🛠️ Principio de Automatización por Parte del Producto
 
-1. **Comandos por Intención / Dominio (No por Tecnología):**
-   * El `Makefile` y las herramientas de automatización deben exponer intenciones de dominio puras (`make dev`, `make build`, `make start`, `make stop`, `make logs`) en lugar de acoplar la herramienta en el nombre (evitar `docker-up`, `docker-build`, `npm-start`).
-   * La infraestructura o runtime subyacente (Docker, Podman, Kubernetes, Serverless o Node.js) queda encapsulada detrás de la interfaz sin afectar al desarrollador.
+1. **Comandos Organizados por Componente del Producto (`componente-acción`):**
+   * El `Makefile` organiza sus objetivos de desarrollo, compilación e inicio explícitamente **por cada parte del producto** (`web`, `api`, `workers`, `all`):
+     * `make web-dev`, `make web-build`, `make web-start`
+     * `make api-dev`, `make api-build`, `make api-start`
+     * `make workers-dev`, `make workers-build`, `make workers-start`
+     * `make all-dev`, `make all-build`, `make all-start`, `make all-stop`
+   * Esto permite a los desarrolladores operar o desplegar cualquier parte del producto de forma independiente o todo el stack unificado.
 
 ---
 
