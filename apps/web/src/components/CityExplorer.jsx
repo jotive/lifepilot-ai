@@ -15,10 +15,10 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
   const [itinerary, setItinerary] = useState({
     title: mode === 'couple' ? 'Itinerario de Roomies / Pareja' : 'Ruta Solo Expat',
     steps: [
-      { time: 'Sábado - 10:30 AM', desc: `Visita al Mercado de Productos Locales para hacer compras frescas de alacena y desayuno al aire libre.` },
+      { time: 'Sábado - 10:30 AM', desc: `Visita al Mercado de Productos Locales para hacer compras frescas de alacena.` },
       { time: 'Sábado - 04:00 PM', desc: `Recorrido por la Ruta de Museos y café de especialidad en el centro de ${currentCity}.` },
-      { time: 'Sábado - 08:30 PM', desc: mode === 'couple' ? 'Noche de Jazz en vivo y cena en pareja en terraza con ambiente acogedor.' : 'Cine de verano al aire libre o Meetup cultural local.' },
-      { time: 'Domingo - 11:00 AM', desc: `Preparación de comida en casa con recetas anti-desperdicio sugeridas por RoomIA.` }
+      { time: 'Sábado - 08:30 PM', desc: mode === 'couple' ? 'Noche de Jazz en vivo y cena en terraza.' : 'Cine de verano al aire libre o Meetup cultural.' },
+      { time: 'Domingo - 11:00 AM', desc: `Preparación de comida en casa con recetas anti-desperdicio de RoomIA.` }
     ]
   });
 
@@ -54,24 +54,30 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
     setItinerary({
       title: isCouple ? 'Itinerario de Roomies / Pareja' : 'Ruta Solo Expat',
       steps: [
-        { time: 'Sábado - 10:30 AM', desc: `Visita al Mercado de Productos Locales para hacer compras frescas y desayuno al aire libre.` },
-        { time: 'Sábado - 04:00 PM', desc: `Recorrido por la Ruta de Museos y café de especialidad en el centro de ${currentCity}.` },
-        { time: 'Sábado - 08:30 PM', desc: isCouple ? 'Noche de Jazz en vivo y cena en pareja en terraza con ambiente acogedor.' : 'Cine de verano al aire libre o Meetup cultural local.' },
-        { time: 'Domingo - 11:00 AM', desc: `Preparación de comida en casa con recetas anti-desperdicio sugeridas por RoomIA y paseo por el parque principal.` }
+        { time: 'Sábado - 10:30 AM', desc: `Visita al Mercado de Productos Locales para hacer compras frescas y desayuno.` },
+        { time: 'Sábado - 04:00 PM', desc: `Recorrido por la Ruta de Museos y café de especialidad en ${currentCity}.` },
+        { time: 'Sábado - 08:30 PM', desc: isCouple ? 'Noche de Jazz en vivo y cena en terraza.' : 'Cine de verano al aire libre.' },
+        { time: 'Domingo - 11:00 AM', desc: `Preparación de comida en casa con recetas de RoomIA y paseo por el parque.` }
       ]
     });
   };
 
   return (
     <section className="tab-panel active">
-      <div className="panel-hero">
-        <div className="hero-text">
-          <h2><i className="fa-solid fa-compass"></i> {t.cityHeroTitle}</h2>
-          <p>{t.cityHeroSub} <span className="city-highlight">{currentCity}</span>.</p>
+      {/* 3D Claymorphic Hero Banner (Dribbble Clay Style) */}
+      <div className="hero-3d-banner">
+        <div className="hero-3d-text">
+          <h3>Descubre Categorías & Eventos en {currentCity} 👋</h3>
+          <p>Tu copiloto de vida inteligente para explorar la ciudad, organizar gastos compartidos y cocinar sin desperdicios.</p>
+          <button className="btn btn-primary" onClick={() => handleSearch()}>
+            <i className="fa-solid fa-compass"></i> Explorar Ahora
+          </button>
         </div>
-        <div className="tavily-status-badge">
-          <i className="fa-solid fa-circle-check"></i> {t.radarStatus}
-        </div>
+        <img 
+          src="/assets/roomia_hero_3d.jpg" 
+          alt="RoomIA 3D Illustration" 
+          className="hero-3d-img" 
+        />
       </div>
 
       <div className="search-section">
@@ -106,7 +112,7 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
       <div className="results-layout">
         <div className="events-main">
           <div className="section-title-wrap">
-            <h3><i className="fa-solid fa-fire"></i> {t.featuredEvents}</h3>
+            <h3><i className="fa-solid fa-fire text-coral"></i> {t.featuredEvents}</h3>
             <span className="results-count">{loading ? 'Explorando...' : `${events.length} Eventos encontrados en ${currentCity}`}</span>
           </div>
 
@@ -132,9 +138,20 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
         </div>
 
         <aside className="planner-sidebar">
+          {/* Credit Card Preview Widget (Inspired by Dribbble Reference) */}
+          <div className="credit-card-widget">
+            <div className="card-brand-row">
+              <span>RoomIA Platinum</span>
+              <i className="fa-brands fa-cc-mastercard text-xl"></i>
+            </div>
+            <div className="card-number">4756 •••• •••• 9018</div>
+            <div className="card-balance-label">Presupuesto del Hogar</div>
+            <div className="card-balance-val">$17,500.33</div>
+          </div>
+
           <div className="sidebar-card">
             <div className="card-header">
-              <h3><i className="fa-solid fa-calendar-heart text-indigo-400"></i> {t.plannerTitle}</h3>
+              <h3><i className="fa-solid fa-calendar-heart text-indigo"></i> {t.plannerTitle}</h3>
               <span className="badge-mode-indicator">{mode === 'couple' ? 'Modo Roomies / Pareja' : 'Modo Solo Expat'}</span>
             </div>
             <p className="sidebar-desc">RoomIA organiza una ruta personalizada para explorar tu nueva ciudad.</p>
@@ -144,17 +161,15 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
             </button>
 
             <div className="itinerary-output">
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.6rem', fontSize: '0.88rem' }}>
-                  <i className="fa-solid fa-route"></i> {itinerary.title} ({currentCity})
-                </div>
-                {itinerary.steps.map((step, i) => (
-                  <div key={i} className="itinerary-step">
-                    <div className="itinerary-time">{step.time}</div>
-                    <p style={{ fontSize: '0.83rem', color: 'var(--text-main)' }}>{step.desc}</p>
-                  </div>
-                ))}
+              <div style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: '0.6rem', fontSize: '0.9rem' }}>
+                <i className="fa-solid fa-route"></i> {itinerary.title} ({currentCity})
               </div>
+              {itinerary.steps.map((step, i) => (
+                <div key={i} className="itinerary-step">
+                  <div className="itinerary-time">{step.time}</div>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-main)', marginTop: '2px' }}>{step.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </aside>
