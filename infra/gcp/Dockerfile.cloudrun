@@ -1,0 +1,16 @@
+# GCP Cloud Run Production Dockerfile for RoomIA API
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY apps/api/package*.json ./
+RUN npm install --production
+
+COPY apps/api/src ./src
+
+ENV NODE_ENV=production
+ENV PORT=8080
+
+EXPOSE 8080
+
+CMD ["node", "src/index.js"]
