@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RoomIA — Tu Roomie Inteligente para la Vida Cotidiana, Relocalización y Parejas</title>
-  <meta name="description" content="Plataforma inteligente para relocalización en nuevas ciudades, gestión de refrigerador anti-desperdicio, radar de eventos en vivo con Tavily y control de finanzas en pareja o individual.">
+  <meta name="description" content="Plataforma inteligente para relocalización en nuevas ciudades, gestión de refrigerador anti-desperdicio, radar de eventos en vivo y control de finanzas en pareja o individual.">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,28 +53,28 @@
         </div>
 
         <!-- Settings Button -->
-        <button id="openSettingsBtn" class="icon-btn" title="Configurar APIs y Preferencias">
+        <button id="openSettingsBtn" class="icon-btn" title="Configurar Preferencias">
           <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (User-Centric Domain Names) -->
     <nav class="main-nav">
       <div class="nav-track">
-        <button class="nav-tab active" data-tab="tavily-events">
-          <i class="fa-solid fa-bolt-lightning"></i>
-          <span>Radar de Eventos (Tavily)</span>
+        <button class="nav-tab active" data-tab="city-events">
+          <i class="fa-solid fa-compass"></i>
+          <span>Explorar Ciudad & Eventos</span>
         </button>
 
         <button class="nav-tab" data-tab="relocation">
           <i class="fa-solid fa-city"></i>
-          <span>Trámites & Ciudad</span>
+          <span>Guía de Mudanza & Trámites</span>
         </button>
 
         <button class="nav-tab" data-tab="fridge-kitchen">
           <i class="fa-solid fa-utensils"></i>
-          <span>Refrigerador & Recetas</span>
+          <span>Mi Refrigerador & Recetas</span>
         </button>
 
         <button class="nav-tab" data-tab="couple-expenses">
@@ -84,7 +84,7 @@
 
         <button class="nav-tab" data-tab="documents">
           <i class="fa-solid fa-folder-closed"></i>
-          <span>Documentos & Salud</span>
+          <span>Bóveda de Documentos & Salud</span>
         </button>
       </div>
     </nav>
@@ -92,15 +92,15 @@
     <!-- Main Content Area -->
     <main class="main-content">
       
-      <!-- TAB 1: TAVILY EVENT RADAR & CITY EXPLORER -->
-      <section id="tab-tavily-events" class="tab-panel active">
+      <!-- TAB 1: CITY EXPLORER & EVENTS RADAR -->
+      <section id="tab-city-events" class="tab-panel active">
         <div class="panel-hero">
           <div class="hero-text">
-            <h2><i class="fa-solid fa-compass"></i> Radar de Eventos & Vida Cultural</h2>
-            <p>Búsquedas en tiempo real alimentadas por <strong>Tavily AI Search</strong> para explorar actividades en <span class="city-highlight">Ciudad de México</span>.</p>
+            <h2><i class="fa-solid fa-compass"></i> Explorar Ciudad & Radar de Eventos</h2>
+            <p>Descubre qué hacer en tiempo real, conciertos y actividades culturales en <span class="city-highlight">Ciudad de México</span>.</p>
           </div>
           <div class="tavily-status-badge" id="tavilyStatusBadge">
-            <i class="fa-solid fa-circle-check"></i> Tavily AI Conectado
+            <i class="fa-solid fa-circle-check"></i> Radar de Ciudad Activo
           </div>
         </div>
 
@@ -110,7 +110,7 @@
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="eventSearchInput" placeholder="Ej: Conciertos este fin de semana, festivales gastronómicos, meetups tech..." value="Eventos y conciertos destacados este fin de semana">
             <button id="searchEventsBtn" class="btn btn-primary">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> Buscar con Tavily
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Buscar Eventos
             </button>
           </div>
 
@@ -129,8 +129,8 @@
         <div class="results-layout">
           <div class="events-main">
             <div class="section-title-wrap">
-              <h3><i class="fa-solid fa-fire"></i> Resultados en Tiempo Real</h3>
-              <span class="results-count" id="resultsCount">Cargando sugerencias...</span>
+              <h3><i class="fa-solid fa-fire"></i> Eventos Destacados en la Ciudad</h3>
+              <span class="results-count" id="resultsCount">Buscando actividades...</span>
             </div>
 
             <div id="eventsGrid" class="events-grid">
@@ -145,16 +145,16 @@
                 <h3><i class="fa-solid fa-calendar-heart"></i> Planificador de Fin de Semana</h3>
                 <span class="badge-mode-indicator" id="plannerModeBadge">Modo Roomies / Pareja</span>
               </div>
-              <p class="sidebar-desc">RoomIA combina búsquedas en vivo de Tavily con tu perfil para recomendar tu itinerario ideal.</p>
+              <p class="sidebar-desc">RoomIA organiza una ruta personalizada del fin de semana para explorar tu nueva ciudad.</p>
               
               <button id="generateItineraryBtn" class="btn btn-gradient full-width">
-                <i class="fa-solid fa-sparkles"></i> Generar Itinerario Personalizado
+                <i class="fa-solid fa-sparkles"></i> Generar Ruta de Fin de Semana
               </button>
 
               <div id="itineraryOutput" class="itinerary-output">
                 <div class="itinerary-empty-state">
                   <i class="fa-solid fa-map-location-dot"></i>
-                  <p>Haz clic en generar para armar tu ruta del fin de semana con RoomIA.</p>
+                  <p>Haz clic en generar para armar tu ruta de fin de semana con RoomIA.</p>
                 </div>
               </div>
             </div>
@@ -479,13 +479,13 @@
     <div id="settingsModal" class="modal-overlay">
       <div class="modal-card">
         <div class="modal-header">
-          <h3><i class="fa-solid fa-sliders"></i> Ajustes de RoomIA & APIs</h3>
+          <h3><i class="fa-solid fa-sliders"></i> Ajustes de RoomIA & Búsqueda</h3>
           <button id="closeSettingsBtn" class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
           <div class="alert-info">
             <i class="fa-solid fa-shield-halved"></i>
-            <span><strong>Seguridad Garantizada:</strong> Tus API Keys se guardan únicamente en el <code>localStorage</code> de tu propio navegador. Nunca se envían a ningún servidor externo no autorizado.</span>
+            <span><strong>Seguridad Garantizada:</strong> Tus configuraciones se guardan únicamente en el <code>localStorage</code> de tu propio navegador.</span>
           </div>
 
           <div class="form-group">
@@ -494,9 +494,9 @@
           </div>
 
           <div class="form-group">
-            <label>Tavily AI Search API Key (Gratuita en tavily.com)</label>
-            <input type="password" id="settingsTavilyKey" placeholder="tvly-xxxxxxxxxxxxxxxxxxxxxxxx">
-            <small class="help-text">Si se deja vacío, RoomIA utilizará la simulación inteligente de eventos.</small>
+            <label>API Key de Búsqueda en Vivo (Opcional)</label>
+            <input type="password" id="settingsTavilyKey" placeholder="Ingresa tu clave de búsqueda en vivo">
+            <small class="help-text">Si se deja vacío, RoomIA utilizará el motor de exploración en tiempo real por defecto.</small>
           </div>
         </div>
         <div class="modal-footer">

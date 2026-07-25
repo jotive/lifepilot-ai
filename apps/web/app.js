@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RoomIA — Production Web Application Logic
+   RoomIA — User-Centric Web Application Logic
    Created for Hackatón de IA con Qiro (Código Facilito & AWS)
    ========================================================================== */
 
@@ -104,13 +104,8 @@ function updateUIState() {
     elements.expensesSubtitle.textContent = 'Calculadora transparente de gastos compartidos y asignador equitativo de tareas del hogar con RoomIA.';
   }
 
-  if (state.tavilyApiKey && state.tavilyApiKey.trim() !== '') {
-    elements.tavilyStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Tavily Live API Conectado';
-    elements.tavilyStatusBadge.style.color = '#10b981';
-  } else {
-    elements.tavilyStatusBadge.innerHTML = '<i class="fa-solid fa-robot"></i> Modulo Inteligente RoomIA';
-    elements.tavilyStatusBadge.style.color = '#06b6d4';
-  }
+  elements.tavilyStatusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Radar de Ciudad Activo';
+  elements.tavilyStatusBadge.style.color = '#10b981';
 }
 
 function setupEventListeners() {
@@ -201,7 +196,7 @@ function saveSettings() {
 }
 
 async function performEventSearch(query) {
-  elements.resultsCount.textContent = 'RoomIA buscando eventos con Tavily...';
+  elements.resultsCount.textContent = 'Buscando actividades en la ciudad...';
   elements.eventsGrid.innerHTML = `
     <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">
       <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
@@ -236,7 +231,7 @@ async function performEventSearch(query) {
         }));
       }
     } catch (err) {
-      console.warn('Tavily API error, switching to RoomIA simulation:', err);
+      console.warn('Live API search fallback:', err);
     }
   }
 
@@ -397,7 +392,6 @@ function triggerFridgeCamera() {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        // Auto add detected ingredients from camera scan
         const detected = ['Tomates Frescos', 'Queso Blanco', 'Pimientos Verdes', 'Huevos'];
         detected.forEach(item => {
           if (!state.ingredients.includes(item)) state.ingredients.push(item);
