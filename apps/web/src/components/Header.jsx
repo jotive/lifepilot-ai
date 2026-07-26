@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { RealtimeService } from '../services/realtime.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
+import { getCityCurrency } from '../config/constants';
 
-export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSettings }) {
+export function Header({ mode, onModeChange, onOpenSettings }) {
   const [pairInfo, setPairInfo] = useState(null);
-  const { language, setLanguage } = useRoomiaStore();
+  const { currentCity, currencyOverride, setCurrencyOverride, language, setLanguage } = useRoomiaStore();
   const t = translations[language] || translations.es;
+  const defaultCurrency = getCityCurrency(currentCity);
+  const activeCurrencyCode = currencyOverride || defaultCurrency.code;
 
   const handlePairClick = () => {
     const info = RealtimeService.createPairingCode();
@@ -26,22 +29,35 @@ export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSet
       </div>
 
       <div className="header-controls">
-        <button className="city-selector-btn" onClick={onCityClick} title="Cambiar Ciudad">
-          <i className="fa-solid fa-location-dot"></i>
-          <span>{currentCity}</span>
-          <i className="fa-solid fa-chevron-down text-xs"></i>
-        </button>
+        {/* Moneda Activa / Selector de Moneda Directo */}
+        <select 
+          value={activeCurrencyCode} 
+          onChange={(e) => setCurrencyOverride(e.target.value)}
+          title="Moneda del Sistema"
+          style={{ width: 'auto', padding: '0.45rem 0.9rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', background: '#fff5f2', border: '1px solid #ffe2d9', borderRadius: '9999px', color: 'var(--primary)' }}
+        >
+          <option value="COP">🇨🇴 COP ($)</option>
+          <option value="MXN">🇲🇽 MXN ($)</option>
+          <option value="EUR">🇪🇸 EUR (€)</option>
+          <option value="USD">🇺🇸 USD ($)</option>
+          <option value="ARS">🇦🇷 ARS ($)</option>
+          <option value="CLP">🇨🇱 CLP ($)</option>
+          <option value="PEN">🇵🇪 PEN (S/)</option>
+        </select>
 
+        {/* Idioma */}
         <select 
           value={language} 
           onChange={(e) => setLanguage(e.target.value)}
-          style={{ width: 'auto', padding: '0.4rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer' }}
+          title="Idioma de la interfaz"
+          style={{ width: 'auto', padding: '0.45rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer', borderRadius: '9999px' }}
         >
           <option value="es">🇲🇽 ES</option>
           <option value="en">🇺🇸 EN</option>
           <option value="pt">🇧🇷 PT</option>
         </select>
 
+        {/* Modo Individual / Pareja */}
         <div className="mode-toggle-group">
           <button 
             className={`mode-btn ${mode === 'solo' ? 'active' : ''}`}
@@ -67,7 +83,7 @@ export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSet
           </button>
         )}
 
-        <button className="icon-btn" onClick={onOpenSettings} title="Configurar Preferencias">
+        <button className="icon-btn" onClick={onOpenSettings} title="Ajustes de Ciudad y Preferencias">
           <i className="fa-solid fa-gear"></i>
         </button>
       </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ContractAnalyzerModal } from './ContractAnalyzerModal';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
+import { exportMedicalCardPDF } from '../utils/export.util';
 
 export function DocVault({ documents, currentCity, onAddDoc }) {
   const { language } = useRoomiaStore();
@@ -24,6 +25,10 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
         date: new Date().toISOString().split('T')[0]
       });
     }
+  };
+
+  const handleExportCard = () => {
+    exportMedicalCardPDF(healthForm, currentCity);
   };
 
   return (
@@ -77,7 +82,7 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
         <div className="vault-card">
           <div className="card-title-bar">
             <h3><i className="fa-solid fa-heart-pulse text-rose-500"></i> {t.medCardTitle}</h3>
-            <button className="btn btn-secondary btn-sm" onClick={() => alert('Ficha Médica Exportada como PDF seguro.')}>
+            <button className="btn btn-secondary btn-sm" onClick={handleExportCard} title="Exportar Ficha Médica en Fichero">
               <i className="fa-solid fa-download"></i> {t.exportCardBtn}
             </button>
           </div>

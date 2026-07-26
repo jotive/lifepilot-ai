@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency } from '../config/constants';
+import { exportExpensesToCSV } from '../utils/export.util';
 
 export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, onToggleChore }) {
-  const { language, currentCity } = useRoomiaStore();
+  const { language, currentCity, currencyOverride } = useRoomiaStore();
   const t = translations[language] || translations.es;
-  const currency = getCityCurrency(currentCity);
+  const defaultCurrency = getCityCurrency(currentCity);
+  const activeCurrencyCode = currencyOverride || defaultCurrency.code;
 
   const [newDesc, setNewDesc] = useState('');
   const [newAmount, setNewAmount] = useState('');
@@ -24,6 +26,10 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
     setNewAmount('');
   };
 
+  const handleExportExpenses = () => {
+    exportExpensesToCSV(expenses, currentCity, activeCurrencyCode);
+  };
+
   const safeExpenses = Array.isArray(expenses) ? expenses : [];
   const safeChores = Array.isArray(chores) ? chores : [];
 
@@ -38,7 +44,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>{t.financesTitle} 💳</h3>
-          <p>{t.financesSub} en <span className="city-highlight">{currentCity} ({currency.code})</span>.</p>
+          <p>{t.financesSub} en <span className="city-highlight">{currentCity} ({activeCurrencyCode})</span>.</p>
         </div>
         <img 
           src="/assets/roomia_finances_3d.jpg" 
@@ -50,8 +56,13 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
       <div className="expenses-layout">
         <div className="expense-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-file-invoice-dollar text-coral"></i> {t.splitTitle} ({currency.code})</h3>
-            <span className="badge-mode-indicator">{mode === 'couple' ? '50/50 Equitativo' : 'Individual'}</span>
+            <h3><i className="fa-solid fa-file-invoice-dollar text-coral"></i> {t.splitTitle} ({activeCurrencyCode})</h3>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button className="btn btn-secondary btn-sm" onClick={handleExportExpenses} title="Exportar reporte de gastos en CSV">
+                <i className="fa-solid fa-file-csv text-emerald-500"></i> Exportar CSV
+              </button>
+              <span className="badge-mode-indicator">{mode === 'couple' ? '50/50 Equitativo' : 'Individual'}</span>
+            </div>
           </div>
 
           <form onSubmit={handleAddExpense} className="add-item-bar">
@@ -63,7 +74,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
             />
             <input 
               type="number" 
-              placeholder={`${currency.symbol} ${currency.code}`} 
+              placeholder={activeCurrencyCode} 
               style={{ width: '130px' }}
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}
@@ -84,7 +95,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                   </div>
                 </div>
                 <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
-                  {currency.symbol}{(exp.amount || 0).toLocaleString('es-ES')} {currency.code}
+                  {(exp.amount || 0).toLocaleString('es-ES')} {activeCurrencyCode}
                 </strong>
               </li>
             ))}
@@ -94,14 +105,14 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
             <i className="fa-solid fa-scale-balanced text-xl"></i>
             <div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                {t.totalExpenseLabel}: <strong>{currency.symbol}{totalExpenseSum.toLocaleString('es-ES')} {currency.code}</strong>
+                {t.totalExpenseLabel}: <strong>{totalExpenseSum.toLocaleString('es-ES')} {activeCurrencyCode}</strong>
               </div>
               <div>
                 {splitBalance > 0 
-                  ? `Tu pareja/roomie te debe ${currency.symbol}${splitBalance.toLocaleString('es-ES')} ${currency.code}` 
+                  ? `Tu pareja/roomie te debe ${splitBalance.toLocaleString('es-ES')} ${activeCurrencyCode}` 
                   : splitBalance < 0 
-                  ? `Debes a tu pareja/roomie ${currency.symbol}${Math.abs(splitBalance).toLocaleString('es-ES')} ${currency.code}` 
-                  : `Cuentas cuadradas al día (0 ${currency.code} pendiente)`}
+                  ? `Debes a tu pareja/roomie ${Math.abs(splitBalance).toLocaleString('es-ES')} ${activeCurrencyCode}` 
+                  : `Cuentas cuadradas al día (0 ${activeCurrencyCode} pendiente)`}
               </div>
             </div>
           </div>

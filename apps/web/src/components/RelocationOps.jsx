@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency } from '../config/constants';
+import { exportRelocationChecklist } from '../utils/export.util';
 
 export function RelocationOps({ currentCity }) {
-  const { language } = useRoomiaStore();
+  const { language, currencyOverride } = useRoomiaStore();
   const t = translations[language] || translations.es;
-  const currency = getCityCurrency(currentCity);
+  const defaultCurrency = getCityCurrency(currentCity);
+  const activeCurrencyCode = currencyOverride || defaultCurrency.code;
 
   const [checklist, setChecklist] = useState([
     { id: 1, text: 'Verificar contrato de arrendamiento con IA en RoomIA', category: 'Trámites Iniciales', completed: true },
@@ -17,10 +19,10 @@ export function RelocationOps({ currentCity }) {
   ]);
 
   const [calc, setCalc] = useState({
-    rent: currency.defaultRent,
-    deposit: currency.defaultDeposit,
-    utilities: currency.defaultUtilities,
-    furniture: currency.defaultFurniture
+    rent: defaultCurrency.defaultRent,
+    deposit: defaultCurrency.defaultDeposit,
+    utilities: defaultCurrency.defaultUtilities,
+    furniture: defaultCurrency.defaultFurniture
   });
 
   useEffect(() => {
@@ -37,6 +39,10 @@ export function RelocationOps({ currentCity }) {
     setChecklist(checklist.map(item => item.id === id ? { ...item, completed: !item.completed } : item));
   };
 
+  const handleExportRelocation = () => {
+    exportRelocationChecklist(checklist, calc, currentCity, activeCurrencyCode);
+  };
+
   const totalCalculated = Number(calc.rent) + Number(calc.deposit) + Number(calc.utilities) + Number(calc.furniture);
   const completedCount = checklist.filter(c => c.completed).length;
   const progressPercent = Math.round((completedCount / checklist.length) * 100);
@@ -47,7 +53,7 @@ export function RelocationOps({ currentCity }) {
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>{t.relocationTitle} 📦</h3>
-          <p>{t.relocationSub} <span className="city-highlight">{currentCity} ({currency.code})</span>.</p>
+          <p>{t.relocationSub} <span className="city-highlight">{currentCity} ({activeCurrencyCode})</span>.</p>
         </div>
         <img 
           src="/assets/roomia_relocation_3d.jpg" 
@@ -60,10 +66,15 @@ export function RelocationOps({ currentCity }) {
         <div className="relocation-card">
           <div className="card-title-bar">
             <h3><i className="fa-solid fa-list-check text-coral"></i> {t.checklistTitle}</h3>
-            <div className="progress-bar-wrap">
-              <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }}></div>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button className="btn btn-secondary btn-sm" onClick={handleExportRelocation} title="Exportar Guía y Presupuesto de Mudanza">
+                <i className="fa-solid fa-download"></i> Exportar Guía
+              </button>
+              <div className="progress-bar-wrap">
+                <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }}></div>
+              </div>
+              <span className="progress-text">{progressPercent}%</span>
             </div>
-            <span className="progress-text">{progressPercent}%</span>
           </div>
 
           <div className="checklist-groups">
@@ -89,14 +100,14 @@ export function RelocationOps({ currentCity }) {
 
         <div className="relocation-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-calculator text-indigo"></i> Presupuesto Estimado ({currency.code})</h3>
+            <h3><i className="fa-solid fa-calculator text-indigo"></i> Presupuesto Estimado ({activeCurrencyCode})</h3>
           </div>
-          <p className="sidebar-desc">Estimación automática de costos en <span className="city-highlight">{currentCity}</span> ({currency.name}).</p>
+          <p className="sidebar-desc">Estimación automática de costos en <span className="city-highlight">{currentCity}</span>.</p>
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="form-row">
               <div className="form-group">
-                <label>{t.rentLabel} ({currency.code})</label>
+                <label>{t.rentLabel} ({activeCurrencyCode})</label>
                 <input 
                   type="number" 
                   value={calc.rent} 
@@ -104,7 +115,7 @@ export function RelocationOps({ currentCity }) {
                 />
               </div>
               <div className="form-group">
-                <label>{t.depositLabel} ({currency.code})</label>
+                <label>{t.depositLabel} ({activeCurrencyCode})</label>
                 <input 
                   type="number" 
                   value={calc.deposit} 
@@ -115,7 +126,7 @@ export function RelocationOps({ currentCity }) {
 
             <div className="form-row">
               <div className="form-group">
-                <label>{t.utilitiesLabel} ({currency.code})</label>
+                <label>{t.utilitiesLabel} ({activeCurrencyCode})</label>
                 <input 
                   type="number" 
                   value={calc.utilities} 
@@ -123,7 +134,7 @@ export function RelocationOps({ currentCity }) {
                 />
               </div>
               <div className="form-group">
-                <label>{t.furnitureLabel} ({currency.code})</label>
+                <label>{t.furnitureLabel} ({activeCurrencyCode})</label>
                 <input 
                   type="number" 
                   value={calc.furniture} 
@@ -134,7 +145,7 @@ export function RelocationOps({ currentCity }) {
 
             <div className="calc-total-box">
               <span>{t.totalMonth1}</span>
-              <strong>{currency.symbol}{totalCalculated.toLocaleString('es-ES')} {currency.code}</strong>
+              <strong>{totalCalculated.toLocaleString('es-ES')} {activeCurrencyCode}</strong>
             </div>
           </form>
 

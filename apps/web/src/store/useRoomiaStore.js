@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { StorageUtil } from '../utils/storage.util';
-import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS } from '../config/constants';
+import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS, getCityCurrency } from '../config/constants';
 
 export const useRoomiaStore = create((set, get) => ({
   currentCity: StorageUtil.getString('roomia_city', 'Ciudad de México'),
+  currencyOverride: StorageUtil.getString('roomia_currency_override', ''),
   mode: StorageUtil.getString('roomia_mode', 'couple'),
   language: StorageUtil.getString('roomia_lang', 'es'),
   tavilyApiKey: StorageUtil.getString('roomia_tavily_key', ''),
@@ -18,6 +19,11 @@ export const useRoomiaStore = create((set, get) => ({
   setCurrentCity: (city) => {
     StorageUtil.setString('roomia_city', city);
     set({ currentCity: city });
+  },
+
+  setCurrencyOverride: (currencyCode) => {
+    StorageUtil.setString('roomia_currency_override', currencyCode);
+    set({ currencyOverride: currencyCode });
   },
 
   setMode: (mode) => {
@@ -61,10 +67,10 @@ export const useRoomiaStore = create((set, get) => ({
 
   randomizeTasks: () => {
     const mode = get().mode;
-    const people = mode === 'couple' ? ['Roomie 1 (Alex)', 'Roomie 2 (Sam)'] : ['Asignado a ti'];
+    const people = mode === 'couple' ? ['Alex', 'Sam'] : ['Asignado a ti'];
     const updated = get().tasks.map(t => ({
       ...t,
-      assigned: people[Math.floor(Math.random() * people.length)]
+      assignee: people[Math.floor(Math.random() * people.length)]
     }));
     StorageUtil.set('roomia_tasks', updated);
     set({ tasks: updated });
