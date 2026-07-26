@@ -1,8 +1,8 @@
-# 📑 Contexto y Reglas del Hackatón de IA con Kiro & AWS
+# 📑 Contexto y Reglas del Hackatón de IA con Google Gemini, Tavily & AWS
 
-> **Organizador:** Código Facilito + Amazon Web Services (AWS) + Kiro AI  
+> **Organizador:** Código Facilito + Amazon Web Services (AWS)  
 > **Fecha del Evento:** 20 al 27 de Julio de 2026 (Entrega: 27 de Julio 23:59 UTC-6)  
-> **Recursos:** 2,000 Créditos de Kiro AI por participante + AWS Free Tier
+> **Tecnologías Core de IA:** Google Gemini AI API + Tavily AI Search API
 
 ---
 
@@ -27,7 +27,7 @@
 ## 🏆 Retos Oficiales del Hackatón
 
 1. 🎮 **Videojuegos:** Videojuego original y jugable de principio a fin (evaluación enfocada en game design y jugabilidad).
-2. 🌐 **Aplicaciones Web (SELECCIONADO):** App que use APIs del navegador y servicios externos para resolver un problema de la vida cotidiana.
+2. 🌐 **Aplicaciones Web (SELECCIONADO):** App que use APIs del navegador y servicios externos (Google Gemini & Tavily AI) para resolver un problema de la vida cotidiana.
 3. 🤖 **Agentes Especializados:** Agente inteligente con LLMs, MCPs y herramientas para tareas específicas.
 4. 🛠️ **Productividad para Desarrolladores:** Herramientas CLI / Tooling para automatizar tareas repetitivas de desarrollo.
 

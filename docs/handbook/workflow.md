@@ -2,7 +2,8 @@
 
 > **Proyecto:** RoomIA  
 > **Estatus:** Producción Funcional desde el Día 1  
-> **Hackatón:** Hackatón de IA con Kiro & AWS (Código Facilito + AWS)
+> **Tecnologías de IA:** Google Gemini AI + Tavily AI Search  
+> **Hackatón:** Hackatón de IA (Código Facilito + AWS)
 
 ---
 
@@ -27,7 +28,7 @@
 * [x] **5 Módulos de Producto Funcionales desde el Día 1:**
   1. *Explorar Ciudad & Radar de Eventos:* Búsqueda en tiempo real con Tavily API y generador de rutas.
   2. *Guía de Mudanza & Trámites:* Checklist interactivo y calculadora de instalación.
-  3. *Mi Refrigerador & Recetas:* Escáner de cámara, dictado por voz y recetas anti-desperdicio.
+  3. *Mi Refrigerador & Recetas:* Escáner de cámara con Google Gemini, dictado por voz y recetas anti-desperdicio.
   4. *Finanzas & Convivencia:* Splitter 50/50 y proporcional + TaskWheel de tareas.
   5. *Bóveda de Documentos & Salud:* Cifrado local AES-GCM y exportador de ficha de emergencia.
 * [x] **Infraestructura Multi-Cloud:** Docker Compose, AWS SAM template y guía GCP Cloud Run + Cloudflare Pages.
