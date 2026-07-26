@@ -4,7 +4,7 @@
 
 /* ==========================================================================
    RoomIA — Neo-Claymorphic & Warm Light Design System
-   Fixed-Dimension Non-Stretching Sidebar & Precise Component Styling
+   Fixed-Dimension Non-Stretching Sidebar & Mobile App Dock Responsive Layout
    ========================================================================== */
 
 :root {
@@ -73,7 +73,7 @@ body {
   gap: 1.25rem;
 }
 
-/* Left Sidebar Navigation (Fixed Dimensions - No Stretching) */
+/* Left Sidebar Navigation (Fixed Dimensions - Desktop) */
 .app-sidebar {
   width: 76px;
   background: var(--primary);
@@ -604,11 +604,81 @@ input:focus, select:focus {
 .alert-info i { color: var(--primary); font-size: 1.1rem; margin-top: 2px; }
 .main-footer { text-align: center; padding: 1.5rem 0; border-top: 1px solid #f1f5f9; color: var(--text-muted); font-size: 0.85rem; margin-top: 2rem; }
 
+/* Responsive Mobile Navigation Dock (iOS / Android PWA Style) */
 @media (max-width: 992px) {
-  .app-container { flex-direction: column; }
-  .app-sidebar { width: 100%; height: auto; flex-direction: row; padding: 0.75rem 1.25rem; }
-  .sidebar-nav-list { flex-direction: row; }
-  .results-layout, .relocation-grid, .kitchen-layout, .expenses-layout, .vault-grid { grid-template-columns: 1fr; }
-  .hero-3d-banner { flex-direction: column; align-items: stretch; text-align: center; }
-  .hero-3d-text, .hero-3d-img { max-width: 100%; }
+  .app-container { 
+    flex-direction: column; 
+    padding: 0.75rem; 
+    gap: 0.75rem;
+    padding-bottom: 80px; /* Leave space for bottom fixed dock */
+  }
+
+  .app-sidebar { 
+    width: 100%; 
+    height: auto; 
+    max-height: none;
+    flex-direction: row; 
+    padding: 0.65rem 1.1rem; 
+    position: fixed;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 1.5rem);
+    max-width: 500px;
+    z-index: 990;
+    border-radius: var(--radius-full);
+    box-shadow: 0 16px 36px rgba(255, 107, 74, 0.45);
+    justify-content: space-between;
+  }
+
+  .sidebar-logo { display: none; }
+
+  .sidebar-nav-list { 
+    flex-direction: row; 
+    justify-content: space-around;
+    gap: 0;
+  }
+
+  .sidebar-nav-item {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    max-width: 42px;
+    max-height: 42px;
+    font-size: 1.15rem;
+  }
+
+  .app-canvas {
+    padding: 1.1rem;
+    border-radius: 24px;
+    width: 100%;
+  }
+
+  .results-layout, .relocation-grid, .kitchen-layout, .expenses-layout, .vault-grid { 
+    grid-template-columns: 1fr; 
+  }
+
+  .hero-3d-banner { 
+    flex-direction: column; 
+    align-items: stretch; 
+    text-align: center; 
+    padding: 1.25rem;
+  }
+
+  .hero-3d-text, .hero-3d-img { 
+    max-width: 100%; 
+  }
+
+  .hero-3d-img {
+    height: 160px;
+    margin-top: 1rem;
+  }
+
+  .form-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .main-header { flex-direction: column; align-items: stretch; }
+  .header-controls { justify-content: space-between; }
 }
