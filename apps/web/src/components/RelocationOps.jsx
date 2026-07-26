@@ -150,11 +150,13 @@ export function RelocationOps({ currentCity }) {
           </form>
 
           <div className="emergency-directory">
-            <h4><i className="fa-solid fa-phone-flip text-rose-500"></i> Directorio de Emergencia ({currentCity})</h4>
+            <h4><i className="fa-solid fa-phone-flip text-rose-500"></i> Directorio de Emergencia Local ({currentCity})</h4>
             <div className="emergency-pills">
-              <div className="pill-item"><i className="fa-solid fa-shield-cat"></i> Policía Nacional / Emergencias: 911 / 123</div>
-              <div className="pill-item"><i className="fa-solid fa-truck-medical"></i> Ambulancia Médica: 125</div>
-              <div className="pill-item"><i className="fa-solid fa-fire-extinguisher"></i> Bomberos: 119</div>
+              {(defaultCurrency.emergencies || []).map((em, idx) => (
+                <div key={idx} className="pill-item">
+                  <i className="fa-solid fa-shield-halved text-rose-500"></i> {em.name}: <strong>{em.number}</strong>
+                </div>
+              ))}
             </div>
           </div>
         </div>

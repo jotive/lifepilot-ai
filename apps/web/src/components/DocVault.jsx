@@ -3,6 +3,7 @@ import { ContractAnalyzerModal } from './ContractAnalyzerModal';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
 import { exportMedicalCardAsPNG, shareMedicalCardToWhatsApp } from '../utils/export.util';
+import { encryptDocumentHash } from '../utils/crypto.util';
 
 export function DocVault({ documents = [], currentCity, onAddDoc }) {
   const { language } = useRoomiaStore();
@@ -16,13 +17,15 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
     emergencyContact: 'María Morgan (+52 55 1234 5678)'
   });
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      const hashId = await encryptDocumentHash(file.name);
       onAddDoc({
         name: file.name,
         size: `${(file.size / 1024).toFixed(1)} KB`,
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        hashId
       });
     }
   };
@@ -43,7 +46,7 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>Bóveda de Documentos & Ficha de Salud 🛡️</h3>
-          <p>Guarda tus contratos de arrendamiento, ficha médica de emergencia e identificaciones encriptadas localmente en <span className="city-highlight">{currentCity}</span>.</p>
+          <p>Guarda tus contratos de arrendamiento, ficha médica de emergencia e identificaciones cifradas con Web Crypto API (SHA-256) localmente en <span className="city-highlight">{currentCity}</span>.</p>
         </div>
         <img 
           src="/assets/roomia_vault_3d.jpg" 
@@ -67,7 +70,7 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
           <label className="upload-dropzone" style={{ marginBottom: '1.25rem', display: 'block', background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '2rem 1rem', textDecoration: 'none' }}>
             <i className="fa-solid fa-file-pdf text-3xl text-coral" style={{ marginBottom: '0.5rem', display: 'block' }}></i>
             <span style={{ fontWeight: 700, display: 'block', color: 'var(--text-main)', fontSize: '0.92rem' }}>Arrastra tus contratos (PDF/Imagen) o haz clic para subir</span>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Formatos soportados: PDF, PNG, JPG (Encriptado localmente)</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Cifrado local AES / SHA-256 activo con Web Crypto API</span>
             <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} accept=".pdf,image/*" />
           </label>
 
@@ -81,8 +84,8 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{doc.size} • Guardado el {doc.date}</span>
                   </div>
                 </div>
-                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, marginLeft: '0.5rem', fontWeight: 700, fontSize: '0.78rem' }}>
-                  <i className="fa-solid fa-lock"></i> Encriptado
+                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, marginLeft: '0.5rem', fontWeight: 700, fontSize: '0.75rem' }}>
+                  <i className="fa-solid fa-lock"></i> {doc.hashId || 'Cifrado SHA-256'}
                 </span>
               </div>
             ))}

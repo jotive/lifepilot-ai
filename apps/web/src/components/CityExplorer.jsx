@@ -5,25 +5,48 @@ import { translations } from '../config/i18n';
 import { getCityCurrency } from '../config/constants';
 
 export function CityExplorer({ currentCity, mode }) {
-  const { language } = useRoomiaStore();
+  const { language, tavilyApiKey } = useRoomiaStore();
   const t = translations[language] || translations.es;
   const currency = getCityCurrency(currentCity);
 
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [events, setEvents] = useState([
-    { title: 'Festival de Arte y Luces 2026', category: 'Cultural', description: 'Exposición interactiva de arte digital y videomapping nocturno.', location: currentCity, date: 'Este Fin de Semana' },
-    { title: 'Ruta Gastronómica de Comida Callejera & Craft Beer', category: 'Gastronomía', description: 'Recorrido guiado por los mejores puestos y cervecerías artesanales de la zona.', location: currentCity, date: 'Viernes 20:00 hrs' },
-    { title: 'Meetup de Expat & Tech Founders', category: 'Networking', description: 'Encuentro informal de emprendedores, nómadas digitales y desarrolladores.', location: currentCity, date: 'Jueves 19:00 hrs' }
+    { title: 'Festival de Arte & Luces 2026', category: 'Cultural', description: `Exposición interactiva de arte digital y videomapping nocturno en ${currentCity}.`, location: currentCity, date: 'Este Fin de Semana' },
+    { title: 'Ruta Gastronómica & Craft Beer', category: 'Gastronomía', description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${currentCity}.`, location: currentCity, date: 'Viernes 20:00 hrs' },
+    { title: 'Meetup de Expat & Tech Founders', category: 'Networking', description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${currentCity}.`, location: currentCity, date: 'Jueves 19:00 hrs' }
   ]);
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    if (!query) return;
-    const filtered = events.filter(evt => evt.title.toLowerCase().includes(query.toLowerCase()));
+    const searchQuery = query.trim() || `Eventos y cultura en ${currentCity}`;
+    setLoading(true);
+
+    try {
+      const searchResults = await ApiService.searchEvents(searchQuery, currentCity, tavilyApiKey);
+      if (searchResults && Array.isArray(searchResults.results) && searchResults.results.length > 0) {
+        const formatted = searchResults.results.map(r => ({
+          title: r.title,
+          category: r.category || 'Evento En Vivo',
+          description: r.snippet || r.content || r.title,
+          location: currentCity,
+          date: 'Esta Semana',
+          url: r.url
+        }));
+        setEvents(formatted);
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.warn('Conexión Tavily fallback local:', err);
+    }
+
+    // High quality filtered fallback
+    const filtered = events.filter(evt => evt.title.toLowerCase().includes(searchQuery.toLowerCase()) || evt.description.toLowerCase().includes(searchQuery.toLowerCase()));
     setEvents(filtered.length > 0 ? filtered : events);
+    setLoading(false);
   };
 
   const handleGenerateItinerary = async () => {
@@ -45,6 +68,10 @@ export function CityExplorer({ currentCity, mode }) {
       setLoading(false);
     }
   };
+
+  const filteredEventsByCategory = activeCategory === 'all' 
+    ? events 
+    : events.filter(e => (e.category || '').toLowerCase().includes(activeCategory.toLowerCase()));
 
   return (
     <section className="tab-panel active">
@@ -80,7 +107,7 @@ export function CityExplorer({ currentCity, mode }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             <i className="fa-solid fa-radar"></i> {t.searchBtn}
           </button>
         </form>
@@ -109,17 +136,17 @@ export function CityExplorer({ currentCity, mode }) {
         <div className="events-column">
           <div className="section-title-wrap">
             <h3>Eventos Destacados en {currentCity}</h3>
-            <span className="results-count">{events.length} resultados</span>
+            <span className="results-count">{filteredEventsByCategory.length} resultados</span>
           </div>
 
           {loading ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
               <i className="fa-solid fa-spinner fa-spin text-3xl text-coral" style={{ marginBottom: '1rem', display: 'block' }}></i>
-              <span>Consultando IA y Radar Urbano...</span>
+              <span>Consultando Radar Urbano y Búsqueda en Vivo...</span>
             </div>
           ) : (
             <div className="events-grid">
-              {events.map((evt, idx) => (
+              {filteredEventsByCategory.map((evt, idx) => (
                 <div key={idx} className="event-card">
                   <div>
                     <span className="event-badge">{evt.category || 'Evento'}</span>

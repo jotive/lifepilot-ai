@@ -1,4 +1,4 @@
-const API_BASE = '/api/v1';
+const API_BASE = 'http://localhost:4000/api/v1';
 
 async function request(endpoint, options = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -13,6 +13,13 @@ async function request(endpoint, options = {}) {
 }
 
 export class ApiService {
+  static async searchEvents(query, city, apiKey = '') {
+    return request('/search', {
+      method: 'POST',
+      body: JSON.stringify({ query, city, apiKey })
+    });
+  }
+
   static async generateRecipes(ingredients, mode, language = 'es') {
     return request('/recipes/generate', {
       method: 'POST',

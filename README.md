@@ -1,87 +1,86 @@
-# 🏠 RoomIA — Tu Roomie Inteligente para la Vida Cotidiana, Relocalización y Parejas
+# 🏠 RoomIA PRO — Tu Roomie Inteligente & Copiloto de Vida
 
-> **Proyecto desarrollado para el Hackatón de IA con Qiro & AWS (organizado por Código Facilito y Amazon Web Services)**  
-> **Categoría / Reto:** 🌐 Aplicaciones Web (Resolver problemas de la vida cotidiana)  
-> **Participante:** jotive (Modalidad Individual)  
-> **Estructura:** Repositorio Multi-Carpeta (Apps independientes, Infraestructura AWS y Documentación)
-
----
-
-## 🌟 Visión del Producto: RoomIA
-
-**RoomIA** (haciendo alusión a un *Roomie* o compañero de hogar impulsado por IA) es un copiloto inteligente diseñado para resolver el estrés, la fricción financiera y la desorganización cuando una persona se muda a una nueva ciudad, o cuando una pareja/roomies se independiza.
+> **Proyecto Oficial para el Hackatón de Inteligencia Artificial (Código Facilito & AWS 2026)**  
+> **Autor:** [@jotive](https://github.com/jotive)  
+> **Repositorio:** [https://github.com/jotive/lifepilot-ai](https://github.com/jotive/lifepilot-ai)
 
 ---
 
-## 📂 Estructura Limpia del Repositorio
+## 🌟 Descripción General
 
-```
-roomIA/
-├── apps/                        # 🚀 Aplicaciones y Servicios independientes
-│   ├── web/                     # Frontend SPA (Vite + HTML/CSS Dark Mode / JS)
-│   ├── api/                     # Backend API Service (Express.js Proxy para Tavily)
-│   └── workers/                 # Background Worker (Crons en segundo plano)
-├── infra/                       # ☁️ Infraestructura & Despliegue AWS / Docker
-│   ├── aws/                     # Plantilla AWS SAM / CloudFormation (S3 + CloudFront + Lambda)
-│   └── docker/                  # Dockerfile.web, Dockerfile.api y docker-compose.yml
-├── docs/                        # 📑 Investigación & Contexto
-│   ├── hackathon_context.md     # Reglas y entregables del Hackatón de Qiro & AWS
-│   ├── idea_research.md         # Investigación del concepto de producto RoomIA
-│   ├── architecture.md          # Especificaciones de la estructura del repositorio
-│   └── raw_context.txt          # Transcripción del Kickoff
-├── .env.example                 # Plantilla de variables de entorno
-├── .gitignore                   # Exclusiones de Git
-└── README.md                    # Documentación principal del repositorio
-```
+**RoomIA PRO** es una aplicación web progresiva (PWA) de asistencia inteligente para la independencia, mudanzas y convivencia en el hogar. Ayuda a jóvenes profesionales, estudiantes y expatriados a desenvolverse en nuevas ciudades, gestionar la despensa sin desperdicio, dividir cuentas equitativamente y resguardar contratos con seguridad.
 
 ---
 
-## 🚀 Módulos Funcionales de RoomIA
+## 🚀 Arquitectura & Tech Stack Real
 
-### 🎟️ 1. Tavily City Explorer & Live Event Radar (`apps/web` + `apps/api`)
-* **Eventos en Tiempo Real:** Integración con **Tavily AI Search API** para descubrir en vivo conciertos, festivales gastronómicos, eventos culturales y meetups en la ciudad.
-* **Planificador de Fin de Semana Inteligente:** Algoritmo que genera itinerarios sugeridos adaptados al perfil (*Solo Expat* vs *Roomies / Pareja*).
+### 🎨 Frontend (`apps/web`)
+* **Core:** React 18 (Vite SPA & PWA Service Worker)
+* **Estado Global:** Zustand con persistencia en `localStorage`
+* **Estilos:** Vanilla CSS 3D Claymorphic Design System, Micro-animaciones y Responsive Dock Móvil estilo iOS
+* **Exportación & Multimedia:** HTML5 Canvas (Generador de Tarjetas PNG) & Web Speech API (Dictado por Voz)
+* **Cifrado Local:** Web Crypto API (`SHA-256` digest hashing para Bóveda de Documentos)
 
-### 🌆 2. Guía de Asentamiento & Trámites de Ciudad (Relocation Ops)
-* **Roadmap por Fases:** Checklist interactivo desde la firma del contrato de alquiler hasta la contratación de servicios (luz, agua, internet, transporte público).
-* **Calculadora de Instalación:** Estimador del costo total del Mes 1 (renta, depósito, servicios y alacena).
-* **Directorio de Emergencias Locales:** Teléfonos de emergencia según la ciudad.
-
-### 🧊 3. Refrigerador Inteligente & Recetas Anti-Desperdicio (Kitchen Ops)
-* **Gestor de Alimentos & Dictado por Voz:** Permite agregar ingredientes mediante teclado o dictado por voz usando la **Web Speech API**.
-* **Smart Meal Planner:** Genera recetas paso a paso utilizando únicamente los ingredientes disponibles para evitar desperdicios.
-
-### 👩‍❤️‍👨 4. Control Financiero & Asignador de Tareas (Solo & Couple Ops)
-* **Splitter de Gastos Compartidos:** Modos *Solo Expat* y *Roomies / Pareja*. Calcula balances y liquidación de deudas (*"Quién le debe a quién"*) de forma 50/50 o proporcional.
-* **TaskWheel (Sorteo de Tareas del Hogar):** Asignador equitativo de tareas (cocina, limpieza, alacena) para convivencia armónica.
-
-### 📄 5. Bóveda de Documentos & Tarjeta de Emergencia
-* **Document Vault Local:** Guarda contratos de arrendamiento y recibos cifrados localmente en el navegador (`IndexedDB` / `LocalStorage`).
-* **Ficha de Emergencia:** Exporta la tarjeta médica personal en formato de texto plano descargable.
+### ⚙️ Backend REST API (`apps/api`)
+* **Runtime:** Node.js & Express v1 RESTful Router en capas (Controllers, Services, Utilities)
+* **Inferencia IA Multi-Proveedor:** Integración directa con **OpenAI (GPT-4o-mini)**, **Groq (Llama-3)** y **Anthropic (Claude)** con sistema de fallback automático local.
+* **Búsqueda en Vivo:** **Tavily Event Search API** para el Radar Urbano en tiempo real.
 
 ---
 
-## 💻 Instrucciones para Ejecutar en Local
+## 📦 Módulos Principales de la Aplicación
 
-### 1. Aplicación Web Frontend (`apps/web`)
+1. **🚀 Radar Urbano & Ciudad (`/#/explorer`):**  
+   Búsqueda de eventos en vivo conectada a Tavily API, categorización por intereses y generador de itinerarios personalizados de fin de semana con IA.
+
+2. **📦 Guía & Calculadora de Mudanza (`/#/relocation`):**  
+   Checklist de trámites iniciales y simulador de costos iniciales (renta, depósito, servicios) adaptado a la moneda local de la ciudad seleccionada, junto con directorio de emergencias locales (*911, 123, 112*).
+
+3. **🥗 Mi Refrigerador & Recetas Anti-Desperdicio (`/#/kitchen`):**  
+   Inventario de alacena con escaneo simulado por cámara, dictado por voz y generador de recetas de cocina aprovechando ingredientes existentes.
+
+4. **📋 Finanzas Compartidas & Organizador de Tareas (`/#/finances`):**  
+   * **Organizador de Tareas:** Tablero con arrastrar y soltar (Drag & Drop), asignación de responsables y sorteo equitativo con IA.  
+   * **Registro de Gastos:** División de compras 50/50, exportación real a ficheros `.csv` y formateo sin centavos adaptativo para **COP, CLP, ARS**.
+
+5. **🛡️ Bóveda de Documentos & Tarjeta Médica (`/#/vault`):**  
+   Almacenamiento seguro local cifrado con Web Crypto API, analizador de contratos de alquiler y exportación de la Ficha Médica de Emergencia en **Imagen PNG de alta resolución** y enlace directo para **WhatsApp**.
+
+---
+
+## 🔧 Instalación y Ejecución Local
+
+### 1. Clonar e Instalar Dependencias
 ```bash
-cd apps/web
+git clone https://github.com/jotive/lifepilot-ai.git
+cd lifepilot-ai
 npm install
+```
+
+### 2. Configurar Variables de Entorno (`apps/api/.env`)
+Crea el archivo `.env` dentro de `apps/api/`:
+```env
+PORT=4000
+NODE_ENV=development
+GROQ_API_KEY=tu_clave_groq
+TAVILY_API_KEY=tu_clave_tavily
+OPENROUTER_TOKEN1=tu_clave_openrouter
+```
+
+### 3. Iniciar Backend API y Web Frontend
+```bash
+# Terminal 1 — Backend Express API (Puerto 4000)
+cd apps/api
+npm run dev
+
+# Terminal 2 — Frontend React Vite (Puerto 3005)
+cd apps/web
 npm run dev
 ```
-Abre en tu navegador `http://localhost:3000`.
 
-### 2. Backend API (`apps/api`)
-```bash
-cd apps/api
-npm install
-npm run start
-```
+Abre **`http://localhost:3005`** en tu navegador.
 
 ---
 
-## 📽️ Entregables del Hackatón
-
-* **Repositorio Público GitHub:** [https://github.com/jotive/lifepilot-ai](https://github.com/jotive/lifepilot-ai)
-* **Demo en Línea (Live App):** *(URL de despliegue)*
-* **Video de Presentación (5 min):** *(Enlace al video demo funcional)*
+## 📜 Licencia
+Proyecto desarrollado para el **Hackatón de IA 2026** por **jotive**. Licencia MIT.
