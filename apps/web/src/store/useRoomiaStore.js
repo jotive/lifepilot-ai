@@ -17,10 +17,10 @@ export const useRoomiaStore = create((set, get) => ({
   activeTab: 'city-events',
   isSettingsOpen: false,
 
-  ingredients: StorageUtil.get('roomia_ingredients', INITIAL_INGREDIENTS),
-  expenses: StorageUtil.get('roomia_expenses', INITIAL_EXPENSES),
+  ingredients: StorageUtil.get('roomia_ingredients', []),
+  expenses: StorageUtil.get('roomia_expenses', []),
   tasks: StorageUtil.get('roomia_tasks', normalizedInitialTasks),
-  documents: StorageUtil.get('roomia_docs', INITIAL_DOCS),
+  documents: StorageUtil.get('roomia_docs', []),
 
   setCurrentCity: (city) => {
     StorageUtil.setString('roomia_city', city);
@@ -152,10 +152,10 @@ export const useRoomiaStore = create((set, get) => ({
       mode: 'couple',
       language: 'es',
       tavilyApiKey: '',
-      ingredients: INITIAL_INGREDIENTS,
-      expenses: INITIAL_EXPENSES,
-      tasks: normalizedInitialTasks,
-      documents: INITIAL_DOCS
+      ingredients: [],
+      expenses: [],
+      tasks: [],
+      documents: []
     });
   }
 }));

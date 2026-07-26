@@ -57,14 +57,8 @@ export function formatMoney(amount, currencyCode) {
   });
 }
 
-export const INITIAL_INGREDIENTS = [
-  '3 Huevos', 'Pechuga de Pollo', 'Tomates', 'Arroz', 'Cebolla', 'Queso'
-];
-
-export const INITIAL_EXPENSES = [
-  { id: 1, desc: 'Mercado Semanal del Hogar', amount: 180000, paidBy: 'Alex', date: 'Hoy' },
-  { id: 2, desc: 'Servicio de Internet y Wifi', amount: 95000, paidBy: 'Sam', date: 'Ayer' }
-];
+export const INITIAL_INGREDIENTS = [];
+export const INITIAL_EXPENSES = [];
 
 export const INITIAL_TASKS = [
   { id: 1, title: 'Cocinar Cena de Bienvenida', assignee: 'Alex', freq: 'Semanal', status: 'done', completed: true },
@@ -73,7 +67,4 @@ export const INITIAL_TASKS = [
   { id: 4, title: 'Limpiar Sala y Áreas Comunes', assignee: 'Sam', freq: 'Quincenal', status: 'todo', completed: false }
 ];
 
-export const INITIAL_DOCS = [
-  { name: 'Contrato_Alquiler_CDMX.pdf', size: '1.2 MB', date: '2026-07-20' },
-  { name: 'Comprobante_Servicios.pdf', size: '450 KB', date: '2026-07-22' }
-];
+export const INITIAL_DOCS = [];
