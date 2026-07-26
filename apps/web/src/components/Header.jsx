@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { RealtimeService } from '../services/realtime.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency } from '../config/constants';
 
 export function Header({ mode, onModeChange, onOpenSettings }) {
   const [pairInfo, setPairInfo] = useState(null);
   const { currentCity, currencyOverride, setCurrencyOverride, language, setLanguage } = useRoomiaStore();
+  const { user, setIsAuthModalOpen } = useAuthStore();
   const t = translations[language] || translations.es;
   const defaultCurrency = getCityCurrency(currentCity);
   const activeCurrencyCode = currencyOverride || defaultCurrency.code;
@@ -18,7 +20,7 @@ export function Header({ mode, onModeChange, onOpenSettings }) {
 
   return (
     <div className="top-header-container" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
-      {/* Standalone Top Mini Utility Bar (Above the Main Header) */}
+      {/* Standalone Top Mini Utility Bar (Above Main Header) */}
       <div className="top-utility-bar">
         <div className="utility-left-info">
           <span className="utility-city-badge">
@@ -27,6 +29,17 @@ export function Header({ mode, onModeChange, onOpenSettings }) {
         </div>
 
         <div className="utility-right-controls">
+          {/* User Account Button */}
+          <button 
+            className="utility-btn utility-user-btn" 
+            onClick={() => setIsAuthModalOpen(true)}
+            title="Mi Cuenta de Usuario"
+            style={{ background: user.isLoggedIn ? '#fff5f2' : '#ffffff', borderColor: user.isLoggedIn ? '#ffe2d9' : '#cbd5e1', color: user.isLoggedIn ? 'var(--primary)' : 'var(--text-main)', fontWeight: 700 }}
+          >
+            <i className="fa-solid fa-circle-user"></i>
+            <span>{user.isLoggedIn ? user.name : 'Crear Cuenta / Login'}</span>
+          </button>
+
           {/* Selector de Moneda Directo */}
           <select 
             value={activeCurrencyCode} 

@@ -7,6 +7,7 @@ import { HouseholdOps } from './components/HouseholdOps';
 import { DocVault } from './components/DocVault';
 import { SettingsModal } from './components/SettingsModal';
 import { OnboardingModal } from './components/OnboardingModal';
+import { AuthModal } from './components/AuthModal';
 import { ToastContainer } from './components/ToastContainer';
 import { AIAssistantWidget } from './components/AIAssistantWidget';
 import { useRoomiaStore } from './store/useRoomiaStore';
@@ -115,6 +116,9 @@ export function App() {
     <div className="app-container">
       {/* Onboarding 3-step Modal for judges & first-time users */}
       <OnboardingModal />
+
+      {/* User Account Login / Profile Modal */}
+      <AuthModal />
 
       {/* Left Vertical Navigation Sidebar (Claymorphic Style) */}
       <aside className="app-sidebar">
