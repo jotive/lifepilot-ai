@@ -15,9 +15,9 @@ export function SettingsModal({ isOpen, currentCity, onClose, onSave }) {
   };
 
   const handleReset = () => {
-    if (window.confirm('¿Seguro que deseas restablecer todos los datos guardados de la aplicación? Se restaurarán los valores iniciales.')) {
+    if (window.confirm('¿Seguro que deseas restablecer todos los datos guardados de la aplicación? Se borrarán las compras y tareas guardadas en este navegador.')) {
       clearAllAppData();
-      onClose();
+      window.location.reload();
     }
   };
 
