@@ -4,7 +4,7 @@ import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
 import { exportMedicalCardPDF } from '../utils/export.util';
 
-export function DocVault({ documents, currentCity, onAddDoc }) {
+export function DocVault({ documents = [], currentCity, onAddDoc }) {
   const { language } = useRoomiaStore();
   const t = translations[language] || translations.es;
 
@@ -31,6 +31,8 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
     exportMedicalCardPDF(healthForm, currentCity);
   };
 
+  const safeDocuments = Array.isArray(documents) ? documents : [];
+
   return (
     <section className="tab-panel active">
       {/* 3D Hero Widget Banner */}
@@ -47,31 +49,35 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
       </div>
 
       <div className="vault-grid">
+        {/* Guarded Documents Card */}
         <div className="vault-card">
-          <div className="card-title-bar">
-            <h3><i className="fa-solid fa-cloud-arrow-up text-coral"></i> {t.storedDocsTitle}</h3>
-            <button className="btn btn-primary btn-sm" onClick={() => setIsAnalyzerOpen(true)}>
+          <div className="card-title-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <i className="fa-solid fa-cloud-arrow-up text-coral"></i> {t.storedDocsTitle}
+            </h3>
+            <button className="btn btn-primary btn-sm" onClick={() => setIsAnalyzerOpen(true)} style={{ flexShrink: 0 }}>
               <i className="fa-solid fa-shield-halved"></i> {t.analyzeContractBtn}
             </button>
           </div>
 
-          <label className="upload-dropzone" style={{ marginBottom: '1.25rem' }}>
+          <label className="upload-dropzone" style={{ marginBottom: '1.25rem', display: 'block', background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '20px', padding: '2rem 1rem', textDecoration: 'none' }}>
             <i className="fa-solid fa-file-pdf text-3xl text-coral" style={{ marginBottom: '0.5rem', display: 'block' }}></i>
-            <span style={{ fontWeight: 700, display: 'block' }}>Arrastra tus contratos (PDF/Imagen) o haz clic para subir</span>
+            <span style={{ fontWeight: 700, display: 'block', color: 'var(--text-main)', fontSize: '0.92rem' }}>Arrastra tus contratos (PDF/Imagen) o haz clic para subir</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Formatos soportados: PDF, PNG, JPG (Encriptado localmente)</span>
             <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} accept=".pdf,image/*" />
           </label>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {documents.map((doc, idx) => (
-              <div key={idx} className="expense-item" style={{ alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+            {safeDocuments.map((doc, idx) => (
+              <div key={idx} className="expense-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1.1rem', background: '#ffffff', border: '1px solid #f1f5f9', borderRadius: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flex: 1 }}>
                   <i className="fa-solid fa-file-pdf text-rose-500 text-xl" style={{ flexShrink: 0 }}></i>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</h4>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: 800, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</h4>
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{doc.size} • Guardado el {doc.date}</span>
                   </div>
                 </div>
-                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, marginLeft: '0.5rem' }}>
+                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, marginLeft: '0.5rem', fontWeight: 700, fontSize: '0.78rem' }}>
                   <i className="fa-solid fa-lock"></i> Encriptado
                 </span>
               </div>
@@ -79,17 +85,20 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
           </div>
         </div>
 
+        {/* Emergency Medical Health Card */}
         <div className="vault-card">
-          <div className="card-title-bar">
-            <h3><i className="fa-solid fa-heart-pulse text-rose-500"></i> {t.medCardTitle}</h3>
-            <button className="btn btn-secondary btn-sm" onClick={handleExportCard} title="Exportar Ficha Médica en Fichero">
+          <div className="card-title-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <i className="fa-solid fa-heart-pulse text-rose-500"></i> {t.medCardTitle}
+            </h3>
+            <button className="btn btn-secondary btn-sm" onClick={handleExportCard} title="Exportar Ficha Médica en Fichero" style={{ flexShrink: 0 }}>
               <i className="fa-solid fa-download"></i> {t.exportCardBtn}
             </button>
           </div>
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="form-group">
-              <label>{t.fullNameLabel}</label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.fullNameLabel}</label>
               <input 
                 type="text" 
                 value={healthForm.fullName} 
@@ -99,7 +108,7 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
 
             <div className="form-row">
               <div className="form-group">
-                <label>{t.bloodLabel}</label>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.bloodLabel}</label>
                 <input 
                   type="text" 
                   value={healthForm.bloodType} 
@@ -107,7 +116,7 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
                 />
               </div>
               <div className="form-group">
-                <label>{t.allergiesLabel}</label>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.allergiesLabel}</label>
                 <input 
                   type="text" 
                   value={healthForm.allergies} 
@@ -117,7 +126,7 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
             </div>
 
             <div className="form-group">
-              <label>{t.emergencyContactLabel}</label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.emergencyContactLabel}</label>
               <input 
                 type="text" 
                 value={healthForm.emergencyContact} 
