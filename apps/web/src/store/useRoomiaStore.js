@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { StorageUtil } from '../utils/storage.util';
-import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS, getCityCurrency } from '../config/constants';
+import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS } from '../config/constants';
+
+// Normalize initial tasks to have status property for Kanban
+const normalizedInitialTasks = INITIAL_TASKS.map(t => ({
+  ...t,
+  status: t.status || (t.completed ? 'done' : 'todo')
+}));
 
 export const useRoomiaStore = create((set, get) => ({
   currentCity: StorageUtil.getString('roomia_city', 'Ciudad de México'),
@@ -13,7 +19,7 @@ export const useRoomiaStore = create((set, get) => ({
 
   ingredients: StorageUtil.get('roomia_ingredients', INITIAL_INGREDIENTS),
   expenses: StorageUtil.get('roomia_expenses', INITIAL_EXPENSES),
-  tasks: StorageUtil.get('roomia_tasks', INITIAL_TASKS),
+  tasks: StorageUtil.get('roomia_tasks', normalizedInitialTasks),
   documents: StorageUtil.get('roomia_docs', INITIAL_DOCS),
 
   setCurrentCity: (city) => {
@@ -63,6 +69,31 @@ export const useRoomiaStore = create((set, get) => ({
     const updated = [...get().expenses, expense];
     StorageUtil.set('roomia_expenses', updated);
     set({ expenses: updated });
+  },
+
+  addTask: (task) => {
+    const updated = [...get().tasks, task];
+    StorageUtil.set('roomia_tasks', updated);
+    set({ tasks: updated });
+  },
+
+  updateTaskStatus: (taskId, newStatus) => {
+    const updated = get().tasks.map(t => t.id === taskId ? {
+      ...t,
+      status: newStatus,
+      completed: newStatus === 'done'
+    } : t);
+    StorageUtil.set('roomia_tasks', updated);
+    set({ tasks: updated });
+  },
+
+  updateTaskAssignee: (taskId, newAssignee) => {
+    const updated = get().tasks.map(t => t.id === taskId ? {
+      ...t,
+      assignee: newAssignee
+    } : t);
+    StorageUtil.set('roomia_tasks', updated);
+    set({ tasks: updated });
   },
 
   randomizeTasks: () => {
