@@ -59,12 +59,5 @@ export function formatMoney(amount, currencyCode) {
 
 export const INITIAL_INGREDIENTS = [];
 export const INITIAL_EXPENSES = [];
-
-export const INITIAL_TASKS = [
-  { id: 1, title: 'Cocinar Cena de Bienvenida', assignee: 'Alex', freq: 'Semanal', status: 'done', completed: true },
-  { id: 2, title: 'Lavar Platos y Alacena', assignee: 'Sam', freq: 'Diario', status: 'in_progress', completed: false },
-  { id: 3, title: 'Surtir Refrigerador', assignee: 'Alex', freq: 'Semanal', status: 'todo', completed: false },
-  { id: 4, title: 'Limpiar Sala y Áreas Comunes', assignee: 'Sam', freq: 'Quincenal', status: 'todo', completed: false }
-];
-
+export const INITIAL_TASKS = [];
 export const INITIAL_DOCS = [];

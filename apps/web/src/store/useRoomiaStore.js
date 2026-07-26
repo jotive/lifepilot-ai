@@ -1,12 +1,5 @@
 import { create } from 'zustand';
 import { StorageUtil } from '../utils/storage.util';
-import { INITIAL_INGREDIENTS, INITIAL_EXPENSES, INITIAL_TASKS, INITIAL_DOCS } from '../config/constants';
-
-// Normalize initial tasks to have status property for Kanban
-const normalizedInitialTasks = INITIAL_TASKS.map(t => ({
-  ...t,
-  status: t.status || (t.completed ? 'done' : 'todo')
-}));
 
 export const useRoomiaStore = create((set, get) => ({
   currentCity: StorageUtil.getString('roomia_city', 'Ciudad de México'),
@@ -19,7 +12,7 @@ export const useRoomiaStore = create((set, get) => ({
 
   ingredients: StorageUtil.get('roomia_ingredients', []),
   expenses: StorageUtil.get('roomia_expenses', []),
-  tasks: StorageUtil.get('roomia_tasks', normalizedInitialTasks),
+  tasks: StorageUtil.get('roomia_tasks', []),
   documents: StorageUtil.get('roomia_docs', []),
 
   setCurrentCity: (city) => {
