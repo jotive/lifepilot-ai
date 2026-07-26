@@ -131,6 +131,19 @@ export const useRoomiaStore = create((set, get) => ({
     set({ documents: updated });
   },
 
+  clearUserDataForNewAccount: () => {
+    StorageUtil.set('roomia_ingredients', []);
+    StorageUtil.set('roomia_expenses', []);
+    StorageUtil.set('roomia_tasks', []);
+    StorageUtil.set('roomia_docs', []);
+    set({
+      ingredients: [],
+      expenses: [],
+      tasks: [],
+      documents: []
+    });
+  },
+
   clearAllAppData: () => {
     StorageUtil.clear();
     set({

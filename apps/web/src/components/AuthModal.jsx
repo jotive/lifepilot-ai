@@ -6,7 +6,7 @@ import { SUPPORTED_CITIES, getCityCurrency } from '../config/constants';
 
 export function AuthModal() {
   const { user, isAuthModalOpen, setIsAuthModalOpen, login, register, logout } = useAuthStore();
-  const { currentCity, setCurrentCity, setCurrencyOverride, mode: appMode, setMode: setAppMode } = useRoomiaStore();
+  const { currentCity, setCurrentCity, setCurrencyOverride, mode: appMode, setMode: setAppMode, clearUserDataForNewAccount } = useRoomiaStore();
   const { addToast } = useToastStore();
 
   const [formMode, setFormMode] = useState('login'); // 'login' or 'register'
@@ -30,6 +30,7 @@ export function AuthModal() {
     } else if (formMode === 'register') {
       if (!email || !password) return;
       register(name, email, password);
+      clearUserDataForNewAccount(); // Clear sample data for fresh account
       setCurrentCity(selectedCity);
       const defaultCurr = getCityCurrency(selectedCity);
       setCurrencyOverride(defaultCurr.code);
