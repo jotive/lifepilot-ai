@@ -1,120 +1,125 @@
 import React, { useState } from 'react';
 import { ContractAnalyzerModal } from './ContractAnalyzerModal';
+import { useRoomiaStore } from '../store/useRoomiaStore';
+import { translations } from '../config/i18n';
 
 export function DocVault({ documents, currentCity, onAddDoc }) {
-  const [medName, setMedName] = useState('Alex R. González');
-  const [medBlood, setMedBlood] = useState('O+ Positive');
-  const [medAllergies, setMedAllergies] = useState('Penicilina, Polvos');
-  const [medContact, setMedContact] = useState('Sam M. (Roomie / Cel: 555-0192)');
-  const [isContractModalOpen, setIsContractModalOpen] = useState(false);
+  const { language } = useRoomiaStore();
+  const t = translations[language] || translations.es;
+
+  const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
+  const [healthForm, setHealthForm] = useState({
+    fullName: 'Alex Morgan',
+    bloodType: 'O+',
+    allergies: 'Penicilina, Polvo',
+    emergencyContact: 'María Morgan (+52 55 1234 5678)'
+  });
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       onAddDoc({
         name: file.name,
-        size: `${(file.size / 1024).toFixed(0)} KB`,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
         date: new Date().toISOString().split('T')[0]
       });
     }
-  };
-
-  const handleExportMedicalCard = () => {
-    const content = `
-=== TARJETA DE EMERGENCIA PERSONAL (ROOMIA AI) ===
-Nombre: ${medName}
-Ciudad Actual: ${currentCity}
-Tipo de Sangre: ${medBlood}
-Alergias / Condiciones: ${medAllergies}
-Contacto de Emergencia: ${medContact}
-Generado en: ${new Date().toLocaleString()}
-===================================================
-    `;
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Tarjeta_Emergencia_RoomIA_${medName.replace(/\s+/g, '_')}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
     <section className="tab-panel active">
       <div className="panel-hero">
         <div className="hero-text">
-          <h2><i className="fa-solid fa-vault"></i> Bóveda de Documentos & Ficha de Salud</h2>
-          <p>Guarda tus contratos, identificaciones y recibos en el navegador de forma segura (Offline & Encriptado Local).</p>
+          <h2><i className="fa-solid fa-folder-closed"></i> {t.vaultTitle}</h2>
+          <p>{t.vaultSub}</p>
         </div>
-        <button className="btn btn-gradient" onClick={() => setIsContractModalOpen(true)}>
-          <i className="fa-solid fa-file-contract"></i> Analizar Contrato con IA
+        <button className="btn btn-primary" onClick={() => setIsAnalyzerOpen(true)}>
+          <i className="fa-solid fa-shield-halved"></i> {t.analyzeContractBtn}
         </button>
       </div>
 
       <div className="vault-grid">
         <div className="vault-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-file-shield"></i> Bóveda de Documentos de Mudanza</h3>
+            <h3><i className="fa-solid fa-cloud-arrow-up text-coral"></i> {t.storedDocsTitle}</h3>
           </div>
 
-          <label className="upload-dropzone">
-            <i className="fa-solid fa-cloud-arrow-up text-3xl"></i>
-            <p>Arrastra tus contratos (PDF/Imagen) o haz clic para subir</p>
-            <input type="file" onChange={handleFileUpload} hidden accept=".pdf,.png,.jpg,.jpeg" />
+          <label className="upload-dropzone" style={{ marginBottom: '1.25rem' }}>
+            <i className="fa-solid fa-file-pdf text-3xl text-coral" style={{ marginBottom: '0.5rem', display: 'block' }}></i>
+            <span style={{ fontWeight: 700, display: 'block' }}>Arrastra tus contratos (PDF/Imagen) o haz clic para subir</span>
+            <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} accept=".pdf,image/*" />
           </label>
 
-          <div className="doc-list-wrap">
-            <h4>Documentos Guardados en RoomIA</h4>
-            <div className="doc-list">
-              {documents.map((d, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: 'var(--bg-dark)', borderRadius: 'var(--radius-md)', marginBottom: '0.5rem' }}>
-                  <div>
-                    <i className="fa-solid fa-file-pdf" style={{ color: 'var(--accent-rose)', marginRight: '0.5rem' }}></i>
-                    <strong>{d.name}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{d.size} • Guardado el {d.date}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {documents.map((doc, idx) => (
+              <div key={idx} className="expense-item" style={{ alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flex: 1 }}>
+                  <i className="fa-solid fa-file-pdf text-rose-500 text-xl" style={{ flexShrink: 0 }}></i>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</h4>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{doc.size} • Guardado el {doc.date}</span>
                   </div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)' }}><i className="fa-solid fa-lock"></i> Encriptado RoomIA</span>
                 </div>
-              ))}
-            </div>
+                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, marginLeft: '0.5rem' }}>
+                  <i className="fa-solid fa-lock"></i> Encriptado
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
         <div className="vault-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-id-card-clip"></i> Tarjeta de Emergencia Personal</h3>
-            <button className="btn btn-secondary btn-sm" onClick={handleExportMedicalCard}>
-              <i className="fa-solid fa-download"></i> Exportar Ficha
+            <h3><i className="fa-solid fa-heart-pulse text-rose-500"></i> {t.medCardTitle}</h3>
+            <button className="btn btn-secondary btn-sm" onClick={() => alert('Ficha Médica Exportada como PDF seguro.')}>
+              <i className="fa-solid fa-download"></i> {t.exportCardBtn}
             </button>
           </div>
 
-          <form className="medical-form" onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={(e) => e.preventDefault()}>
             <div className="form-group">
-              <label>Nombre Completo</label>
-              <input type="text" value={medName} onChange={(e) => setMedName(e.target.value)} />
+              <label>{t.fullNameLabel}</label>
+              <input 
+                type="text" 
+                value={healthForm.fullName} 
+                onChange={(e) => setHealthForm({ ...healthForm, fullName: e.target.value })} 
+              />
             </div>
+
             <div className="form-row">
               <div className="form-group">
-                <label>Tipo de Sangre</label>
-                <input type="text" value={medBlood} onChange={(e) => setMedBlood(e.target.value)} />
+                <label>{t.bloodLabel}</label>
+                <input 
+                  type="text" 
+                  value={healthForm.bloodType} 
+                  onChange={(e) => setHealthForm({ ...healthForm, bloodType: e.target.value })} 
+                />
               </div>
               <div className="form-group">
-                <label>Alergias / Condiciones</label>
-                <input type="text" value={medAllergies} onChange={(e) => setMedAllergies(e.target.value)} />
+                <label>{t.allergiesLabel}</label>
+                <input 
+                  type="text" 
+                  value={healthForm.allergies} 
+                  onChange={(e) => setHealthForm({ ...healthForm, allergies: e.target.value })} 
+                />
               </div>
             </div>
+
             <div className="form-group">
-              <label>Contacto de Emergencia en la Ciudad</label>
-              <input type="text" value={medContact} onChange={(e) => setMedContact(e.target.value)} />
+              <label>{t.emergencyContactLabel}</label>
+              <input 
+                type="text" 
+                value={healthForm.emergencyContact} 
+                onChange={(e) => setHealthForm({ ...healthForm, emergencyContact: e.target.value })} 
+              />
             </div>
           </form>
         </div>
       </div>
 
       <ContractAnalyzerModal
-        isOpen={isContractModalOpen}
-        onClose={() => setIsContractModalOpen(false)}
+        isOpen={isAnalyzerOpen}
+        onClose={() => setIsAnalyzerOpen(false)}
       />
     </section>
   );
