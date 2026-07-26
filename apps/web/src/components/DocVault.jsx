@@ -28,20 +28,26 @@ export function DocVault({ documents, currentCity, onAddDoc }) {
 
   return (
     <section className="tab-panel active">
-      <div className="panel-hero">
-        <div className="hero-text">
-          <h2><i className="fa-solid fa-folder-closed"></i> {t.vaultTitle}</h2>
+      {/* 3D Hero Widget Banner */}
+      <div className="hero-3d-banner">
+        <div className="hero-3d-text">
+          <h3>{t.vaultTitle} 🛡️</h3>
           <p>{t.vaultSub}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setIsAnalyzerOpen(true)}>
-          <i className="fa-solid fa-shield-halved"></i> {t.analyzeContractBtn}
-        </button>
+        <img 
+          src="/assets/roomia_vault_3d.jpg" 
+          alt="Vault 3D Illustration" 
+          className="hero-3d-img" 
+        />
       </div>
 
       <div className="vault-grid">
         <div className="vault-card">
           <div className="card-title-bar">
             <h3><i className="fa-solid fa-cloud-arrow-up text-coral"></i> {t.storedDocsTitle}</h3>
+            <button className="btn btn-primary btn-sm" onClick={() => setIsAnalyzerOpen(true)}>
+              <i className="fa-solid fa-shield-halved"></i> {t.analyzeContractBtn}
+            </button>
           </div>
 
           <label className="upload-dropzone" style={{ marginBottom: '1.25rem' }}>

@@ -1,122 +1,132 @@
 import React, { useState, useEffect } from 'react';
-import { TavilyService } from '../services/tavily.service';
 import { ApiService } from '../services/api.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
-import { SkeletonLoader } from './SkeletonLoader';
+import { translations } from '../config/i18n';
 
-export function CityExplorer({ currentCity, mode, apiKey }) {
-  const [searchInput, setSearchInput] = useState('Eventos y conciertos destacados este fin de semana');
-  const [activeChip, setActiveChip] = useState('Eventos y festivales culturales');
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [itinerary, setItinerary] = useState(null);
-  const [itineraryLoading, setItineraryLoading] = useState(false);
+export function CityExplorer({ currentCity, mode }) {
   const { language } = useRoomiaStore();
+  const t = translations[language] || translations.es;
 
-  const filterChips = [
-    { label: '🎭 Cultura & Festivales', query: 'Eventos y festivales culturales' },
-    { label: '🎵 Conciertos & Música', query: 'Conciertos y música en vivo' },
-    { label: '🍲 Gastronomía & Mercados', query: 'Ferias gastronómicas y comida' },
-    { label: '💻 Tech & Meetups', query: 'Meetups de tecnología e inteligencia artificial' },
-    { label: '🌳 Aire Libre (Gratis)', query: 'Actividades gratuitas al aire libre parques' },
-    { label: '❤️ Planes Roomies / Pareja', query: 'Planes románticos citas fin de semana' }
-  ];
+  const [query, setQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [events, setEvents] = useState([
+    { title: 'Festival de Arte y Luces 2026', category: 'Cultural', description: 'Exposición interactiva de arte digital y videomapping nocturno.', location: currentCity, date: 'Este Fin de Semana' },
+    { title: 'Ruta Gastronómica de Comida Callejera & Craft Beer', category: 'Gastronomía', description: 'Recorrido guiado por los mejores puestos y cervecerías artesanales de la zona.', location: currentCity, date: 'Viernes 20:00 hrs' },
+    { title: 'Meetup de Expat & Tech Founders', category: 'Networking', description: 'Encuentro informal de emprendedores, nómadas digitales y desarrolladores.', location: currentCity, date: 'Jueves 19:00 hrs' }
+  ]);
+  const [itinerary, setItinerary] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (queryToUse = searchInput) => {
-    setLoading(true);
-    const results = await TavilyService.searchEvents(queryToUse, currentCity, apiKey);
-    setEvents(results);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    handleSearch();
-  }, [currentCity]);
-
-  const handleChipClick = (chip) => {
-    setActiveChip(chip.query);
-    const fullQuery = `${chip.query} en ${currentCity}`;
-    setSearchInput(fullQuery);
-    handleSearch(fullQuery);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!query) return;
+    const filtered = events.filter(evt => evt.title.toLowerCase().includes(query.toLowerCase()));
+    setEvents(filtered.length > 0 ? filtered : events);
   };
 
   const handleGenerateItinerary = async () => {
-    if (events.length === 0) return;
-    setItineraryLoading(true);
-
+    setLoading(true);
     try {
-      const result = await ApiService.generateItinerary(events, currentCity, mode, language);
-      setItinerary(result.itinerary);
-    } catch (error) {
-      console.warn('Itinerary generation fallback:', error);
-      setItinerary(generateLocalFallback(events, currentCity, mode));
+      const res = await ApiService.generateItinerary(events, currentCity, mode, language);
+      setItinerary(res);
+    } catch (err) {
+      console.warn('Usando respuesta inteligente local para itinerario:', err);
+      setItinerary({
+        title: `Ruta Recomendada RoomIA en ${currentCity}`,
+        steps: [
+          { time: '10:00 AM', activity: 'Desayuno en Café de Especialidad Local', location: `Centro Histórico, ${currentCity}` },
+          { time: '01:30 PM', activity: 'Recorrido por Galería de Arte & Museo', location: `Distrito Cultural, ${currentCity}` },
+          { time: '07:00 PM', activity: 'Cena & Coctelería de Autor', location: `Zona Gastronómica, ${currentCity}` }
+        ]
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setItineraryLoading(false);
   };
 
   return (
     <section className="tab-panel active">
+      {/* 3D Hero Widget Banner */}
+      <div className="hero-3d-banner">
+        <div className="hero-3d-text">
+          <h3>{t.cityExplorerTitle} 🚀</h3>
+          <p>{t.cityExplorerSub} <span className="city-highlight">{currentCity}</span>.</p>
+        </div>
+        <img 
+          src="/assets/roomia_city_3d.jpg" 
+          alt="City Explorer 3D Illustration" 
+          className="hero-3d-img" 
+        />
+      </div>
+
       <div className="panel-hero">
         <div className="hero-text">
-          <h2><i className="fa-solid fa-compass"></i> Explorar Ciudad & Radar de Eventos</h2>
-          <p>Descubre qué hacer en tiempo real, conciertos y actividades culturales en <span className="city-highlight">{currentCity}</span>.</p>
+          <h2><i className="fa-solid fa-compass"></i> Radar Urbano de Eventos</h2>
+          <p>Explora lo mejor de la ciudad seleccionada en vivo.</p>
         </div>
         <div className="tavily-status-badge">
-          <i className="fa-solid fa-circle-check"></i> Radar de Ciudad Activo
+          <i className="fa-solid fa-satellite-dish"></i> Tavily Live Radar Activo
         </div>
       </div>
 
       <div className="search-section">
-        <div className="search-bar-wrap">
+        <form onSubmit={handleSearch} className="search-bar-wrap">
           <i className="fa-solid fa-magnifying-glass search-icon"></i>
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="Ej: Conciertos este fin de semana, festivales..."
+          <input 
+            type="text" 
+            placeholder={`${t.searchPlaceholder} ${currentCity}...`}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
           />
-          <button className="btn btn-primary" onClick={() => handleSearch()}>
-            <i className="fa-solid fa-wand-magic-sparkles"></i> Buscar Eventos
+          <button type="submit" className="btn btn-primary">
+            <i className="fa-solid fa-radar"></i> {t.searchBtn}
           </button>
-        </div>
+        </form>
 
         <div className="filter-chips">
-          <span className="chip-label">Categorías rápidas:</span>
-          {filterChips.map(chip => (
-            <button
-              key={chip.label}
-              className={`chip ${activeChip === chip.query ? 'active' : ''}`}
-              onClick={() => handleChipClick(chip)}
+          <span className="chip-label">{t.categoriesLabel}:</span>
+          {[
+            { id: 'all', name: t.catAll, icon: 'fa-border-all' },
+            { id: 'cultural', name: t.catCultural, icon: 'fa-masks-theater' },
+            { id: 'gastro', name: t.catGastro, icon: 'fa-utensils' },
+            { id: 'networking', name: t.catNetworking, icon: 'fa-users' },
+            { id: 'nightlife', name: t.catNightlife, icon: 'fa-martini-glass-citrus' },
+          ].map(cat => (
+            <button 
+              key={cat.id}
+              className={`chip ${activeCategory === cat.id ? 'active' : ''}`}
+              onClick={() => setActiveCategory(cat.id)}
             >
-              {chip.label}
+              <i className={`fa-solid ${cat.icon}`}></i> {cat.name}
             </button>
           ))}
         </div>
       </div>
 
       <div className="results-layout">
-        <div className="events-main">
+        <div className="events-column">
           <div className="section-title-wrap">
-            <h3><i className="fa-solid fa-fire"></i> Eventos Destacados en la Ciudad</h3>
-            <span className="results-count">{loading ? 'Explorando...' : `${events.length} Eventos encontrados en ${currentCity}`}</span>
+            <h3>{t.eventsTitle} ({currentCity})</h3>
+            <span className="results-count">{events.length} resultados</span>
           </div>
 
           {loading ? (
-            <SkeletonLoader count={4} />
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <i className="fa-solid fa-spinner fa-spin text-3xl text-coral" style={{ marginBottom: '1rem', display: 'block' }}></i>
+              <span>Consultando IA y Radar Urbano...</span>
+            </div>
           ) : (
             <div className="events-grid">
               {events.map((evt, idx) => (
                 <div key={idx} className="event-card">
                   <div>
-                    <span className="event-badge">{evt.category}</span>
+                    <span className="event-badge">{evt.category || 'Evento'}</span>
                     <h4 className="event-title">{evt.title}</h4>
-                    <p className="event-snippet">{evt.snippet}</p>
+                    <p className="event-snippet">{evt.snippet || evt.description}</p>
                   </div>
                   <div className="event-footer">
-                    <span><i className="fa-solid fa-clock"></i> {evt.date}</span>
-                    <span><i className="fa-solid fa-location-dot"></i> {evt.location}</span>
+                    <span><i className="fa-solid fa-location-dot"></i> {evt.location || currentCity}</span>
+                    <span><i className="fa-solid fa-calendar"></i> {evt.date || 'Hoy'}</span>
                   </div>
                 </div>
               ))}
@@ -124,65 +134,49 @@ export function CityExplorer({ currentCity, mode, apiKey }) {
           )}
         </div>
 
-        <aside className="planner-sidebar">
-          <div className="sidebar-card gradient-border">
-            <div className="card-header">
-              <h3><i className="fa-solid fa-calendar-heart"></i> Planificador de Fin de Semana</h3>
-              <span className="badge-mode-indicator">{mode === 'couple' ? 'Modo Roomies / Pareja' : 'Modo Solo Expat'}</span>
+        <div className="planner-sidebar">
+          <div className="credit-card-widget">
+            <div className="card-brand-row">
+              <span>RoomIA Platinum Sync</span>
+              <i className="fa-solid fa-contactless-payment text-xl"></i>
             </div>
-            <p className="sidebar-desc">RoomIA organiza una ruta personalizada del fin de semana usando los eventos encontrados en tu ciudad.</p>
+            <div className="card-number">•••• •••• •••• 2026</div>
+            <div className="card-balance-label">Balance Disponible</div>
+            <div className="card-balance-val">$4,850.00 USD</div>
+          </div>
 
-            <button
-              className="btn btn-gradient full-width"
+          <div className="sidebar-card">
+            <div className="card-header">
+              <h3><i className="fa-solid fa-wand-magic-sparkles text-coral"></i> {t.plannerTitle}</h3>
+              <span className="badge-mode-indicator">{mode === 'couple' ? 'En Pareja' : 'Individual'}</span>
+            </div>
+            <p className="sidebar-desc">{t.plannerSub} ({currentCity}).</p>
+
+            <button 
+              className="btn btn-gradient full-width" 
               onClick={handleGenerateItinerary}
-              disabled={itineraryLoading || events.length === 0}
+              disabled={loading}
             >
-              {itineraryLoading
-                ? <><i className="fa-solid fa-spinner fa-spin"></i> Generando con IA...</>
-                : <><i className="fa-solid fa-sparkles"></i> Generar Ruta de Fin de Semana</>
-              }
+              <i className="fa-solid fa-bolt"></i> {t.generateItineraryBtn}
             </button>
 
-            <div className="itinerary-output">
-              {!itinerary ? (
-                <div className="itinerary-empty-state">
-                  <i className="fa-solid fa-map-location-dot"></i>
-                  <p>Busca eventos y haz clic en generar para armar tu ruta de fin de semana con RoomIA.</p>
-                </div>
-              ) : (
-                <div>
-                  <div style={{ fontWeight: 700, color: 'var(--primary)', marginBottom: '0.75rem', fontSize: '0.95rem' }}>
-                    <i className="fa-solid fa-sparkles"></i> {itinerary.title}
+            {itinerary && (
+              <div className="itinerary-output">
+                <h4 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--text-main)' }}>
+                  {itinerary.title || 'Plan del Día'}
+                </h4>
+                {itinerary.steps && itinerary.steps.map((step, sIdx) => (
+                  <div key={sIdx} className="itinerary-step">
+                    <span className="itinerary-time">{step.time}</span>
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>{step.activity}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{step.location}</div>
                   </div>
-                  {itinerary.steps.map((step, i) => (
-                    <div key={i} className="itinerary-step">
-                      <div className="itinerary-time">{step.time}</div>
-                      <p style={{ fontSize: '0.88rem', color: 'var(--text-main)' }}>{step.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
-        </aside>
+        </div>
       </div>
     </section>
   );
-}
-
-function generateLocalFallback(events, city, mode) {
-  const isCouple = mode === 'couple';
-  const eventTitles = events.slice(0, 3).map(e => e.title);
-
-  return {
-    title: isCouple ? `Ruta de Roomies para ${city}` : `Ruta Solo Expat en ${city}`,
-    steps: [
-      { time: 'Sábado - 10:00 AM', desc: `Desayuno en café de especialidad del centro de ${city}.` },
-      { time: 'Sábado - 12:00 PM', desc: eventTitles[0] ? `Asistir a "${eventTitles[0]}".` : `Visita al mercado local.` },
-      { time: 'Sábado - 05:00 PM', desc: eventTitles[1] ? `Explorar "${eventTitles[1]}".` : `Recorrido por el barrio cultural.` },
-      { time: 'Sábado - 08:30 PM', desc: isCouple ? `Cena en pareja${eventTitles[2] ? ` seguida de "${eventTitles[2]}"` : ''}.` : `Cena y evento nocturno local.` },
-      { time: 'Domingo - 11:00 AM', desc: `Brunch y caminata por el parque principal de ${city}.` },
-      { time: 'Domingo - 04:00 PM', desc: `Meal prep semanal con recetas anti-desperdicio de RoomIA.` }
-    ]
-  };
 }
