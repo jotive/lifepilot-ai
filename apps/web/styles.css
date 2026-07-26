@@ -1,10 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* ==========================================================================
-   RoomIA — Neo-Claymorphic & Warm Light Design System
-   Fixed Non-Stretching Sidebar & Bottom Mobile App Dock (No Layout Overlaps)
+   RoomIA — Self-Contained Neo-Claymorphic & Micro-Interactive Design System
+   Guaranteed 100% CSS Compatibility with Pure Animations & Rich Aesthetics
    ========================================================================== */
 
 :root {
@@ -15,7 +11,7 @@
   --bg-input: #f1f5f9;
   
   --primary: #ff6b4a;
-  --primary-hover: #f05432;
+  --primary-hover: #e05334;
   --secondary: #ff9f43;
   --accent-cyan: #0ea5e9;
   --accent-indigo: #6366f1;
@@ -27,8 +23,8 @@
   --text-muted: #64748b;
   --text-subtle: #94a3b8;
 
-  --border-light: rgba(226, 232, 240, 0.8);
-  --border-glow: rgba(255, 107, 74, 0.3);
+  --border-light: #e2e8f0;
+  --border-glow: rgba(255, 107, 74, 0.35);
 
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -108,6 +104,7 @@ body {
   font-size: 1.35rem;
   box-shadow: 0 6px 16px rgba(255, 107, 74, 0.35);
   flex-shrink: 0;
+  animation: pulseGlow 3s infinite alternate;
 }
 
 .sidebar-nav-list {
@@ -134,7 +131,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition-fast);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
   padding: 0;
   line-height: 1;
@@ -146,15 +143,16 @@ body {
 }
 
 .sidebar-nav-item:hover {
-  background: #f1f5f9;
+  background: #fff5f2;
   color: var(--primary);
+  transform: translateY(-2px) scale(1.08);
 }
 
 .sidebar-nav-item.active {
   background: var(--primary);
   color: #ffffff;
-  box-shadow: 0 6px 18px rgba(255, 107, 74, 0.35);
-  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(255, 107, 74, 0.4);
+  transform: scale(1.08);
 }
 
 /* Main Canvas Body */
@@ -235,6 +233,7 @@ body {
   text-transform: uppercase;
   display: inline-block;
   vertical-align: middle;
+  box-shadow: 0 2px 8px rgba(255, 107, 74, 0.3);
 }
 
 .tagline { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
@@ -264,6 +263,7 @@ body {
 .city-selector-btn:hover {
   border-color: var(--primary);
   background: #fff5f2;
+  transform: translateY(-1px);
 }
 
 .city-selector-btn i:first-child { color: var(--primary); }
@@ -310,17 +310,22 @@ body {
   transition: var(--transition-fast);
 }
 
-.icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+.icon-btn:hover { border-color: var(--primary); color: var(--primary); transform: rotate(45deg); }
 
-/* Panels Layout */
+/* Panels Layout & Keyframe Animations */
 .main-content { flex: 1; }
 
-.tab-panel { display: none; animation: fadeIn var(--transition-normal); }
+.tab-panel { display: none; animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
 .tab-panel.active { display: block; }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 6px 16px rgba(255, 107, 74, 0.35); }
+  100% { box-shadow: 0 10px 24px rgba(255, 107, 74, 0.6); }
 }
 
 .panel-hero {
@@ -371,7 +376,9 @@ body {
   margin-bottom: 1.5rem;
   border: 1px solid #ffe2d9;
   box-shadow: 0 10px 30px rgba(255, 107, 74, 0.06);
+  transition: transform 0.3s ease;
 }
+.hero-3d-banner:hover { transform: translateY(-2px); }
 
 .hero-3d-text { max-width: 55%; }
 .hero-3d-text h3 { font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--text-main); line-height: 1.25; margin-bottom: 0.6rem; }
@@ -383,9 +390,11 @@ body {
   border-radius: 22px;
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
+.hero-3d-img:hover { transform: scale(1.03); }
 
-/* Buttons */
+/* Buttons & Tactile Feedback */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -397,8 +406,10 @@ body {
   font-size: 0.95rem;
   cursor: pointer;
   border: none;
-  transition: var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+.btn:active { transform: scale(0.96); }
 
 .btn-primary { 
   background: var(--primary);
@@ -408,7 +419,7 @@ body {
 .btn-primary:hover { 
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 107, 74, 0.45); 
+  box-shadow: 0 10px 25px rgba(255, 107, 74, 0.45); 
 }
 
 .btn-gradient { 
@@ -418,7 +429,7 @@ body {
 }
 .btn-gradient:hover { 
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 107, 74, 0.45); 
+  box-shadow: 0 10px 25px rgba(255, 107, 74, 0.45); 
 }
 
 .btn-secondary { 
@@ -428,6 +439,7 @@ body {
 }
 .btn-secondary:hover { 
   background: #f1f5f9; 
+  transform: translateY(-1px);
 }
 
 .btn-sm { padding: 0.4rem 0.9rem; font-size: 0.85rem; }
@@ -483,9 +495,9 @@ input:focus, select:focus {
   font-size: 0.85rem; 
   font-weight: 600;
   cursor: pointer; 
-  transition: var(--transition-fast); 
+  transition: all 0.2s ease; 
 }
-.chip:hover { background: #f1f5f9; color: var(--text-main); }
+.chip:hover { background: #f1f5f9; color: var(--text-main); transform: translateY(-1px); }
 .chip.active { 
   background: rgba(255, 107, 74, 0.12); 
   border-color: var(--primary); 
@@ -510,12 +522,12 @@ input:focus, select:focus {
   justify-content: space-between; 
   gap: 1rem; 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  transition: var(--transition-fast); 
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); 
 }
 .event-card:hover { 
-  transform: translateY(-4px); 
+  transform: translateY(-5px); 
   border-color: rgba(255, 107, 74, 0.3); 
-  box-shadow: 0 16px 40px rgba(255, 107, 74, 0.12); 
+  box-shadow: 0 18px 45px rgba(255, 107, 74, 0.12); 
 }
 
 .event-badge { 
@@ -556,7 +568,10 @@ input:focus, select:focus {
   color: #ffffff;
   margin-bottom: 1.25rem;
   box-shadow: 0 12px 28px rgba(49, 46, 129, 0.3);
+  transition: transform 0.3s ease;
 }
+.credit-card-widget:hover { transform: scale(1.02); }
+
 .card-brand-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; opacity: 0.85; margin-bottom: 1rem; }
 .card-number { font-family: var(--font-heading); font-size: 1.1rem; letter-spacing: 0.15em; font-weight: 700; margin-bottom: 0.5rem; }
 .card-balance-label { font-size: 0.75rem; opacity: 0.75; }
@@ -715,181 +730,25 @@ input:focus, select:focus {
   .form-row { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 768px) {
-  .main-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.6rem;
-    padding-bottom: 0.75rem;
+@media (max-width: 640px) {
+  .logo-text h1 {
+    font-size: 1.35rem;
   }
-
-  .header-brand {
-    justify-content: space-between;
-    width: 100%;
+  .tagline {
+    display: none;
   }
-
-  .header-controls {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.5rem;
+  .main-header { 
+    flex-direction: row;
     align-items: center;
+    justify-content: space-between;
   }
-
-  .city-selector-btn {
-    padding: 0.5rem 0.9rem;
-    font-size: 0.82rem;
-    grid-column: 1;
+  .header-controls { 
+    gap: 0.4rem;
   }
-
   .city-selector-btn span {
-    max-width: 110px;
+    max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
-  .header-controls select {
-    width: auto;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
-    grid-column: 2;
-  }
-
-  .mode-toggle-group {
-    grid-column: 1 / -1;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .mode-btn {
-    flex: 1;
-    justify-content: center;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.8rem;
-  }
-
-  .mode-btn span { font-size: 0.78rem; }
-
-  .header-controls .btn-secondary.btn-sm {
-    padding: 0.45rem;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-full);
-    font-size: 0;
-    gap: 0;
-  }
-
-  .header-controls .btn-secondary.btn-sm i {
-    font-size: 1rem;
-    margin: 0;
-  }
-
-  .pair-label { display: none; }
-
-  .icon-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  /* Hero banner compact */
-  .hero-3d-banner {
-    padding: 1rem;
-    border-radius: 20px;
-  }
-
-  .hero-3d-text h3 {
-    font-size: clamp(1.1rem, 5vw, 1.6rem);
-    margin-bottom: 0.3rem;
-  }
-
-  .hero-3d-text p {
-    font-size: 0.85rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .panel-hero {
-    margin-bottom: 1rem;
-  }
-
-  .hero-text p {
-    font-size: 0.85rem;
-  }
-
-  /* Search section compact */
-  .search-section {
-    padding: 1rem;
-    border-radius: 18px;
-    margin-bottom: 1rem;
-  }
-
-  .search-bar-wrap {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .search-bar-wrap input { padding-left: 1rem; }
-  .search-icon { display: none; }
-
-  .filter-chips { gap: 0.35rem; }
-  .chip { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
-  .chip-label { display: none; }
-
-  /* Cards compact */
-  .card-title-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .card-title-bar h3 { font-size: 1.05rem; }
-  .section-title-wrap h3 { font-size: 1.1rem; }
-
-  .relocation-card, .kitchen-card, .expense-card, .vault-card {
-    padding: 1.1rem;
-    border-radius: 20px;
-  }
-}
-
-@media (max-width: 640px) {
-  .logo-text h1 {
-    font-size: 1.25rem;
-  }
-
-  .header-brand {
-    gap: 0.5rem;
-  }
-
-  .tagline {
-    display: none;
-  }
-
-  .badge-ai {
-    font-size: 0.65rem;
-    padding: 2px 7px;
-  }
-
-  .mode-btn span { display: none; }
-  .mode-btn { padding: 0.5rem 0.9rem; }
-
-  .city-selector-btn span {
-    max-width: 80px;
-  }
-
-  .hero-3d-text h3 { font-size: 1.1rem; }
-  .hero-3d-text p { font-size: 0.8rem; }
-  .hero-3d-img { height: 120px; }
-
-  .calc-total-box {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.5rem;
-  }
-
-  .settlement-summary-box {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .btn { padding: 0.65rem 1.1rem; font-size: 0.88rem; }
-  .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
 }

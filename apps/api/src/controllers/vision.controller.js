@@ -7,14 +7,14 @@ export class VisionController {
   }
 
   async handleFridgeScan(req, res, next) {
-    const { imageBase64, qiroKey } = req.body;
+    const { imageBase64, apiKey } = req.body;
 
     if (!imageBase64) {
       return ResponseUtil.error(res, 'Base64 image payload is required', 400);
     }
 
     try {
-      const result = await this.visionService.processFridgePhoto(imageBase64, qiroKey);
+      const result = await this.visionService.processFridgePhoto(imageBase64, apiKey);
       return ResponseUtil.success(res, result);
     } catch (error) {
       next(error);

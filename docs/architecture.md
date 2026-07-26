@@ -28,7 +28,7 @@ roomIA/
 ## 📦 Separación de Responsabilidades
 
 1. **`apps/web`:** Aplicación Single-Page (SPA) del usuario final. Compila sus artefactos de producción de manera aislada en `apps/web/dist`.
-2. **`apps/api`:** Servidor Express para consumo seguro de APIs (Tavily AI Search, Qiro LLM).
+2. **`apps/api`:** Servidor Express para consumo seguro de APIs (Tavily AI Search, OpenAI Vision & Chat).
 3. **`apps/workers`:** Proceso desacoplado para cron-jobs (notificaciones de caducidad y escrutinio de eventos).
 4. **`packages/shared`:** Módulo reutilizable de definiciones, ciudades soportadas y plantillas.
 5. **`infra/`:** Toda la infraestructura declarativa para AWS (CloudFormation / S3 / Lambda / CloudFront) y contenedores Docker / Docker Compose.

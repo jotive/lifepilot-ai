@@ -2,7 +2,7 @@ import { envConfig } from '../config/env.config.js';
 
 export class RecipeService {
   async generateRecipes(ingredients, mode, language = 'es') {
-    const apiKey = envConfig.qiroApiKey || envConfig.groqApiKey || envConfig.openrouterApiKey;
+    const apiKey = envConfig.openaiApiKey || envConfig.groqApiKey || envConfig.openrouterApiKey;
 
     if (apiKey && apiKey.trim() !== '') {
       try {

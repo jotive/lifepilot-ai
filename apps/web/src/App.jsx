@@ -172,7 +172,7 @@ export function App() {
 
         <footer className="main-footer">
           <div className="footer-content">
-            <p><strong>RoomIA</strong> — Proyecto para el <strong>Hackatón de IA con Qiro (Código Facilito & AWS)</strong>. Creado por <strong>jotive</strong>.</p>
+            <p><strong>RoomIA</strong> — Proyecto para el <strong>Hackatón de IA (Código Facilito & AWS)</strong>. Creado por <strong>jotive</strong>.</p>
           </div>
         </footer>
       </div>

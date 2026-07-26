@@ -2,7 +2,7 @@ import { envConfig } from '../config/env.config.js';
 
 export class ItineraryService {
   async generateItinerary(events, city, mode, language = 'es') {
-    const apiKey = envConfig.qiroApiKey || envConfig.groqApiKey || envConfig.openrouterApiKey;
+    const apiKey = envConfig.openaiApiKey || envConfig.groqApiKey || envConfig.openrouterApiKey;
 
     if (apiKey && apiKey.trim() !== '' && events.length > 0) {
       try {

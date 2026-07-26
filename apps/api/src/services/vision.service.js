@@ -2,7 +2,7 @@ import { settings } from '../config/settings.js';
 
 export class VisionService {
   async processFridgePhoto(imageBase64, userApiKey) {
-    const targetKey = userApiKey || settings.qiroApiKey;
+    const targetKey = userApiKey || settings.openaiApiKey;
 
     if (targetKey) {
       try {
