@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
-import { getCityCurrency } from '../config/constants';
+import { getCityCurrency, formatMoney } from '../config/constants';
 import { exportExpensesToCSV } from '../utils/export.util';
 
 export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, onToggleChore }) {
@@ -9,10 +9,12 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
   const t = translations[language] || translations.es;
   const defaultCurrency = getCityCurrency(currentCity);
   const activeCurrencyCode = currencyOverride || defaultCurrency.code;
+  const currencySymbol = defaultCurrency.symbol;
 
   const [activeSubTab, setActiveSubTab] = useState('kanban'); // 'finances' or 'kanban'
   const [newDesc, setNewDesc] = useState('');
   const [newAmount, setNewAmount] = useState('');
+  const [draggedTaskId, setDraggedTaskId] = useState(null);
 
   // Task creation form state
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -48,6 +50,25 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
 
   const handleExportExpenses = () => {
     exportExpensesToCSV(expenses, currentCity, activeCurrencyCode);
+  };
+
+  // Drag and Drop handlers
+  const handleDragStart = (e, taskId) => {
+    setDraggedTaskId(taskId);
+    e.dataTransfer.setData('text/plain', String(taskId));
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetStatus) => {
+    e.preventDefault();
+    const id = draggedTaskId || Number(e.dataTransfer.getData('text/plain'));
+    if (id) {
+      updateTaskStatus(id, targetStatus);
+      setDraggedTaskId(null);
+    }
   };
 
   const safeExpenses = Array.isArray(expenses) ? expenses : [];
@@ -96,7 +117,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
         </button>
       </div>
 
-      {/* VIEW 1: ORGANIZADOR DE TAREAS */}
+      {/* VIEW 1: ORGANIZADOR DE TAREAS (DRAG & DROP) */}
       {activeSubTab === 'kanban' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Form & AI Action Bar */}
@@ -145,20 +166,35 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
             </form>
           </div>
 
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
+            💡 <em>Tip: Puedes arrastrar y soltar cualquier tarjeta entre las columnas para actualizar su estado.</em>
+          </p>
+
           {/* 3 Columns: Pendiente, En Progreso, Completado */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
             {/* Column 1: PENDIENTES */}
-            <div className="vault-card" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', minHeight: '350px' }}>
+            <div 
+              className="vault-card" 
+              style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', minHeight: '380px' }}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, 'todo')}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '2px solid #cbd5e1', paddingBottom: '0.5rem' }}>
                 <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>
-                  📌 Pendientes ({todoTasks.length})
+                  📌 Por Hacer ({todoTasks.length})
                 </h4>
-                <span className="event-badge" style={{ background: '#e2e8f0', color: 'var(--text-muted)' }}>Por Hacer</span>
+                <span className="event-badge" style={{ background: '#e2e8f0', color: 'var(--text-muted)' }}>Arrastra aquí</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {todoTasks.map((task) => (
-                  <div key={task.id} className="expense-item" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem' }}>
+                  <div 
+                    key={task.id} 
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, task.id)}
+                    className="expense-item" 
+                    style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
+                  >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
                       <span className="event-badge" style={{ background: 'rgba(255, 107, 74, 0.12)', color: 'var(--primary)', fontSize: '0.75rem' }}>
@@ -191,17 +227,28 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
             </div>
 
             {/* Column 2: EN PROGRESO */}
-            <div className="vault-card" style={{ background: '#fffcf5', border: '1px solid #fde68a', minHeight: '350px' }}>
+            <div 
+              className="vault-card" 
+              style={{ background: '#fffcf5', border: '2px dashed #fde68a', minHeight: '380px' }}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, 'in_progress')}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '2px solid #f59e0b', paddingBottom: '0.5rem' }}>
                 <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-amber)', margin: 0 }}>
-                  ⏳ En Progreso ({inProgressTasks.length})
+                  ⏳ Haciendo ({inProgressTasks.length})
                 </h4>
-                <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-amber)' }}>Haciendo</span>
+                <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-amber)' }}>Arrastra aquí</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {inProgressTasks.map((task) => (
-                  <div key={task.id} className="expense-item" style={{ background: '#ffffff', border: '1px solid #fef3c7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem' }}>
+                  <div 
+                    key={task.id} 
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, task.id)}
+                    className="expense-item" 
+                    style={{ background: '#ffffff', border: '1px solid #fef3c7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
+                  >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
                       <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent-amber)', fontSize: '0.75rem' }}>
@@ -235,17 +282,28 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
             </div>
 
             {/* Column 3: COMPLETADAS */}
-            <div className="vault-card" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', minHeight: '350px' }}>
+            <div 
+              className="vault-card" 
+              style={{ background: '#f0fdf4', border: '2px dashed #bbf7d0', minHeight: '380px' }}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, 'done')}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '2px solid #10b981', paddingBottom: '0.5rem' }}>
                 <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--accent-emerald)', margin: 0 }}>
-                  ✅ Completadas ({doneTasks.length})
+                  ✅ Listo ({doneTasks.length})
                 </h4>
-                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)' }}>Listo</span>
+                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)' }}>Arrastra aquí</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {doneTasks.map((task) => (
-                  <div key={task.id} className="expense-item" style={{ background: '#ffffff', border: '1px solid #dcfce7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem' }}>
+                  <div 
+                    key={task.id} 
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, task.id)}
+                    className="expense-item" 
+                    style={{ background: '#ffffff', border: '1px solid #dcfce7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
+                  >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <strong style={{ fontSize: '0.95rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>{task.title}</strong>
                       <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', fontSize: '0.75rem' }}>
@@ -290,8 +348,8 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
               />
               <input 
                 type="number" 
-                placeholder={activeCurrencyCode} 
-                style={{ width: '130px' }}
+                placeholder={`${currencySymbol} ${activeCurrencyCode}`} 
+                style={{ width: '150px' }}
                 value={newAmount}
                 onChange={(e) => setNewAmount(e.target.value)}
               />
@@ -311,7 +369,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                     </div>
                   </div>
                   <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
-                    {(exp.amount || 0).toLocaleString('es-ES')} {activeCurrencyCode}
+                    {currencySymbol}{formatMoney(exp.amount, activeCurrencyCode)} {activeCurrencyCode}
                   </strong>
                 </li>
               ))}
@@ -321,13 +379,13 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
               <i className="fa-solid fa-scale-balanced text-xl"></i>
               <div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  {t.totalExpenseLabel}: <strong>{totalExpenseSum.toLocaleString('es-ES')} {activeCurrencyCode}</strong>
+                  {t.totalExpenseLabel}: <strong>{currencySymbol}{formatMoney(totalExpenseSum, activeCurrencyCode)} {activeCurrencyCode}</strong>
                 </div>
                 <div>
                   {splitBalance > 0 
-                    ? `Tu pareja/roomie te debe ${splitBalance.toLocaleString('es-ES')} ${activeCurrencyCode}` 
+                    ? `Tu pareja/roomie te debe ${currencySymbol}${formatMoney(splitBalance, activeCurrencyCode)} ${activeCurrencyCode}` 
                     : splitBalance < 0 
-                    ? `Debes a tu pareja/roomie ${Math.abs(splitBalance).toLocaleString('es-ES')} ${activeCurrencyCode}` 
+                    ? `Debes a tu pareja/roomie ${currencySymbol}${formatMoney(Math.abs(splitBalance), activeCurrencyCode)} ${activeCurrencyCode}` 
                     : `Cuentas cuadradas al día (0 ${activeCurrencyCode} pendiente)`}
                 </div>
               </div>
