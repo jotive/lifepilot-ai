@@ -23,3 +23,12 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+  - type: worker
+    name: roomia-background-worker
+    env: node
+    buildCommand: cd apps/workers && npm install
+    startCommand: cd apps/workers && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
