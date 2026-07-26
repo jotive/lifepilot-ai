@@ -3,7 +3,7 @@ import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency } from '../config/constants';
 
-export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleChore }) {
+export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, onToggleChore }) {
   const { language, currentCity } = useRoomiaStore();
   const t = translations[language] || translations.es;
   const currency = getCityCurrency(currentCity);
@@ -24,9 +24,12 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
     setNewAmount('');
   };
 
-  const totalExpenseSum = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const alexTotal = expenses.filter(e => e.paidBy === 'Alex').reduce((sum, item) => sum + item.amount, 0);
-  const partnerTotal = expenses.filter(e => e.paidBy !== 'Alex').reduce((sum, item) => sum + item.amount, 0);
+  const safeExpenses = Array.isArray(expenses) ? expenses : [];
+  const safeChores = Array.isArray(chores) ? chores : [];
+
+  const totalExpenseSum = safeExpenses.reduce((sum, item) => sum + (item.amount || 0), 0);
+  const alexTotal = safeExpenses.filter(e => e.paidBy === 'Alex').reduce((sum, item) => sum + (item.amount || 0), 0);
+  const partnerTotal = safeExpenses.filter(e => e.paidBy !== 'Alex').reduce((sum, item) => sum + (item.amount || 0), 0);
   const splitBalance = (alexTotal - partnerTotal) / 2;
 
   return (
@@ -71,17 +74,17 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
           </form>
 
           <ul className="expense-list">
-            {expenses.map((exp, idx) => (
+            {safeExpenses.map((exp, idx) => (
               <li key={idx} className="expense-item">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <i className="fa-solid fa-receipt text-indigo"></i>
                   <div>
                     <strong style={{ display: 'block', fontSize: '0.92rem' }}>{exp.desc}</strong>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy} • {exp.date}</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy || 'Alex'} • {exp.date || 'Hoy'}</span>
                   </div>
                 </div>
                 <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
-                  {currency.symbol}{exp.amount.toLocaleString('es-ES')} {currency.code}
+                  {currency.symbol}{(exp.amount || 0).toLocaleString('es-ES')} {currency.code}
                 </strong>
               </li>
             ))}
@@ -110,8 +113,8 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
-            {chores.map((chore) => (
-              <div key={chore.id} className="expense-item" style={{ cursor: 'pointer' }} onClick={() => onToggleChore(chore.id)}>
+            {safeChores.map((chore) => (
+              <div key={chore.id} className="expense-item" style={{ cursor: 'pointer' }} onClick={() => onToggleChore && onToggleChore(chore.id)}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <input 
                     type="checkbox" 

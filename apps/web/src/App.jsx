@@ -192,9 +192,9 @@ export function App() {
             <HouseholdOps
               mode={mode}
               expenses={expenses}
-              tasks={tasks}
+              chores={tasks}
               onAddExpense={handleAddExpense}
-              onRandomizeTasks={handleRandomizeTasks}
+              onToggleChore={handleRandomizeTasks}
             />
           )}
           {activeTab === 'documents' && (
