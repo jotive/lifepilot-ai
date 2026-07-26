@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
+import { getCityCurrency } from '../config/constants';
 
 export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleChore }) {
-  const { language } = useRoomiaStore();
+  const { language, currentCity } = useRoomiaStore();
   const t = translations[language] || translations.es;
+  const currency = getCityCurrency(currentCity);
 
   const [newDesc, setNewDesc] = useState('');
   const [newAmount, setNewAmount] = useState('');
@@ -33,7 +35,7 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>{t.financesTitle} 💳</h3>
-          <p>{t.financesSub} ({mode === 'couple' ? 'Modo Pareja / Roomies Activo' : 'Modo Individual'}).</p>
+          <p>{t.financesSub} en <span className="city-highlight">{currentCity} ({currency.code})</span>.</p>
         </div>
         <img 
           src="/assets/roomia_finances_3d.jpg" 
@@ -45,7 +47,7 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
       <div className="expenses-layout">
         <div className="expense-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-file-invoice-dollar text-coral"></i> {t.splitTitle}</h3>
+            <h3><i className="fa-solid fa-file-invoice-dollar text-coral"></i> {t.splitTitle} ({currency.code})</h3>
             <span className="badge-mode-indicator">{mode === 'couple' ? '50/50 Equitativo' : 'Individual'}</span>
           </div>
 
@@ -58,8 +60,8 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
             />
             <input 
               type="number" 
-              placeholder="$ USD" 
-              style={{ width: '110px' }}
+              placeholder={`${currency.symbol} ${currency.code}`} 
+              style={{ width: '130px' }}
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}
             />
@@ -78,7 +80,9 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy} • {exp.date}</span>
                   </div>
                 </div>
-                <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>${exp.amount.toFixed(2)} USD</strong>
+                <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
+                  {currency.symbol}{exp.amount.toLocaleString('es-ES')} {currency.code}
+                </strong>
               </li>
             ))}
           </ul>
@@ -86,13 +90,15 @@ export function HouseholdOps({ expenses, chores, mode, onAddExpense, onToggleCho
           <div className="settlement-summary-box">
             <i className="fa-solid fa-scale-balanced text-xl"></i>
             <div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{t.totalExpenseLabel}: <strong>${totalExpenseSum.toFixed(2)} USD</strong></div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                {t.totalExpenseLabel}: <strong>{currency.symbol}{totalExpenseSum.toLocaleString('es-ES')} {currency.code}</strong>
+              </div>
               <div>
                 {splitBalance > 0 
-                  ? `Tu pareja/roomie te debe $${splitBalance.toFixed(2)} USD` 
+                  ? `Tu pareja/roomie te debe ${currency.symbol}${splitBalance.toLocaleString('es-ES')} ${currency.code}` 
                   : splitBalance < 0 
-                  ? `Debes a tu pareja/roomie $${Math.abs(splitBalance).toFixed(2)} USD` 
-                  : 'Cuentas cuadradas al día (0.00 USD pendiente)'}
+                  ? `Debes a tu pareja/roomie ${currency.symbol}${Math.abs(splitBalance).toLocaleString('es-ES')} ${currency.code}` 
+                  : `Cuentas cuadradas al día (0 ${currency.code} pendiente)`}
               </div>
             </div>
           </div>

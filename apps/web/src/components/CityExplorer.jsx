@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { ApiService } from '../services/api.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
+import { getCityCurrency } from '../config/constants';
 
 export function CityExplorer({ currentCity, mode }) {
   const { language } = useRoomiaStore();
   const t = translations[language] || translations.es;
+  const currency = getCityCurrency(currentCity);
 
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
@@ -50,7 +52,7 @@ export function CityExplorer({ currentCity, mode }) {
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>Explora {currentCity} en Tiempo Real 🚀</h3>
-          <p>Eventos culturales, gastronomía y itinerarios inteligentes seleccionados por IA para tu estancia en <span className="city-highlight">{currentCity}</span>.</p>
+          <p>Eventos culturales, gastronomía e itinerarios inteligentes seleccionados por IA para tu estancia en <span className="city-highlight">{currentCity}</span>.</p>
         </div>
         <img 
           src="/assets/roomia_city_3d.jpg" 
@@ -141,8 +143,8 @@ export function CityExplorer({ currentCity, mode }) {
               <i className="fa-solid fa-contactless-payment text-xl"></i>
             </div>
             <div className="card-number">•••• •••• •••• 2026</div>
-            <div className="card-balance-label">Balance Disponible</div>
-            <div className="card-balance-val">$4,850.00 USD</div>
+            <div className="card-balance-label">Balance Disponible ({currency.code})</div>
+            <div className="card-balance-val">{currency.symbol}{currency.defaultCardBalance.toLocaleString('es-ES')} {currency.code}</div>
           </div>
 
           <div className="sidebar-card">

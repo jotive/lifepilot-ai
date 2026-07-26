@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
+import { getCityCurrency } from '../config/constants';
 
 export function RelocationOps({ currentCity }) {
   const { language } = useRoomiaStore();
   const t = translations[language] || translations.es;
+  const currency = getCityCurrency(currentCity);
 
   const [checklist, setChecklist] = useState([
     { id: 1, text: 'Verificar contrato de arrendamiento con IA en RoomIA', category: 'Trámites Iniciales', completed: true },
@@ -14,7 +16,22 @@ export function RelocationOps({ currentCity }) {
     { id: 5, text: 'Configurar mapa de transporte público y rutas de desplazamiento', category: 'Asentamiento Barrio', completed: false }
   ]);
 
-  const [calc, setCalc] = useState({ rent: 850, deposit: 850, utilities: 120, furniture: 400 });
+  const [calc, setCalc] = useState({
+    rent: currency.defaultRent,
+    deposit: currency.defaultDeposit,
+    utilities: currency.defaultUtilities,
+    furniture: currency.defaultFurniture
+  });
+
+  useEffect(() => {
+    const freshCurrency = getCityCurrency(currentCity);
+    setCalc({
+      rent: freshCurrency.defaultRent,
+      deposit: freshCurrency.defaultDeposit,
+      utilities: freshCurrency.defaultUtilities,
+      furniture: freshCurrency.defaultFurniture
+    });
+  }, [currentCity]);
 
   const toggleCheck = (id) => {
     setChecklist(checklist.map(item => item.id === id ? { ...item, completed: !item.completed } : item));
@@ -30,7 +47,7 @@ export function RelocationOps({ currentCity }) {
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>{t.relocationTitle} 📦</h3>
-          <p>{t.relocationSub} <span className="city-highlight">{currentCity}</span>.</p>
+          <p>{t.relocationSub} <span className="city-highlight">{currentCity} ({currency.code})</span>.</p>
         </div>
         <img 
           src="/assets/roomia_relocation_3d.jpg" 
@@ -72,14 +89,14 @@ export function RelocationOps({ currentCity }) {
 
         <div className="relocation-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-calculator text-indigo"></i> {t.calcTitle}</h3>
+            <h3><i className="fa-solid fa-calculator text-indigo"></i> Presupuesto Estimado ({currency.code})</h3>
           </div>
-          <p className="sidebar-desc">{t.calcSub} <span className="city-highlight">{currentCity}</span>.</p>
+          <p className="sidebar-desc">Estimación automática de costos en <span className="city-highlight">{currentCity}</span> ({currency.name}).</p>
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="form-row">
               <div className="form-group">
-                <label>{t.rentLabel}</label>
+                <label>{t.rentLabel} ({currency.code})</label>
                 <input 
                   type="number" 
                   value={calc.rent} 
@@ -87,7 +104,7 @@ export function RelocationOps({ currentCity }) {
                 />
               </div>
               <div className="form-group">
-                <label>{t.depositLabel}</label>
+                <label>{t.depositLabel} ({currency.code})</label>
                 <input 
                   type="number" 
                   value={calc.deposit} 
@@ -98,7 +115,7 @@ export function RelocationOps({ currentCity }) {
 
             <div className="form-row">
               <div className="form-group">
-                <label>{t.utilitiesLabel}</label>
+                <label>{t.utilitiesLabel} ({currency.code})</label>
                 <input 
                   type="number" 
                   value={calc.utilities} 
@@ -106,7 +123,7 @@ export function RelocationOps({ currentCity }) {
                 />
               </div>
               <div className="form-group">
-                <label>{t.furnitureLabel}</label>
+                <label>{t.furnitureLabel} ({currency.code})</label>
                 <input 
                   type="number" 
                   value={calc.furniture} 
@@ -117,16 +134,16 @@ export function RelocationOps({ currentCity }) {
 
             <div className="calc-total-box">
               <span>{t.totalMonth1}</span>
-              <strong>${totalCalculated.toLocaleString('en-US')} USD</strong>
+              <strong>{currency.symbol}{totalCalculated.toLocaleString('es-ES')} {currency.code}</strong>
             </div>
           </form>
 
           <div className="emergency-directory">
             <h4><i className="fa-solid fa-phone-flip text-rose-500"></i> Directorio de Emergencia ({currentCity})</h4>
             <div className="emergency-pills">
-              <div className="pill-item"><i className="fa-solid fa-shield-cat"></i> Policía Nacional / Emergencias: 911</div>
-              <div className="pill-item"><i className="fa-solid fa-truck-medical"></i> Ambulancia Médica: 065</div>
-              <div className="pill-item"><i className="fa-solid fa-fire-extinguisher"></i> Bomberos: 068</div>
+              <div className="pill-item"><i className="fa-solid fa-shield-cat"></i> Policía Nacional / Emergencias: 911 / 123</div>
+              <div className="pill-item"><i className="fa-solid fa-truck-medical"></i> Ambulancia Médica: 125</div>
+              <div className="pill-item"><i className="fa-solid fa-fire-extinguisher"></i> Bomberos: 119</div>
             </div>
           </div>
         </div>
