@@ -2,7 +2,7 @@
 
 > **Proyecto:** RoomIA  
 > **Estatus:** Producción Funcional desde el Día 1  
-> **Hackatón:** Hackatón de IA con Qiro & AWS (Código Facilito + AWS)
+> **Hackatón:** Hackatón de IA con Kiro & AWS (Código Facilito + AWS)
 
 ---
 
@@ -31,7 +31,7 @@
   4. *Finanzas & Convivencia:* Splitter 50/50 y proporcional + TaskWheel de tareas.
   5. *Bóveda de Documentos & Salud:* Cifrado local AES-GCM y exportador de ficha de emergencia.
 * [x] **Infraestructura Multi-Cloud:** Docker Compose, AWS SAM template y guía GCP Cloud Run + Cloudflare Pages.
-* [x] **Handbook Completo (`docs/handbook/`):** `architecture.md`, `conventions.md`, `decisions.md`, `glossary.md`, `workflow.md`, `errors.md`.
+* [x] **Handbook Completo (`docs/handbook/`):** `architecture.md`, `conventions.md`, `decisions.md`, `workflow.md`, `errors.md`.
 * [x] **Comandos de Dominio:** `Makefile` desacoplado (`make web-*`, `make api-*`, `make inference-*`, `make cron-*`, `make all-*`).
 
 ---

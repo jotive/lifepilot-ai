@@ -1,8 +1,8 @@
-# 📑 Contexto y Reglas del Hackatón de IA con Qiro & AWS
+# 📑 Contexto y Reglas del Hackatón de IA con Kiro & AWS
 
-> **Organizador:** Código Facilito + Amazon Web Services (AWS) + Qiro AI  
+> **Organizador:** Código Facilito + Amazon Web Services (AWS) + Kiro AI  
 > **Fecha del Evento:** 20 al 27 de Julio de 2026 (Entrega: 27 de Julio 23:59 UTC-6)  
-> **Recursos:** 2,000 Créditos de Qiro AI por participante + AWS Free Tier
+> **Recursos:** 2,000 Créditos de Kiro AI por participante + AWS Free Tier
 
 ---
 
