@@ -17,7 +17,20 @@ import { useRoomiaStore } from './store/useRoomiaStore';
 import { useAuthStore } from './store/useAuthStore';
 import { useToastStore } from './store/useToastStore';
 
-const VALID_HASHES = ['#/', '#/landing', '#/login', '#/logout', '#/explorer', '#/relocation', '#/kitchen', '#/finances', '#/vault'];
+const VALID_HASHES = [
+  '#/', 
+  '#/landing', 
+  '#/login', 
+  '#/signup', 
+  '#/profile', 
+  '#/settings', 
+  '#/logout', 
+  '#/explorer', 
+  '#/relocation', 
+  '#/kitchen', 
+  '#/finances', 
+  '#/vault'
+];
 
 export function App() {
   const {
@@ -46,14 +59,16 @@ export function App() {
   const { addToast } = useToastStore();
   const [currentRoute, setCurrentRoute] = useState(window.location.hash || '#/explorer');
 
-  // Handle URL hash changes
+  // Handle URL hash changes in standard English conventions
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash || '#/explorer';
       setCurrentRoute(hash);
 
-      if (hash === '#/login') {
+      if (hash === '#/login' || hash === '#/signup' || hash === '#/profile') {
         setIsAuthModalOpen(true);
+      } else if (hash === '#/settings') {
+        setIsSettingsOpen(true);
       } else if (hash === '#/logout') {
         logout();
         addToast('Sesión cerrada correctamente', 'info');
@@ -137,7 +152,7 @@ export function App() {
         <aside className="app-sidebar">
           <div 
             className="sidebar-logo" 
-            title="RoomIA Landing Page" 
+            title="RoomIA Landing Page (/#/landing)" 
             onClick={() => { window.location.hash = '#/'; }} 
             style={{ cursor: 'pointer' }}
           >
@@ -187,7 +202,12 @@ export function App() {
             </button>
           </div>
 
-          <button className="sidebar-nav-item" onClick={() => setIsSettingsOpen(true)} title="Ajustes" aria-label="Ajustes">
+          <button 
+            className="sidebar-nav-item" 
+            onClick={() => { window.location.hash = '#/settings'; }} 
+            title="Ajustes (/#/settings)" 
+            aria-label="Ajustes"
+          >
             <i className="fa-solid fa-gear"></i>
           </button>
         </aside>
@@ -197,12 +217,12 @@ export function App() {
           <Header
             currentCity={currentCity}
             mode={mode}
-            onCityClick={() => setIsSettingsOpen(true)}
+            onCityClick={() => { window.location.hash = '#/settings'; }}
             onModeChange={(newMode) => {
               setMode(newMode);
               addToast(`Modo cambiado a: ${newMode === 'solo' ? 'Solo Expat' : 'Roomies / Pareja'}`, 'info');
             }}
-            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenSettings={() => { window.location.hash = '#/settings'; }}
           />
 
           <main className="main-content">
@@ -246,10 +266,15 @@ export function App() {
           </main>
 
           <SettingsModal
-            isOpen={isSettingsOpen}
+            isOpen={isSettingsOpen || currentRoute === '#/settings'}
             currentCity={currentCity}
             apiKey={tavilyApiKey}
-            onClose={() => setIsSettingsOpen(false)}
+            onClose={() => {
+              setIsSettingsOpen(false);
+              if (currentRoute === '#/settings') {
+                window.location.hash = '#/explorer';
+              }
+            }}
             onSave={handleSaveSettings}
           />
 
