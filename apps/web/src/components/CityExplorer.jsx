@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ApiService } from '../services/api.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
@@ -21,10 +21,40 @@ export function CityExplorer({ currentCity, mode }) {
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Automatically fetch live web events from Tavily when city changes or on initial load
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLiveEvents = async () => {
+      setLoading(true);
+      try {
+        const searchQuery = `Eventos destacados cultura y gastronomia en ${currentCity}`;
+        const searchResults = await ApiService.searchEvents(searchQuery, currentCity, tavilyApiKey);
+        if (isMounted && searchResults && Array.isArray(searchResults.results) && searchResults.results.length > 0) {
+          const formatted = searchResults.results.map(r => ({
+            title: r.title,
+            category: r.category || 'Evento En Vivo',
+            description: r.snippet || r.content || r.title,
+            location: currentCity,
+            date: 'Esta Semana',
+            url: r.url
+          }));
+          setEvents(formatted);
+        }
+      } catch (err) {
+        console.warn('Tavily search fallback to local initial events:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchLiveEvents();
+    return () => { isMounted = false; };
+  }, [currentCity, tavilyApiKey]);
+
   const totalExpenseSum = (expenses || []).reduce((sum, item) => sum + (item.amount || 0), 0);
 
   const handleSearch = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const searchQuery = query.trim() || `Eventos y cultura en ${currentCity}`;
     setLoading(true);
 
@@ -146,7 +176,7 @@ export function CityExplorer({ currentCity, mode }) {
           {loading ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
               <i className="fa-solid fa-spinner fa-spin text-3xl text-coral" style={{ marginBottom: '1rem', display: 'block' }}></i>
-              <span>Consultando Radar Urbano y Búsqueda en Vivo...</span>
+              <span>Consultando Radar Urbano y Búsqueda en Vivo en {currentCity}...</span>
             </div>
           ) : filteredEventsByCategory.length === 0 ? (
             <div style={{ padding: '3rem', textAlign: 'center', background: '#f8fafc', borderRadius: '20px', border: '2px dashed #cbd5e1' }}>
@@ -174,7 +204,7 @@ export function CityExplorer({ currentCity, mode }) {
         </div>
 
         <div className="planner-sidebar">
-          {/* REAL SHARED EXPENSES SUMMARY WIDGET (Replaced confusing fake credit card widget) */}
+          {/* REAL SHARED EXPENSES SUMMARY WIDGET */}
           <div className="credit-card-widget" style={{ background: 'linear-gradient(135deg, #1e1b4b, #312e81)' }}>
             <div className="card-brand-row">
               <span>Resumen de Gastos del Hogar</span>
