@@ -43,8 +43,8 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
       {/* 3D Hero Widget Banner */}
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
-          <h3>{t.financesTitle} 💳</h3>
-          <p>{t.financesSub} en <span className="city-highlight">{currentCity} ({activeCurrencyCode})</span>.</p>
+          <h3>Finanzas Compartidas & Gastos del Hogar 💳</h3>
+          <p>Gestiona cuentas claras en <span className="city-highlight">{currentCity} ({activeCurrencyCode})</span>, divide compras del hogar 50/50 y asigna tareas rotativas.</p>
         </div>
         <img 
           src="/assets/roomia_finances_3d.jpg" 
@@ -56,7 +56,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
       <div className="expenses-layout">
         <div className="expense-card">
           <div className="card-title-bar">
-            <h3><i className="fa-solid fa-file-invoice-dollar text-coral"></i> {t.splitTitle} ({activeCurrencyCode})</h3>
+            <h3><i className="fa-solid fa-file-invoice-dollar text-coral"></i> Registro de Gastos (${activeCurrencyCode})</h3>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <button className="btn btn-secondary btn-sm" onClick={handleExportExpenses} title="Exportar reporte de gastos en CSV">
                 <i className="fa-solid fa-file-csv text-emerald-500"></i> Exportar CSV

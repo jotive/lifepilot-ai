@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ContractAnalyzerModal } from './ContractAnalyzerModal';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
-import { exportMedicalCardPDF } from '../utils/export.util';
+import { exportMedicalCardAsPNG, shareMedicalCardToWhatsApp } from '../utils/export.util';
 
 export function DocVault({ documents = [], currentCity, onAddDoc }) {
   const { language } = useRoomiaStore();
@@ -27,8 +27,12 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
     }
   };
 
-  const handleExportCard = () => {
-    exportMedicalCardPDF(healthForm, currentCity);
+  const handleExportPNG = () => {
+    exportMedicalCardAsPNG(healthForm, currentCity);
+  };
+
+  const handleShareWhatsApp = () => {
+    shareMedicalCardToWhatsApp(healthForm, currentCity);
   };
 
   const safeDocuments = Array.isArray(documents) ? documents : [];
@@ -38,8 +42,8 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
       {/* 3D Hero Widget Banner */}
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
-          <h3>{t.vaultTitle} 🛡️</h3>
-          <p>{t.vaultSub}</p>
+          <h3>Bóveda de Documentos & Ficha de Salud 🛡️</h3>
+          <p>Guarda tus contratos de arrendamiento, ficha médica de emergencia e identificaciones encriptadas localmente en <span className="city-highlight">{currentCity}</span>.</p>
         </div>
         <img 
           src="/assets/roomia_vault_3d.jpg" 
@@ -87,13 +91,18 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
 
         {/* Emergency Medical Health Card */}
         <div className="vault-card">
-          <div className="card-title-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+          <div className="card-title-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', flexWrap: 'wrap' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <i className="fa-solid fa-heart-pulse text-rose-500"></i> {t.medCardTitle}
             </h3>
-            <button className="btn btn-secondary btn-sm" onClick={handleExportCard} title="Exportar Ficha Médica en Fichero" style={{ flexShrink: 0 }}>
-              <i className="fa-solid fa-download"></i> {t.exportCardBtn}
-            </button>
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              <button className="btn btn-secondary btn-sm" onClick={handleShareWhatsApp} title="Compartir en WhatsApp" style={{ background: '#25D366', color: '#fff', border: 'none' }}>
+                <i className="fa-brands fa-whatsapp"></i> WhatsApp
+              </button>
+              <button className="btn btn-primary btn-sm" onClick={handleExportPNG} title="Descargar como Imagen PNG">
+                <i className="fa-solid fa-image"></i> PNG Imagen
+              </button>
+            </div>
           </div>
 
           <form onSubmit={(e) => e.preventDefault()}>
