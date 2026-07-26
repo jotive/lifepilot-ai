@@ -1,16 +1,22 @@
 import { Router } from 'express';
 import { SearchController } from '../controllers/search.controller.js';
 import { VisionController } from '../controllers/vision.controller.js';
+import { RecipeController } from '../controllers/recipe.controller.js';
+import { ItineraryController } from '../controllers/itinerary.controller.js';
 import { ContractAnalyzerService } from '../services/contract.service.js';
 import { ResponseUtil } from '../utils/response.util.js';
 import { SUPPORTED_CITIES, APP_NAME } from '../config/constants.js';
 import { envConfig } from '../config/env.config.js';
 import { eventSearchSchema } from '../schemas/search.schema.js';
 import { fridgeScanSchema, receiptScanSchema } from '../schemas/vision.schema.js';
+import { recipeGenerateSchema } from '../schemas/recipe.schema.js';
+import { itineraryGenerateSchema } from '../schemas/itinerary.schema.js';
 
 const router = Router();
 const searchController = new SearchController();
 const visionController = new VisionController();
+const recipeController = new RecipeController();
+const itineraryController = new ItineraryController();
 
 // In-memory Realtime Channels Store for cross-device roomie sync
 const realtimeStore = new Map();
@@ -39,6 +45,8 @@ router.get('/api/v1/cities', (req, res) => {
 router.post('/api/v1/events/search', validateBody(eventSearchSchema), (req, res, next) => searchController.handleTavilySearch(req, res, next));
 router.post('/api/v1/vision/fridge-scans', validateBody(fridgeScanSchema), (req, res, next) => visionController.handleFridgeScan(req, res, next));
 router.post('/api/v1/vision/receipt-scans', validateBody(receiptScanSchema), (req, res, next) => visionController.handleReceiptScan(req, res, next));
+router.post('/api/v1/recipes/generate', validateBody(recipeGenerateSchema), (req, res, next) => recipeController.handleGenerateRecipes(req, res, next));
+router.post('/api/v1/itineraries/generate', validateBody(itineraryGenerateSchema), (req, res, next) => itineraryController.handleGenerateItinerary(req, res, next));
 
 router.post('/api/v1/contracts/analyze', (req, res) => {
   const { contractText } = req.body;

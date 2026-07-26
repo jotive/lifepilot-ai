@@ -62,8 +62,8 @@ export function Header({ currentCity, mode, onCityClick, onModeChange, onOpenSet
         </div>
 
         {mode === 'couple' && (
-          <button className="btn btn-secondary btn-sm" onClick={handlePairClick} title="Vincular Dispositivo">
-            <i className="fa-solid fa-qrcode"></i> Vincular Roomie
+          <button className="btn btn-secondary btn-sm" onClick={handlePairClick} title="Vincular Dispositivo" aria-label="Vincular Roomie">
+            <i className="fa-solid fa-qrcode"></i> <span className="pair-label">Vincular Roomie</span>
           </button>
         )}
 

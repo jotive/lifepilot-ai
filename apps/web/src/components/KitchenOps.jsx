@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
+import { ApiService } from '../services/api.service';
+import { useRoomiaStore } from '../store/useRoomiaStore';
+import { SkeletonLoader } from './SkeletonLoader';
 
 export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient }) {
   const [newIngredient, setNewIngredient] = useState('');
   const [recipes, setRecipes] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const { mode, language } = useRoomiaStore();
 
   const handleAdd = () => {
     if (newIngredient.trim()) {
@@ -19,12 +25,18 @@ export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient })
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang = 'es-ES';
+    recognition.lang = language === 'en' ? 'en-US' : language === 'pt' ? 'pt-BR' : 'es-ES';
     recognition.start();
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setNewIngredient(transcript);
+      if (transcript.trim()) {
+        onAddIngredient(transcript.trim());
+      }
+    };
+
+    recognition.onerror = () => {
+      alert('No se pudo capturar audio. Intenta de nuevo.');
     };
   };
 
@@ -33,44 +45,37 @@ export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient })
     input.type = 'file';
     input.accept = 'image/*';
     input.capture = 'environment';
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = e.target.files[0];
-      if (file) {
+      if (!file) return;
+
+      setScanning(true);
+      try {
+        const base64 = await fileToBase64(file);
+        const result = await ApiService.scanFridge(base64);
+        if (result.ingredients && result.ingredients.length > 0) {
+          result.ingredients.forEach(item => onAddIngredient(item));
+        }
+      } catch (error) {
+        console.warn('Camera scan fallback:', error);
         ['Tomates Frescos', 'Queso Blanco', 'Pimientos Verdes', 'Huevos'].forEach(item => onAddIngredient(item));
-        alert('📷 Escaneo de refrigerador completado. Se agregaron ingredientes reconocidos.');
       }
+      setScanning(false);
     };
     input.click();
   };
 
-  const handleGenerateRecipes = () => {
+  const handleGenerateRecipes = async () => {
     if (ingredients.length === 0) return;
-    const ingStr = ingredients.join(', ');
-
-    setRecipes([
-      {
-        title: `Bowl Saludable de ${ingredients[0] || 'Ingredientes'} & Proteínas`,
-        time: '20 minutos',
-        difficulty: 'Fácil',
-        badge: 'Anti-Desperdicio',
-        steps: [
-          `Picar en cubos ${ingredients[0] || 'los vegetales'} y saltear en sartén con aceite de oliva.`,
-          `Combinar con ${ingredients[1] || 'el acompañamiento disponible'} e incorporar especias al gusto.`,
-          `Servir caliente. Ideal para 2 porciones de roomies o meal prep.`
-        ]
-      },
-      {
-        title: `Salteado Exprés de Alacena (${ingStr.slice(0, 25)}...)`,
-        time: '15 minutos',
-        difficulty: 'Rápido',
-        badge: 'Económico',
-        steps: [
-          `Mezclar en fuego medio los ingredientes disponibles en tu refrigerador.`,
-          `Sazonar con sal, pimienta y salsa de soya si se cuenta con ella.`,
-          `Disfrutar de una comida rápida sin necesidad de comprar ingredientes extra.`
-        ]
-      }
-    ]);
+    setLoading(true);
+    try {
+      const result = await ApiService.generateRecipes(ingredients, mode, language);
+      setRecipes(result.recipes);
+    } catch (error) {
+      console.warn('Recipe generation fallback:', error);
+      setRecipes(generateLocalFallback(ingredients));
+    }
+    setLoading(false);
   };
 
   return (
@@ -86,18 +91,18 @@ export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient })
         <div className="kitchen-card">
           <div className="card-title-bar">
             <h3><i className="fa-solid fa-basket-shopping"></i> Inventario de Refrigerador & Alacena</h3>
-            <button className="btn btn-secondary btn-sm" onClick={handleCameraScan}>
-              <i className="fa-solid fa-camera"></i> Escanear con Cámara
+            <button className="btn btn-secondary btn-sm" onClick={handleCameraScan} disabled={scanning}>
+              {scanning ? <><i className="fa-solid fa-spinner fa-spin"></i> Escaneando...</> : <><i className="fa-solid fa-camera"></i> Escanear con Cámara</>}
             </button>
           </div>
 
           <div className="add-item-bar">
-            <input 
-              type="text" 
-              value={newIngredient} 
+            <input
+              type="text"
+              value={newIngredient}
               onChange={(e) => setNewIngredient(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
-              placeholder="Ej: 3 Huevos, Pechuga de Pollo, Tomates..." 
+              placeholder="Ej: 3 Huevos, Pechuga de Pollo, Tomates..."
             />
             <button className="btn btn-primary" onClick={handleAdd}>
               <i className="fa-solid fa-plus"></i> Agregar
@@ -118,8 +123,8 @@ export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient })
           </div>
 
           <div className="recipe-action-box">
-            <button className="btn btn-gradient full-width" onClick={handleGenerateRecipes}>
-              <i className="fa-solid fa-kitchen-set"></i> Generar Recetas Anti-Desperdicio
+            <button className="btn btn-gradient full-width" onClick={handleGenerateRecipes} disabled={loading || ingredients.length === 0}>
+              {loading ? <><i className="fa-solid fa-spinner fa-spin"></i> Generando con IA...</> : <><i className="fa-solid fa-kitchen-set"></i> Generar Recetas Anti-Desperdicio</>}
             </button>
           </div>
         </div>
@@ -130,7 +135,9 @@ export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient })
           </div>
 
           <div className="recipes-container">
-            {!recipes ? (
+            {loading ? (
+              <SkeletonLoader count={3} />
+            ) : !recipes ? (
               <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>
                 Haz clic en "Generar Recetas" para ver platillos adaptados a tu inventario.
               </p>
@@ -156,4 +163,42 @@ export function KitchenOps({ ingredients, onAddIngredient, onRemoveIngredient })
       </div>
     </section>
   );
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function generateLocalFallback(ingredients) {
+  const ing1 = ingredients[0] || 'Ingredientes';
+  const ing2 = ingredients[1] || 'acompañamiento';
+  return [
+    {
+      title: `Bowl Saludable de ${ing1}`,
+      time: '20 min',
+      difficulty: 'Fácil',
+      badge: 'Anti-Desperdicio',
+      steps: [
+        `Picar ${ing1} en cubos y saltear con aceite de oliva.`,
+        `Combinar con ${ing2} y especias al gusto.`,
+        `Servir caliente en bowl. Rinde 2 porciones.`
+      ]
+    },
+    {
+      title: `Salteado Exprés de Alacena`,
+      time: '15 min',
+      difficulty: 'Rápido',
+      badge: 'Económico',
+      steps: [
+        `Mezclar ingredientes disponibles en fuego medio.`,
+        `Sazonar con sal, pimienta y salsa de soya.`,
+        `Disfrutar sin necesidad de compras extra.`
+      ]
+    }
+  ];
 }

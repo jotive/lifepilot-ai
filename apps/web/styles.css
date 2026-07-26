@@ -715,25 +715,181 @@ input:focus, select:focus {
   .form-row { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 640px) {
-  .logo-text h1 {
-    font-size: 1.35rem;
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    padding-bottom: 0.75rem;
   }
-  .tagline {
-    display: none;
-  }
-  .main-header { 
-    flex-direction: row;
-    align-items: center;
+
+  .header-brand {
     justify-content: space-between;
+    width: 100%;
   }
-  .header-controls { 
-    gap: 0.4rem;
+
+  .header-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
   }
+
+  .city-selector-btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.82rem;
+    grid-column: 1;
+  }
+
   .city-selector-btn span {
-    max-width: 90px;
+    max-width: 110px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  .header-controls select {
+    width: auto;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    grid-column: 2;
+  }
+
+  .mode-toggle-group {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mode-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .mode-btn span { font-size: 0.78rem; }
+
+  .header-controls .btn-secondary.btn-sm {
+    padding: 0.45rem;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    font-size: 0;
+    gap: 0;
+  }
+
+  .header-controls .btn-secondary.btn-sm i {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .pair-label { display: none; }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Hero banner compact */
+  .hero-3d-banner {
+    padding: 1rem;
+    border-radius: 20px;
+  }
+
+  .hero-3d-text h3 {
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-3d-text p {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .panel-hero {
+    margin-bottom: 1rem;
+  }
+
+  .hero-text p {
+    font-size: 0.85rem;
+  }
+
+  /* Search section compact */
+  .search-section {
+    padding: 1rem;
+    border-radius: 18px;
+    margin-bottom: 1rem;
+  }
+
+  .search-bar-wrap {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .search-bar-wrap input { padding-left: 1rem; }
+  .search-icon { display: none; }
+
+  .filter-chips { gap: 0.35rem; }
+  .chip { padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+  .chip-label { display: none; }
+
+  /* Cards compact */
+  .card-title-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .card-title-bar h3 { font-size: 1.05rem; }
+  .section-title-wrap h3 { font-size: 1.1rem; }
+
+  .relocation-card, .kitchen-card, .expense-card, .vault-card {
+    padding: 1.1rem;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .logo-text h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-brand {
+    gap: 0.5rem;
+  }
+
+  .tagline {
+    display: none;
+  }
+
+  .badge-ai {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+  }
+
+  .mode-btn span { display: none; }
+  .mode-btn { padding: 0.5rem 0.9rem; }
+
+  .city-selector-btn span {
+    max-width: 80px;
+  }
+
+  .hero-3d-text h3 { font-size: 1.1rem; }
+  .hero-3d-text p { font-size: 0.8rem; }
+  .hero-3d-img { height: 120px; }
+
+  .calc-total-box {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .settlement-summary-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .btn { padding: 0.65rem 1.1rem; font-size: 0.88rem; }
+  .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
 }
