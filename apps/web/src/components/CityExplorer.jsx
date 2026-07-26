@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ApiService } from '../services/api.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
@@ -49,8 +49,8 @@ export function CityExplorer({ currentCity, mode }) {
       {/* 3D Hero Widget Banner */}
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
-          <h3>{t.cityExplorerTitle} 🚀</h3>
-          <p>{t.cityExplorerSub} <span className="city-highlight">{currentCity}</span>.</p>
+          <h3>Explora {currentCity} en Tiempo Real 🚀</h3>
+          <p>Eventos culturales, gastronomía y itinerarios inteligentes seleccionados por IA para tu estancia en <span className="city-highlight">{currentCity}</span>.</p>
         </div>
         <img 
           src="/assets/roomia_city_3d.jpg" 
@@ -62,10 +62,10 @@ export function CityExplorer({ currentCity, mode }) {
       <div className="panel-hero">
         <div className="hero-text">
           <h2><i className="fa-solid fa-compass"></i> Radar Urbano de Eventos</h2>
-          <p>Explora lo mejor de la ciudad seleccionada en vivo.</p>
+          <p>Descubre experiencias seleccionadas y panoramas imperdibles en {currentCity}.</p>
         </div>
         <div className="tavily-status-badge">
-          <i className="fa-solid fa-satellite-dish"></i> Tavily Live Radar Activo
+          <i className="fa-solid fa-satellite-dish"></i> Live Radar Activo
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export function CityExplorer({ currentCity, mode }) {
       <div className="results-layout">
         <div className="events-column">
           <div className="section-title-wrap">
-            <h3>{t.eventsTitle} ({currentCity})</h3>
+            <h3>Eventos Destacados en {currentCity}</h3>
             <span className="results-count">{events.length} resultados</span>
           </div>
 
@@ -146,30 +146,39 @@ export function CityExplorer({ currentCity, mode }) {
           </div>
 
           <div className="sidebar-card">
-            <div className="card-header">
-              <h3><i className="fa-solid fa-wand-magic-sparkles text-coral"></i> {t.plannerTitle}</h3>
-              <span className="badge-mode-indicator">{mode === 'couple' ? 'En Pareja' : 'Individual'}</span>
+            <div className="card-header" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.4rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                  <i className="fa-solid fa-wand-magic-sparkles text-coral"></i> Planificador IA
+                </h3>
+              </div>
+              <span className="badge-mode-indicator">
+                {mode === 'couple' ? 'En Pareja' : 'Solo Expat'}
+              </span>
             </div>
-            <p className="sidebar-desc">{t.plannerSub} ({currentCity}).</p>
+            <p className="sidebar-desc" style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}>
+              Crea un itinerario personalizado a tu medida en {currentCity}.
+            </p>
 
             <button 
               className="btn btn-gradient full-width" 
               onClick={handleGenerateItinerary}
               disabled={loading}
+              style={{ marginTop: '0.75rem' }}
             >
-              <i className="fa-solid fa-bolt"></i> {t.generateItineraryBtn}
+              <i className="fa-solid fa-bolt"></i> Planificar con IA
             </button>
 
             {itinerary && (
               <div className="itinerary-output">
-                <h4 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--text-main)' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--text-main)' }}>
                   {itinerary.title || 'Plan del Día'}
                 </h4>
                 {itinerary.steps && itinerary.steps.map((step, sIdx) => (
                   <div key={sIdx} className="itinerary-step">
                     <span className="itinerary-time">{step.time}</span>
-                    <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>{step.activity}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{step.location}</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem' }}>{step.activity}</div>
+                    <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>{step.location}</div>
                   </div>
                 ))}
               </div>

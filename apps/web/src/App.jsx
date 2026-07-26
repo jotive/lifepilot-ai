@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Header } from './components/Header';
-import { Navigation } from './components/Navigation';
 import { CityExplorer } from './components/CityExplorer';
 import { RelocationOps } from './components/RelocationOps';
 import { KitchenOps } from './components/KitchenOps';
@@ -11,6 +10,22 @@ import { ToastContainer } from './components/ToastContainer';
 import { AIAssistantWidget } from './components/AIAssistantWidget';
 import { useRoomiaStore } from './store/useRoomiaStore';
 import { useToastStore } from './store/useToastStore';
+
+const TAB_HASH_MAP = {
+  'city-events': '#/explorer',
+  'relocation': '#/relocation',
+  'fridge-kitchen': '#/kitchen',
+  'couple-expenses': '#/finances',
+  'documents': '#/vault'
+};
+
+const HASH_TAB_MAP = {
+  '#/explorer': 'city-events',
+  '#/relocation': 'relocation',
+  '#/kitchen': 'fridge-kitchen',
+  '#/finances': 'couple-expenses',
+  '#/vault': 'documents'
+};
 
 export function App() {
   const {
@@ -36,6 +51,38 @@ export function App() {
   } = useRoomiaStore();
 
   const { addToast } = useToastStore();
+
+  // Sync hash changes in browser address bar with activeTab state
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash || '#/explorer';
+      const matchedTab = HASH_TAB_MAP[hash];
+      if (matchedTab && matchedTab !== activeTab) {
+        setActiveTab(matchedTab);
+      }
+    };
+
+    // Initial check on load
+    if (!window.location.hash || !HASH_TAB_MAP[window.location.hash]) {
+      window.location.hash = TAB_HASH_MAP[activeTab] || '#/explorer';
+    } else {
+      const initialTab = HASH_TAB_MAP[window.location.hash];
+      if (initialTab && initialTab !== activeTab) {
+        setActiveTab(initialTab);
+      }
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const handleTabSelect = (tabKey) => {
+    setActiveTab(tabKey);
+    const hash = TAB_HASH_MAP[tabKey];
+    if (hash) {
+      window.location.hash = hash;
+    }
+  };
 
   const handleAddIngredient = (item) => {
     addIngredient(item);
@@ -74,36 +121,36 @@ export function App() {
         <div className="sidebar-nav-list">
           <button 
             className={`sidebar-nav-item ${activeTab === 'city-events' ? 'active' : ''}`}
-            onClick={() => setActiveTab('city-events')}
-            title="Explorar Ciudad"
+            onClick={() => handleTabSelect('city-events')}
+            title="Explorar Ciudad (/#/explorer)"
           >
             <i className="fa-solid fa-compass"></i>
           </button>
           <button 
             className={`sidebar-nav-item ${activeTab === 'relocation' ? 'active' : ''}`}
-            onClick={() => setActiveTab('relocation')}
-            title="Guía de Mudanza"
+            onClick={() => handleTabSelect('relocation')}
+            title="Guía de Mudanza (/#/relocation)"
           >
             <i className="fa-solid fa-city"></i>
           </button>
           <button 
             className={`sidebar-nav-item ${activeTab === 'fridge-kitchen' ? 'active' : ''}`}
-            onClick={() => setActiveTab('fridge-kitchen')}
-            title="Mi Refrigerador"
+            onClick={() => handleTabSelect('fridge-kitchen')}
+            title="Mi Refrigerador (/#/kitchen)"
           >
             <i className="fa-solid fa-utensils"></i>
           </button>
           <button 
             className={`sidebar-nav-item ${activeTab === 'couple-expenses' ? 'active' : ''}`}
-            onClick={() => setActiveTab('couple-expenses')}
-            title="Finanzas Compartidas"
+            onClick={() => handleTabSelect('couple-expenses')}
+            title="Finanzas Compartidas (/#/finances)"
           >
             <i className="fa-solid fa-wallet"></i>
           </button>
           <button 
             className={`sidebar-nav-item ${activeTab === 'documents' ? 'active' : ''}`}
-            onClick={() => setActiveTab('documents')}
-            title="Bóveda de Documentos"
+            onClick={() => handleTabSelect('documents')}
+            title="Bóveda de Documentos (/#/vault)"
           >
             <i className="fa-solid fa-folder-closed"></i>
           </button>
