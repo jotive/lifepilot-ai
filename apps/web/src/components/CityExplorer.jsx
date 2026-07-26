@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { ApiService } from '../services/api.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency, formatMoney } from '../config/constants';
 
 export function CityExplorer({ currentCity, mode }) {
   const { language, tavilyApiKey, expenses, currencyOverride } = useRoomiaStore();
+  const { user } = useAuthStore();
   const t = translations[language] || translations.es;
   const defaultCurrency = getCityCurrency(currentCity);
   const activeCurrencyCode = currencyOverride || defaultCurrency.code;
@@ -21,13 +23,14 @@ export function CityExplorer({ currentCity, mode }) {
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Automatically fetch live web events from Tavily when city changes or on initial load
+  // Automatically fetch personalized live web events from Tavily when city or user profile changes
   useEffect(() => {
     let isMounted = true;
     const fetchLiveEvents = async () => {
       setLoading(true);
       try {
-        const searchQuery = `Eventos destacados cultura y gastronomia en ${currentCity}`;
+        const userName = user.name && user.name !== 'Invitado' ? user.name : 'Expat';
+        const searchQuery = `Eventos destacados cultura y gastronomia recomendados para ${userName} en ${currentCity}`;
         const searchResults = await ApiService.searchEvents(searchQuery, currentCity, tavilyApiKey);
         if (isMounted && searchResults && Array.isArray(searchResults.results) && searchResults.results.length > 0) {
           const formatted = searchResults.results.map(r => ({
@@ -49,13 +52,14 @@ export function CityExplorer({ currentCity, mode }) {
 
     fetchLiveEvents();
     return () => { isMounted = false; };
-  }, [currentCity, tavilyApiKey]);
+  }, [currentCity, tavilyApiKey, user.name]);
 
   const totalExpenseSum = (expenses || []).reduce((sum, item) => sum + (item.amount || 0), 0);
 
   const handleSearch = async (e) => {
     if (e) e.preventDefault();
-    const searchQuery = query.trim() || `Eventos y cultura en ${currentCity}`;
+    const userName = user.name && user.name !== 'Invitado' ? user.name : 'Expat';
+    const searchQuery = query.trim() || `Eventos y cultura recomendados para ${userName} en ${currentCity}`;
     setLoading(true);
 
     try {
@@ -84,13 +88,17 @@ export function CityExplorer({ currentCity, mode }) {
 
   const handleGenerateItinerary = async () => {
     setLoading(true);
+    const userName = user.name && user.name !== 'Invitado' ? user.name : 'Alex';
     try {
       const res = await ApiService.generateItinerary(events, currentCity, mode, language);
-      setItinerary(res);
+      setItinerary({
+        ...res,
+        title: `Ruta Recomendada RoomIA para ${userName} en ${currentCity}`
+      });
     } catch (err) {
       console.warn('Usando respuesta inteligente local para itinerario:', err);
       setItinerary({
-        title: `Ruta Recomendada RoomIA en ${currentCity}`,
+        title: `Ruta Recomendada RoomIA para ${userName} en ${currentCity}`,
         steps: [
           { time: '10:00 AM', activity: 'Desayuno en Café de Especialidad Local', location: `Centro Histórico, ${currentCity}` },
           { time: '01:30 PM', activity: 'Recorrido por Galería de Arte & Museo', location: `Distrito Cultural, ${currentCity}` },
@@ -125,7 +133,7 @@ export function CityExplorer({ currentCity, mode }) {
       <div className="panel-hero">
         <div className="hero-text">
           <h2><i className="fa-solid fa-compass"></i> Radar Urbano de Eventos</h2>
-          <p>Descubre experiencias seleccionadas y panoramas imperdibles en {currentCity}.</p>
+          <p>Descubre experiencias seleccionadas y panoramas imperdibles para {user.name || 'ti'} en {currentCity}.</p>
         </div>
         <div className="tavily-status-badge">
           <i className="fa-solid fa-satellite-dish"></i> Live Radar Activo
@@ -176,7 +184,7 @@ export function CityExplorer({ currentCity, mode }) {
           {loading ? (
             <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
               <i className="fa-solid fa-spinner fa-spin text-3xl text-coral" style={{ marginBottom: '1rem', display: 'block' }}></i>
-              <span>Consultando Radar Urbano y Búsqueda en Vivo en {currentCity}...</span>
+              <span>Consultando Radar Urbano personalizado para {user.name || 'ti'} en {currentCity}...</span>
             </div>
           ) : filteredEventsByCategory.length === 0 ? (
             <div style={{ padding: '3rem', textAlign: 'center', background: '#f8fafc', borderRadius: '20px', border: '2px dashed #cbd5e1' }}>
@@ -229,7 +237,7 @@ export function CityExplorer({ currentCity, mode }) {
               </span>
             </div>
             <p className="sidebar-desc" style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}>
-              Crea un itinerario personalizado a tu medida en {currentCity}.
+              Crea un itinerario personalizado para <strong>{user.name || 'ti'}</strong> en {currentCity}.
             </p>
 
             <button 
