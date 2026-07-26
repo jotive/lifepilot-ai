@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { ApiService } from '../services/api.service';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { translations } from '../config/i18n';
-import { getCityCurrency } from '../config/constants';
+import { getCityCurrency, formatMoney } from '../config/constants';
 
 export function CityExplorer({ currentCity, mode }) {
-  const { language, tavilyApiKey } = useRoomiaStore();
+  const { language, tavilyApiKey, expenses, currencyOverride } = useRoomiaStore();
   const t = translations[language] || translations.es;
-  const currency = getCityCurrency(currentCity);
+  const defaultCurrency = getCityCurrency(currentCity);
+  const activeCurrencyCode = currencyOverride || defaultCurrency.code;
+  const currencySymbol = defaultCurrency.symbol;
 
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
@@ -18,6 +20,8 @@ export function CityExplorer({ currentCity, mode }) {
   ]);
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const totalExpenseSum = (expenses || []).reduce((sum, item) => sum + (item.amount || 0), 0);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -43,7 +47,6 @@ export function CityExplorer({ currentCity, mode }) {
       console.warn('Conexión Tavily fallback local:', err);
     }
 
-    // High quality filtered fallback
     const filtered = events.filter(evt => evt.title.toLowerCase().includes(searchQuery.toLowerCase()) || evt.description.toLowerCase().includes(searchQuery.toLowerCase()));
     setEvents(filtered.length > 0 ? filtered : events);
     setLoading(false);
@@ -75,7 +78,7 @@ export function CityExplorer({ currentCity, mode }) {
 
   return (
     <section className="tab-panel active">
-      {/* 3D Hero Widget Banner */}
+      {/* 3D Hero Widget Banner with lazy loading */}
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>Explora {currentCity} en Tiempo Real 🚀</h3>
@@ -85,6 +88,7 @@ export function CityExplorer({ currentCity, mode }) {
           src="/assets/roomia_city_3d.jpg" 
           alt="City Explorer 3D Illustration" 
           className="hero-3d-img" 
+          loading="lazy"
         />
       </div>
 
@@ -144,6 +148,12 @@ export function CityExplorer({ currentCity, mode }) {
               <i className="fa-solid fa-spinner fa-spin text-3xl text-coral" style={{ marginBottom: '1rem', display: 'block' }}></i>
               <span>Consultando Radar Urbano y Búsqueda en Vivo...</span>
             </div>
+          ) : filteredEventsByCategory.length === 0 ? (
+            <div style={{ padding: '3rem', textAlign: 'center', background: '#f8fafc', borderRadius: '20px', border: '2px dashed #cbd5e1' }}>
+              <i className="fa-solid fa-calendar-xmark text-3xl text-coral" style={{ marginBottom: '0.75rem', display: 'block' }}></i>
+              <h4 style={{ fontWeight: 800, margin: 0 }}>No se encontraron eventos para esta búsqueda</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>Prueba buscando otras palabras clave como "conciertos", "museos" o "comida".</p>
+            </div>
           ) : (
             <div className="events-grid">
               {filteredEventsByCategory.map((evt, idx) => (
@@ -164,14 +174,17 @@ export function CityExplorer({ currentCity, mode }) {
         </div>
 
         <div className="planner-sidebar">
-          <div className="credit-card-widget">
+          {/* REAL SHARED EXPENSES SUMMARY WIDGET (Replaced confusing fake credit card widget) */}
+          <div className="credit-card-widget" style={{ background: 'linear-gradient(135deg, #1e1b4b, #312e81)' }}>
             <div className="card-brand-row">
-              <span>RoomIA Platinum Sync</span>
-              <i className="fa-solid fa-contactless-payment text-xl"></i>
+              <span>Resumen de Gastos del Hogar</span>
+              <i className="fa-solid fa-wallet text-xl"></i>
             </div>
-            <div className="card-number">•••• •••• •••• 2026</div>
-            <div className="card-balance-label">Balance Disponible ({currency.code})</div>
-            <div className="card-balance-val">{currency.symbol}{currency.defaultCardBalance.toLocaleString('es-ES')} {currency.code}</div>
+            <div className="card-number" style={{ fontSize: '0.85rem', letterSpacing: '1px', opacity: 0.9 }}>
+              Moneda Oficial: <strong>{activeCurrencyCode}</strong>
+            </div>
+            <div className="card-balance-label">Total Acumulado en Compras</div>
+            <div className="card-balance-val">{currencySymbol}{formatMoney(totalExpenseSum, activeCurrencyCode)} {activeCurrencyCode}</div>
           </div>
 
           <div className="sidebar-card">

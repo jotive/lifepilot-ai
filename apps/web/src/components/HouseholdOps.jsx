@@ -11,7 +11,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
   const activeCurrencyCode = currencyOverride || defaultCurrency.code;
   const currencySymbol = defaultCurrency.symbol;
 
-  const [activeSubTab, setActiveSubTab] = useState('kanban'); // 'finances' or 'kanban'
+  const [activeSubTab, setActiveSubTab] = useState('kanban');
   const [newDesc, setNewDesc] = useState('');
   const [newAmount, setNewAmount] = useState('');
   const [draggedTaskId, setDraggedTaskId] = useState(null);
@@ -86,7 +86,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
 
   return (
     <section className="tab-panel active">
-      {/* 3D Hero Widget Banner */}
+      {/* 3D Hero Widget Banner with Lazy Loading */}
       <div className="hero-3d-banner">
         <div className="hero-3d-text">
           <h3>Finanzas Compartidas & Tareas del Hogar 💳</h3>
@@ -96,6 +96,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
           src="/assets/roomia_finances_3d.jpg" 
           alt="Finances 3D Illustration" 
           className="hero-3d-img" 
+          loading="lazy"
         />
       </div>
 
@@ -186,47 +187,55 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                 <span className="event-badge" style={{ background: '#e2e8f0', color: 'var(--text-muted)' }}>Arrastra aquí</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {todoTasks.map((task) => (
-                  <div 
-                    key={task.id} 
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task.id)}
-                    className="expense-item" 
-                    style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
-                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <span className="event-badge" style={{ background: 'rgba(255, 107, 74, 0.12)', color: 'var(--primary)', fontSize: '0.75rem' }}>
-                          {task.freq || 'Semanal'}
-                        </span>
-                        <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+              {todoTasks.length === 0 ? (
+                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  Sin tareas pendientes. ¡Crea una nueva tarea arriba!
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {todoTasks.map((task) => (
+                    <div 
+                      key={task.id} 
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, task.id)}
+                      className="expense-item" 
+                      style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                          <span className="event-badge" style={{ background: 'rgba(255, 107, 74, 0.12)', color: 'var(--primary)', fontSize: '0.75rem' }}>
+                            {task.freq || 'Semanal'}
+                          </span>
+                          <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" aria-label="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
+                        <select 
+                          value={task.assignee} 
+                          onChange={(e) => updateTaskAssignee(task.id, e.target.value)}
+                          aria-label="Cambiar Responsable"
+                          style={{ padding: '2px 6px', fontSize: '0.78rem', width: 'auto', borderRadius: '8px' }}
+                        >
+                          <option value="Alex">👤 Alex</option>
+                          <option value="Sam">👤 Sam</option>
+                          <option value="Ambos">👥 Ambos</option>
+                        </select>
+
+                        <button 
+                          className="btn btn-secondary btn-sm" 
+                          onClick={() => updateTaskStatus(task.id, 'in_progress')}
+                          aria-label="Iniciar Tarea"
+                          style={{ padding: '4px 10px', fontSize: '0.78rem' }}
+                        >
+                          Iniciar ⏳
+                        </button>
                       </div>
                     </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
-                      <select 
-                        value={task.assignee} 
-                        onChange={(e) => updateTaskAssignee(task.id, e.target.value)}
-                        style={{ padding: '2px 6px', fontSize: '0.78rem', width: 'auto', borderRadius: '8px' }}
-                      >
-                        <option value="Alex">👤 Alex</option>
-                        <option value="Sam">👤 Sam</option>
-                        <option value="Ambos">👥 Ambos</option>
-                      </select>
-
-                      <button 
-                        className="btn btn-secondary btn-sm" 
-                        onClick={() => updateTaskStatus(task.id, 'in_progress')}
-                        style={{ padding: '2px 8px', fontSize: '0.75rem' }}
-                      >
-                        Iniciar ⏳
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Column 2: EN PROGRESO */}
@@ -243,48 +252,55 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                 <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.15)', color: 'var(--accent-amber)' }}>Arrastra aquí</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {inProgressTasks.map((task) => (
-                  <div 
-                    key={task.id} 
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task.id)}
-                    className="expense-item" 
-                    style={{ background: '#ffffff', border: '1px solid #fef3c7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
-                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent-amber)', fontSize: '0.75rem' }}>
-                          {task.freq || 'Semanal'}
-                        </span>
-                        <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+              {inProgressTasks.length === 0 ? (
+                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  Ninguna tarea en progreso actualmente.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {inProgressTasks.map((task) => (
+                    <div 
+                      key={task.id} 
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, task.id)}
+                      className="expense-item" 
+                      style={{ background: '#ffffff', border: '1px solid #fef3c7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                          <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent-amber)', fontSize: '0.75rem' }}>
+                            {task.freq || 'Semanal'}
+                          </span>
+                          <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" aria-label="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
+                        <select 
+                          value={task.assignee} 
+                          onChange={(e) => updateTaskAssignee(task.id, e.target.value)}
+                          aria-label="Cambiar Responsable"
+                          style={{ padding: '2px 6px', fontSize: '0.78rem', width: 'auto', borderRadius: '8px' }}
+                        >
+                          <option value="Alex">👤 Alex</option>
+                          <option value="Sam">👤 Sam</option>
+                          <option value="Ambos">👥 Ambos</option>
+                        </select>
+
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button className="btn btn-secondary btn-sm" onClick={() => updateTaskStatus(task.id, 'todo')} aria-label="Regresar a Por Hacer" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>
+                            ← Por Hacer
+                          </button>
+                          <button className="btn btn-primary btn-sm" onClick={() => updateTaskStatus(task.id, 'done')} aria-label="Completar Tarea" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>
+                            Completar ✅
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
-                      <select 
-                        value={task.assignee} 
-                        onChange={(e) => updateTaskAssignee(task.id, e.target.value)}
-                        style={{ padding: '2px 6px', fontSize: '0.78rem', width: 'auto', borderRadius: '8px' }}
-                      >
-                        <option value="Alex">👤 Alex</option>
-                        <option value="Sam">👤 Sam</option>
-                        <option value="Ambos">👥 Ambos</option>
-                      </select>
-
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => updateTaskStatus(task.id, 'todo')} style={{ padding: '2px 6px', fontSize: '0.75rem' }}>
-                          ← 📌
-                        </button>
-                        <button className="btn btn-primary btn-sm" onClick={() => updateTaskStatus(task.id, 'done')} style={{ padding: '2px 6px', fontSize: '0.75rem' }}>
-                          Completar ✅
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Column 3: COMPLETADAS */}
@@ -301,34 +317,40 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                 <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-emerald)' }}>Arrastra aquí</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {doneTasks.map((task) => (
-                  <div 
-                    key={task.id} 
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task.id)}
-                    className="expense-item" 
-                    style={{ background: '#ffffff', border: '1px solid #dcfce7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <strong style={{ fontSize: '0.95rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>{task.title}</strong>
-                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', fontSize: '0.75rem' }}>
-                          Listo
-                        </span>
-                        <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+              {doneTasks.length === 0 ? (
+                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  Aún no hay tareas completadas.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {doneTasks.map((task) => (
+                    <div 
+                      key={task.id} 
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, task.id)}
+                      className="expense-item" 
+                      style={{ background: '#ffffff', border: '1px solid #dcfce7', borderRadius: '16px', flexDirection: 'column', alignItems: 'stretch', gap: '0.6rem', cursor: 'grab', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <strong style={{ fontSize: '0.95rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>{task.title}</strong>
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                          <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', fontSize: '0.75rem' }}>
+                            Listo
+                          </span>
+                          <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" aria-label="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Responsable: <strong>{task.assignee}</strong></span>
+                        <button className="btn btn-secondary btn-sm" onClick={() => updateTaskStatus(task.id, 'in_progress')} aria-label="Reabrir Tarea" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>
+                          Reabrir ⏳
+                        </button>
                       </div>
                     </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Responsable: <strong>{task.assignee}</strong></span>
-                      <button className="btn btn-secondary btn-sm" onClick={() => updateTaskStatus(task.id, 'in_progress')} style={{ padding: '2px 6px', fontSize: '0.75rem' }}>
-                        Reabrir ⏳
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -367,31 +389,42 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
               </button>
             </form>
 
-            <ul className="expense-list">
-              {safeExpenses.map((exp, idx) => (
-                <li key={idx} className="expense-item">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <i className="fa-solid fa-receipt text-indigo"></i>
-                    <div>
-                      <strong style={{ display: 'block', fontSize: '0.92rem' }}>{exp.desc}</strong>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy || 'Alex'} • {exp.date || 'Hoy'}</span>
+            {safeExpenses.length === 0 ? (
+              <div style={{ padding: '3rem 1.5rem', textAlign: 'center', background: '#f8fafc', borderRadius: '16px', border: '2px dashed #cbd5e1', margin: '1rem 0' }}>
+                <i className="fa-solid fa-receipt text-3xl text-coral" style={{ marginBottom: '0.75rem', display: 'block' }}></i>
+                <h4 style={{ fontWeight: 800, margin: 0 }}>Aún no hay gastos registrados</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                  Agrega tu primer gasto del hogar arriba (ej: Supermercado o Internet) para ver la división 50/50 en tiempo real.
+                </p>
+              </div>
+            ) : (
+              <ul className="expense-list">
+                {safeExpenses.map((exp, idx) => (
+                  <li key={idx} className="expense-item">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <i className="fa-solid fa-receipt text-indigo"></i>
+                      <div>
+                        <strong style={{ display: 'block', fontSize: '0.92rem' }}>{exp.desc}</strong>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy || 'Alex'} • {exp.date || 'Hoy'}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
-                      {currencySymbol}{formatMoney(exp.amount, activeCurrencyCode)} {activeCurrencyCode}
-                    </strong>
-                    <button 
-                      onClick={() => removeExpense(idx)} 
-                      title="Eliminar Gasto"
-                      style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px' }}
-                    >
-                      &times;
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
+                        {currencySymbol}{formatMoney(exp.amount, activeCurrencyCode)} {activeCurrencyCode}
+                      </strong>
+                      <button 
+                        onClick={() => removeExpense(idx)} 
+                        title="Eliminar Gasto"
+                        aria-label="Eliminar Gasto"
+                        style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px' }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
 
             <div className="settlement-summary-box">
               <i className="fa-solid fa-scale-balanced text-xl"></i>

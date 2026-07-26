@@ -6,6 +6,7 @@ import { KitchenOps } from './components/KitchenOps';
 import { HouseholdOps } from './components/HouseholdOps';
 import { DocVault } from './components/DocVault';
 import { SettingsModal } from './components/SettingsModal';
+import { OnboardingModal } from './components/OnboardingModal';
 import { ToastContainer } from './components/ToastContainer';
 import { AIAssistantWidget } from './components/AIAssistantWidget';
 import { useRoomiaStore } from './store/useRoomiaStore';
@@ -112,6 +113,9 @@ export function App() {
 
   return (
     <div className="app-container">
+      {/* Onboarding 3-step Modal for judges & first-time users */}
+      <OnboardingModal />
+
       {/* Left Vertical Navigation Sidebar (Claymorphic Style) */}
       <aside className="app-sidebar">
         <div className="sidebar-logo" title="RoomIA Copilot">
@@ -123,6 +127,7 @@ export function App() {
             className={`sidebar-nav-item ${activeTab === 'city-events' ? 'active' : ''}`}
             onClick={() => handleTabSelect('city-events')}
             title="Explorar Ciudad (/#/explorer)"
+            aria-label="Explorar Ciudad"
           >
             <i className="fa-solid fa-compass"></i>
           </button>
@@ -130,6 +135,7 @@ export function App() {
             className={`sidebar-nav-item ${activeTab === 'relocation' ? 'active' : ''}`}
             onClick={() => handleTabSelect('relocation')}
             title="Guía de Mudanza (/#/relocation)"
+            aria-label="Guía de Mudanza"
           >
             <i className="fa-solid fa-city"></i>
           </button>
@@ -137,6 +143,7 @@ export function App() {
             className={`sidebar-nav-item ${activeTab === 'fridge-kitchen' ? 'active' : ''}`}
             onClick={() => handleTabSelect('fridge-kitchen')}
             title="Mi Refrigerador (/#/kitchen)"
+            aria-label="Mi Refrigerador"
           >
             <i className="fa-solid fa-utensils"></i>
           </button>
@@ -144,6 +151,7 @@ export function App() {
             className={`sidebar-nav-item ${activeTab === 'couple-expenses' ? 'active' : ''}`}
             onClick={() => handleTabSelect('couple-expenses')}
             title="Finanzas Compartidas (/#/finances)"
+            aria-label="Finanzas Compartidas"
           >
             <i className="fa-solid fa-wallet"></i>
           </button>
@@ -151,12 +159,13 @@ export function App() {
             className={`sidebar-nav-item ${activeTab === 'documents' ? 'active' : ''}`}
             onClick={() => handleTabSelect('documents')}
             title="Bóveda de Documentos (/#/vault)"
+            aria-label="Bóveda de Documentos"
           >
             <i className="fa-solid fa-folder-closed"></i>
           </button>
         </div>
 
-        <button className="sidebar-nav-item" onClick={() => setIsSettingsOpen(true)} title="Ajustes">
+        <button className="sidebar-nav-item" onClick={() => setIsSettingsOpen(true)} title="Ajustes" aria-label="Ajustes">
           <i className="fa-solid fa-gear"></i>
         </button>
       </aside>

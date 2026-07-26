@@ -10,7 +10,7 @@ export function ContractAnalyzerModal({ isOpen, onClose }) {
   const handleAnalyze = () => {
     if (!text.trim()) return;
     setLoading(true);
-
+  
     setTimeout(() => {
       const textLower = text.toLowerCase();
       const findings = [];
@@ -39,9 +39,9 @@ export function ContractAnalyzerModal({ isOpen, onClose }) {
       if (findings.length === 0) {
         findings.push({
           type: 'SUCCESS',
-          title: 'Contrato Estándar y Equitativo',
-          description: 'No se detectaron cláusulas abusivas evidentes en el fragmento analizado.',
-          recommendation: 'Guardar copia cifrada en tu Bóveda RoomIA.'
+          title: 'Análisis Automático de Patrones Completo',
+          description: 'No se detectaron términos o restricciones estándar de alerta inmediata.',
+          recommendation: 'Revisar detenidamente las fechas de aviso de salida y condiciones de entrega del inmueble.'
         });
       }
 
@@ -63,6 +63,14 @@ export function ContractAnalyzerModal({ isOpen, onClose }) {
         </div>
 
         <div className="modal-body">
+          {/* Prominent Legal Disclaimer Callout Box */}
+          <div style={{ background: '#fff7ed', border: '1px solid #ffedd5', borderRadius: '12px', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
+            <i className="fa-solid fa-triangle-exclamation text-amber-500 text-lg" style={{ flexShrink: 0, marginTop: '2px' }}></i>
+            <span style={{ fontSize: '0.8rem', color: '#9a3412', lineHeight: '1.4' }}>
+              <strong>Aviso Legal Importante:</strong> Este análisis de IA es puramente orientativo y para detección de patrones comunes. No sustituye la asesoría legal profesional ni constituye dictamen jurídico.
+            </span>
+          </div>
+
           <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
             Pega el texto o fragmento de tu contrato de alquiler para que la IA de RoomIA detecte cláusulas abusivas, penalizaciones o riegos ocultos.
           </p>
@@ -107,7 +115,7 @@ export function ContractAnalyzerModal({ isOpen, onClose }) {
                   background: analysis.riskLevel === 'HIGH' ? 'rgba(244, 63, 94, 0.2)' : analysis.riskLevel === 'MEDIUM' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
                   color: analysis.riskLevel === 'HIGH' ? 'var(--accent-rose)' : analysis.riskLevel === 'MEDIUM' ? 'var(--accent-amber)' : 'var(--accent-emerald)'
                 }}>
-                  {analysis.riskLevel === 'HIGH' ? '🚨 RIESGO ALTO (45/100)' : analysis.riskLevel === 'MEDIUM' ? '⚠️ RIESGO MODERADO (75/100)' : '🟢 SALUDABLE (95/100)'}
+                  {analysis.riskLevel === 'HIGH' ? '🚨 RIESGO ALTO (45/100)' : analysis.riskLevel === 'MEDIUM' ? '⚠️ RIESGO MODERADO (75/100)' : '🟢 PATRÓN ESTÁNDAR (95/100)'}
                 </span>
               </div>
 
