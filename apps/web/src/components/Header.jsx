@@ -17,76 +17,88 @@ export function Header({ mode, onModeChange, onOpenSettings }) {
   };
 
   return (
-    <header className="main-header">
-      <div className="header-brand">
-        <div className="logo-icon">
-          <i className="fa-solid fa-house-user"></i>
+    <div className="top-header-container" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
+      {/* Standalone Top Mini Utility Bar (Above the Main Header) */}
+      <div className="top-utility-bar">
+        <div className="utility-left-info">
+          <span className="utility-city-badge">
+            <i className="fa-solid fa-location-dot"></i> {currentCity} ({activeCurrencyCode})
+          </span>
         </div>
-        <div className="logo-text">
-          <h1>Room<span className="logo-highlight">IA</span> <span className="badge-ai">PRO</span></h1>
-          <p className="tagline">{t.tagline}</p>
+
+        <div className="utility-right-controls">
+          {/* Selector de Moneda Directo */}
+          <select 
+            value={activeCurrencyCode} 
+            onChange={(e) => setCurrencyOverride(e.target.value)}
+            title="Moneda del Sistema"
+            className="utility-select currency-select"
+          >
+            <option value="COP">🇨🇴 COP ($)</option>
+            <option value="MXN">🇲🇽 MXN ($)</option>
+            <option value="EUR">🇪🇸 EUR (€)</option>
+            <option value="USD">🇺🇸 USD ($)</option>
+            <option value="ARS">🇦🇷 ARS ($)</option>
+            <option value="CLP">🇨🇱 CLP ($)</option>
+            <option value="PEN">🇵🇪 PEN (S/)</option>
+          </select>
+
+          {/* Selector de Idioma */}
+          <select 
+            value={language} 
+            onChange={(e) => setLanguage(e.target.value)}
+            title="Idioma de la interfaz"
+            className="utility-select lang-select"
+          >
+            <option value="es">🇲🇽 ES</option>
+            <option value="en">🇺🇸 EN</option>
+            <option value="pt">🇧🇷 PT</option>
+          </select>
+
+          {/* Alternador Modo Individual / Pareja */}
+          <div className="utility-mode-group">
+            <button 
+              className={`utility-mode-btn ${mode === 'solo' ? 'active' : ''}`}
+              onClick={() => onModeChange('solo')}
+              title="Modo Individual / Expat"
+            >
+              <i className="fa-solid fa-user"></i>
+              <span>Solo Expat</span>
+            </button>
+            <button 
+              className={`utility-mode-btn ${mode === 'couple' ? 'active' : ''}`}
+              onClick={() => onModeChange('couple')}
+              title="Modo Pareja / Roomies"
+            >
+              <i className="fa-solid fa-user-group"></i>
+              <span>Roomies / Pareja</span>
+            </button>
+          </div>
+
+          {mode === 'couple' && (
+            <button className="utility-btn utility-pair-btn" onClick={handlePairClick} title="Vincular Dispositivo" aria-label="Vincular Roomie">
+              <i className="fa-solid fa-qrcode"></i> <span>Vincular</span>
+            </button>
+          )}
+
+          <button className="utility-icon-btn" onClick={onOpenSettings} title="Ajustes de Ciudad y Preferencias" aria-label="Ajustes">
+            <i className="fa-solid fa-gear"></i>
+          </button>
         </div>
       </div>
 
-      <div className="header-controls">
-        {/* Moneda Activa / Selector de Moneda Directo */}
-        <select 
-          value={activeCurrencyCode} 
-          onChange={(e) => setCurrencyOverride(e.target.value)}
-          title="Moneda del Sistema"
-          style={{ width: 'auto', padding: '0.45rem 0.9rem', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', background: '#fff5f2', border: '1px solid #ffe2d9', borderRadius: '9999px', color: 'var(--primary)' }}
-        >
-          <option value="COP">🇨🇴 COP ($)</option>
-          <option value="MXN">🇲🇽 MXN ($)</option>
-          <option value="EUR">🇪🇸 EUR (€)</option>
-          <option value="USD">🇺🇸 USD ($)</option>
-          <option value="ARS">🇦🇷 ARS ($)</option>
-          <option value="CLP">🇨🇱 CLP ($)</option>
-          <option value="PEN">🇵🇪 PEN (S/)</option>
-        </select>
-
-        {/* Idioma */}
-        <select 
-          value={language} 
-          onChange={(e) => setLanguage(e.target.value)}
-          title="Idioma de la interfaz"
-          style={{ width: 'auto', padding: '0.45rem 0.8rem', fontSize: '0.85rem', cursor: 'pointer', borderRadius: '9999px' }}
-        >
-          <option value="es">🇲🇽 ES</option>
-          <option value="en">🇺🇸 EN</option>
-          <option value="pt">🇧🇷 PT</option>
-        </select>
-
-        {/* Modo Individual / Pareja */}
-        <div className="mode-toggle-group">
-          <button 
-            className={`mode-btn ${mode === 'solo' ? 'active' : ''}`}
-            onClick={() => onModeChange('solo')}
-            title="Modo Individual / Expat"
-          >
-            <i className="fa-solid fa-user"></i>
-            <span>Solo Expat</span>
-          </button>
-          <button 
-            className={`mode-btn ${mode === 'couple' ? 'active' : ''}`}
-            onClick={() => onModeChange('couple')}
-            title="Modo Pareja / Roomies"
-          >
-            <i className="fa-solid fa-user-group"></i>
-            <span>Roomies / Pareja</span>
-          </button>
+      {/* Main Header Brand Bar */}
+      <header className="main-header">
+        <div className="header-brand">
+          <div className="logo-icon">
+            <i className="fa-solid fa-house-user"></i>
+          </div>
+          <div className="logo-text">
+            <h1>Room<span className="logo-highlight">IA</span> <span className="badge-ai">PRO</span></h1>
+            <p className="tagline">{t.tagline}</p>
+          </div>
         </div>
-
-        {mode === 'couple' && (
-          <button className="btn btn-secondary btn-sm" onClick={handlePairClick} title="Vincular Dispositivo" aria-label="Vincular Roomie">
-            <i className="fa-solid fa-qrcode"></i> <span className="pair-label">Vincular Roomie</span>
-          </button>
-        )}
-
-        <button className="icon-btn" onClick={onOpenSettings} title="Ajustes de Ciudad y Preferencias">
-          <i className="fa-solid fa-gear"></i>
-        </button>
-      </div>
+      </header>
 
       {pairInfo && (
         <div className="modal-overlay active" style={{ zIndex: 9999 }}>
@@ -114,6 +126,6 @@ export function Header({ mode, onModeChange, onOpenSettings }) {
           </div>
         </div>
       )}
-    </header>
+    </div>
   );
 }
