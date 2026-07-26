@@ -6,7 +6,7 @@ import { exportMedicalCardAsPNG, shareMedicalCardToWhatsApp } from '../utils/exp
 import { encryptDocumentHash } from '../utils/crypto.util';
 
 export function DocVault({ documents = [], currentCity, onAddDoc }) {
-  const { language } = useRoomiaStore();
+  const { language, removeDocument } = useRoomiaStore();
   const t = translations[language] || translations.es;
 
   const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
@@ -84,9 +84,18 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{doc.size} • Guardado el {doc.date}</span>
                   </div>
                 </div>
-                <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, marginLeft: '0.5rem', fontWeight: 700, fontSize: '0.75rem' }}>
-                  <i className="fa-solid fa-lock"></i> {doc.hashId || 'Cifrado SHA-256'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', flexShrink: 0, fontWeight: 700, fontSize: '0.75rem' }}>
+                    <i className="fa-solid fa-lock"></i> {doc.hashId || 'Cifrado SHA-256'}
+                  </span>
+                  <button 
+                    onClick={() => removeDocument(idx)} 
+                    title="Eliminar Documento"
+                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px' }}
+                  >
+                    &times;
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -71,8 +71,20 @@ export const useRoomiaStore = create((set, get) => ({
     set({ expenses: updated });
   },
 
+  removeExpense: (index) => {
+    const updated = get().expenses.filter((_, i) => i !== index);
+    StorageUtil.set('roomia_expenses', updated);
+    set({ expenses: updated });
+  },
+
   addTask: (task) => {
     const updated = [...get().tasks, task];
+    StorageUtil.set('roomia_tasks', updated);
+    set({ tasks: updated });
+  },
+
+  removeTask: (taskId) => {
+    const updated = get().tasks.filter(t => t.id !== taskId);
     StorageUtil.set('roomia_tasks', updated);
     set({ tasks: updated });
   },
@@ -111,5 +123,26 @@ export const useRoomiaStore = create((set, get) => ({
     const updated = [...get().documents, doc];
     StorageUtil.set('roomia_docs', updated);
     set({ documents: updated });
+  },
+
+  removeDocument: (index) => {
+    const updated = get().documents.filter((_, i) => i !== index);
+    StorageUtil.set('roomia_docs', updated);
+    set({ documents: updated });
+  },
+
+  clearAllAppData: () => {
+    StorageUtil.clear();
+    set({
+      currentCity: 'Ciudad de México',
+      currencyOverride: '',
+      mode: 'couple',
+      language: 'es',
+      tavilyApiKey: '',
+      ingredients: INITIAL_INGREDIENTS,
+      expenses: INITIAL_EXPENSES,
+      tasks: normalizedInitialTasks,
+      documents: INITIAL_DOCS
+    });
   }
 }));

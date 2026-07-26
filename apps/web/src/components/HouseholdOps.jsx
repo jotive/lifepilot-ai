@@ -5,7 +5,7 @@ import { getCityCurrency, formatMoney } from '../config/constants';
 import { exportExpensesToCSV } from '../utils/export.util';
 
 export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, onToggleChore }) {
-  const { language, currentCity, currencyOverride, addTask, updateTaskStatus, updateTaskAssignee, randomizeTasks } = useRoomiaStore();
+  const { language, currentCity, currencyOverride, addTask, removeTask, removeExpense, updateTaskStatus, updateTaskAssignee, randomizeTasks } = useRoomiaStore();
   const t = translations[language] || translations.es;
   const defaultCurrency = getCityCurrency(currentCity);
   const activeCurrencyCode = currencyOverride || defaultCurrency.code;
@@ -197,9 +197,12 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
-                      <span className="event-badge" style={{ background: 'rgba(255, 107, 74, 0.12)', color: 'var(--primary)', fontSize: '0.75rem' }}>
-                        {task.freq || 'Semanal'}
-                      </span>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        <span className="event-badge" style={{ background: 'rgba(255, 107, 74, 0.12)', color: 'var(--primary)', fontSize: '0.75rem' }}>
+                          {task.freq || 'Semanal'}
+                        </span>
+                        <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
@@ -251,9 +254,12 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <strong style={{ fontSize: '0.95rem', color: 'var(--text-main)' }}>{task.title}</strong>
-                      <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent-amber)', fontSize: '0.75rem' }}>
-                        {task.freq || 'Semanal'}
-                      </span>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        <span className="event-badge" style={{ background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent-amber)', fontSize: '0.75rem' }}>
+                          {task.freq || 'Semanal'}
+                        </span>
+                        <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
@@ -306,9 +312,12 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <strong style={{ fontSize: '0.95rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>{task.title}</strong>
-                      <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', fontSize: '0.75rem' }}>
-                        Listo
-                      </span>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        <span className="event-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-emerald)', fontSize: '0.75rem' }}>
+                          Listo
+                        </span>
+                        <button onClick={() => removeTask(task.id)} title="Eliminar Tarea" style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.1rem', padding: '0 4px' }}>&times;</button>
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.4rem', borderTop: '1px dashed #f1f5f9' }}>
@@ -368,9 +377,18 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                       <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy || 'Alex'} • {exp.date || 'Hoy'}</span>
                     </div>
                   </div>
-                  <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
-                    {currencySymbol}{formatMoney(exp.amount, activeCurrencyCode)} {activeCurrencyCode}
-                  </strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <strong style={{ fontSize: '1rem', color: 'var(--primary)' }}>
+                      {currencySymbol}{formatMoney(exp.amount, activeCurrencyCode)} {activeCurrencyCode}
+                    </strong>
+                    <button 
+                      onClick={() => removeExpense(idx)} 
+                      title="Eliminar Gasto"
+                      style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px' }}
+                    >
+                      &times;
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
