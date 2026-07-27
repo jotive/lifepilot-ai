@@ -5,6 +5,30 @@ import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency, formatMoney } from '../config/constants';
 
+const generateCuratedCityEvents = (city) => [
+  { 
+    title: `Festival de Arte & Luces 2026`, 
+    category: 'Cultural', 
+    description: `Exposición interactiva de arte digital y videomapping nocturno en ${city}.`, 
+    location: city, 
+    date: 'Este Fin de Semana' 
+  },
+  { 
+    title: `Ruta Gastronómica & Craft Beer`, 
+    category: 'Gastronomía', 
+    description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${city}.`, 
+    location: city, 
+    date: 'Viernes 20:00 hrs' 
+  },
+  { 
+    title: `Meetup de Expat & Tech Founders`, 
+    category: 'Networking', 
+    description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${city}.`, 
+    location: city, 
+    date: 'Jueves 19:00 hrs' 
+  }
+];
+
 export function CityExplorer({ currentCity, mode }) {
   const { language, tavilyApiKey, expenses, currencyOverride } = useRoomiaStore();
   const { user } = useAuthStore();
@@ -15,17 +39,17 @@ export function CityExplorer({ currentCity, mode }) {
 
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [events, setEvents] = useState([
-    { title: 'Festival de Arte & Luces 2026', category: 'Cultural', description: `Exposición interactiva de arte digital y videomapping nocturno en ${currentCity}.`, location: currentCity, date: 'Este Fin de Semana' },
-    { title: 'Ruta Gastronómica & Craft Beer', category: 'Gastronomía', description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${currentCity}.`, location: currentCity, date: 'Viernes 20:00 hrs' },
-    { title: 'Meetup de Expat & Tech Founders', category: 'Networking', description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${currentCity}.`, location: currentCity, date: 'Jueves 19:00 hrs' }
-  ]);
+  const [events, setEvents] = useState(() => generateCuratedCityEvents(currentCity || 'Bogotá'));
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Automatically fetch personalized live web events from Tavily when city or user profile changes
   useEffect(() => {
     let isMounted = true;
+
+    // Instantly update default curated events to match selected city
+    setEvents(generateCuratedCityEvents(currentCity));
+
     const fetchLiveEvents = async () => {
       setLoading(true);
       try {
@@ -44,7 +68,10 @@ export function CityExplorer({ currentCity, mode }) {
           setEvents(formatted);
         }
       } catch (err) {
-        console.warn('Tavily search fallback to local initial events:', err);
+        console.warn('Tavily search fallback to local city events:', err);
+        if (isMounted) {
+          setEvents(generateCuratedCityEvents(currentCity));
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
