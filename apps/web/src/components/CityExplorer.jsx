@@ -65,15 +65,24 @@ const CITY_EVENT_CATALOG = {
 };
 
 const generateCuratedCityEvents = (city) => {
-  if (CITY_EVENT_CATALOG[city]) {
-    return CITY_EVENT_CATALOG[city];
+  if (!city) return CITY_EVENT_CATALOG['Bogotá'];
+
+  const cleanCity = city.trim();
+  const normalizedInput = cleanCity.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  for (const catalogCity of Object.keys(CITY_EVENT_CATALOG)) {
+    const normalizedCatalog = catalogCity.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (normalizedInput.includes(normalizedCatalog) || normalizedCatalog.includes(normalizedInput)) {
+      return CITY_EVENT_CATALOG[catalogCity];
+    }
   }
-  // Generic fallback for any other city
+
+  // Generic fallback using the specified city
   return [
-    { title: `Festival de Arte & Luces ${city} 2026`, category: 'Cultural', description: `Exposición interactiva de arte digital y videomapping nocturno en ${city}.`, location: city, date: 'Este Fin de Semana' },
-    { title: `Ruta Gastronómica & Craft Beer ${city}`, category: 'Gastronomía', description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${city}.`, location: city, date: 'Viernes 20:00 hrs' },
-    { title: `Meetup de Expat & Tech Founders ${city}`, category: 'Networking', description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${city}.`, location: city, date: 'Jueves 19:00 hrs' },
-    { title: `Noche de Música en Vivo & Coctelería ${city}`, category: 'Vida Nocturna', description: `Sesión de música en vivo y coctelería de autor en la zona rosa de ${city}.`, location: city, date: 'Sábado 21:00 hrs' }
+    { title: `Festival de Arte & Luces ${cleanCity} 2026`, category: 'Cultural', description: `Exposición interactiva de arte digital y videomapping nocturno en ${cleanCity}.`, location: cleanCity, date: 'Este Fin de Semana' },
+    { title: `Ruta Gastronómica & Craft Beer ${cleanCity}`, category: 'Gastronomía', description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${cleanCity}.`, location: cleanCity, date: 'Viernes 20:00 hrs' },
+    { title: `Meetup de Expat & Tech Founders ${cleanCity}`, category: 'Networking', description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${cleanCity}.`, location: cleanCity, date: 'Jueves 19:00 hrs' },
+    { title: `Noche de Música en Vivo & Coctelería ${cleanCity}`, category: 'Vida Nocturna', description: `Sesión de música en vivo y coctelería de autor en ${cleanCity}.`, location: cleanCity, date: 'Sábado 21:00 hrs' }
   ];
 };
 

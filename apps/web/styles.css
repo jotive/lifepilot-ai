@@ -650,12 +650,14 @@ input:focus, select:focus {
   padding: 1.25rem; 
   margin-bottom: 1.5rem; 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  box-sizing: border-box;
 }
-.search-bar-wrap { position: relative; display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+.search-bar-wrap { position: relative; display: flex; gap: 0.75rem; margin-bottom: 1rem; width: 100%; }
 .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-.search-bar-wrap input { padding-left: 3rem; flex: 1; }
+.search-bar-wrap input { padding-left: 3rem; flex: 1; min-width: 0; }
 
-.filter-chips { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.filter-chips { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; width: 100%; }
 .chip-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
 .chip { 
   padding: 0.45rem 1rem; 
@@ -676,13 +678,40 @@ input:focus, select:focus {
   font-weight: 700; 
 }
 
-/* Event Cards Grid */
-.results-layout { display: grid; grid-template-columns: 2.3fr 1fr; gap: 1.5rem; }
-.section-title-wrap { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+/* Event Cards Grid & Layout (Zero Horizontal Scroll) */
+.results-layout { 
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .results-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+}
+
+.events-column {
+  min-width: 0;
+  width: 100%;
+}
+
+.section-title-wrap { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
 .section-title-wrap h3 { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; }
 .results-count { font-size: 0.85rem; color: var(--text-muted); }
 
-.events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+.events-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+  gap: 1.25rem; 
+  width: 100%;
+  box-sizing: border-box;
+}
 .event-card { 
   background: #ffffff; 
   border: 1px solid #f1f5f9; 
@@ -694,6 +723,8 @@ input:focus, select:focus {
   gap: 1rem; 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); 
+  min-width: 0;
+  word-break: break-word;
 }
 .event-card:hover { 
   transform: translateY(-5px); 
