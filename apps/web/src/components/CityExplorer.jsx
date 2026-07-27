@@ -229,7 +229,7 @@ export function CityExplorer({ currentCity, mode }) {
           <p>Descubre experiencias seleccionadas y panoramas imperdibles para {user.name || 'ti'} en {currentCity}.</p>
         </div>
         <div className="tavily-status-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#059669' }}>
-          <i className="fa-solid fa-satellite-dish"></i> Live Radar Activo ({currentCity}) — Caché Diario DB
+          <i className="fa-solid fa-sparkles"></i> Cartelera Verificada en {currentCity}
         </div>
       </div>
 
