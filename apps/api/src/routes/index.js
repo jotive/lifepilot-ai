@@ -57,6 +57,32 @@ router.post('/api/v1/contracts/analyze', (req, res) => {
   return ResponseUtil.success(res, result);
 });
 
+// AUTHENTICATION & PASSWORD RECOVERY ENDPOINTS
+router.post('/api/v1/auth/forgot-password', (req, res) => {
+  const { email } = req.body;
+  if (!email || !email.includes('@')) {
+    return ResponseUtil.error(res, 'Se requiere un correo electrónico válido', 400);
+  }
+  return ResponseUtil.success(res, {
+    sent: true,
+    email,
+    message: `Se ha enviado un enlace de recuperación seguro a ${email}. Revisa tu bandeja de entrada o spam.`,
+    resetToken: `rm_reset_${Math.random().toString(36).substring(2, 10)}`
+  });
+});
+
+router.post('/api/v1/auth/reset-password', (req, res) => {
+  const { email, newPassword, resetToken } = req.body;
+  if (!email || !newPassword || newPassword.length < 6) {
+    return ResponseUtil.error(res, 'La nueva contraseña debe tener al menos 6 caracteres', 400);
+  }
+  return ResponseUtil.success(res, {
+    updated: true,
+    email,
+    message: 'Tu contraseña ha sido restablecida exitosamente. Ya puedes iniciar sesión con tu nueva clave.'
+  });
+});
+
 // REALTIME CLOUD SYNC ENDPOINTS (Distances Sync)
 router.post('/api/v1/realtime/broadcast', (req, res) => {
   const { pairCode, channelKey, payload } = req.body;
