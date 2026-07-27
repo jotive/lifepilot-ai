@@ -4,7 +4,9 @@
 > **Presentador:** Jose Tirado  
 > **Proyecto:** RoomIA PRO — Tu Roomie Inteligente & Copiloto de Vida  
 > **Tiempo Total:** 4:30 a 5:00 minutos  
-> **URL Demo Local:** `http://localhost:3005` (o URL desplegada en Vercel)
+> **🌐 URL Demo Pública (Live Demo):** `https://roomia-pro.vercel.app` *(o `http://localhost:3005` para pruebas locales)*  
+> **🎬 Enlace del Video Publicado:** `[Añadir enlace público de YouTube / Loom / Drive aquí]`  
+> **📦 Repositorio GitHub:** [https://github.com/jotive/lifepilot-ai](https://github.com/jotive/lifepilot-ai)  
 
 ---
 
