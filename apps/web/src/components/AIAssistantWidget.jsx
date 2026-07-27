@@ -36,45 +36,53 @@ export function AIAssistantWidget() {
     if (!customText) setInput('');
     setLoading(true);
 
-    try {
-      // Use ApiService for generating recipes / responses
-      const res = await ApiService.generateRecipes([textToSend, `Ciudad: ${currentCity}`], mode, 'es');
-      if (res && res.recipes && res.recipes[0]) {
-        const recipe = res.recipes[0];
-        setMessages((prev) => [
-          ...prev,
-          { 
-            sender: 'bot', 
-            text: `💡 Sugerencia RoomIA (${recipe.title}):\n${recipe.description}\n⏱️ Tiempo: ${recipe.prepTime || '20 min'}` 
-          }
-        ]);
-        setLoading(false);
-        return;
+    const msgLower = textToSend.toLowerCase();
+
+    // 1. If asking about recipes or food
+    if (msgLower.includes('cocin') || msgLower.includes('receta') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('ingredien')) {
+      try {
+        const res = await ApiService.generateRecipes([textToSend, ...ingredients], mode, 'es');
+        if (res && res.recipes && res.recipes[0]) {
+          const recipe = res.recipes[0];
+          const stepsText = Array.isArray(recipe.steps) 
+            ? recipe.steps.map((step, i) => `${i + 1}. ${step}`).join('\n')
+            : (recipe.description || 'Picar ingredientes y saltear a fuego medio por 15 minutos.');
+
+          setMessages((prev) => [
+            ...prev,
+            { 
+              sender: 'bot', 
+              text: `💡 Sugerencia de Receta (${recipe.title}):\n⏱️ Tiempo: ${recipe.time || '20 min'} | 🏷️ ${recipe.badge || 'Anti-Desperdicio'}\n\n📋 Instrucciones:\n${stepsText}` 
+            }
+          ]);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('Fallback receta local:', err);
       }
-    } catch (err) {
-      console.warn('Real AI endpoint fallback activated:', err);
     }
 
-    // High quality intelligent response fallback
+    // 2. Intelligent responses for all other topics
     setTimeout(() => {
-      let botResponse = `Como tu copiloto en ${currentCity}, he procesado tu consulta. Revisa los módulos de finanzas, mudanza o recetas para más detalles.`;
-      const msgLower = textToSend.toLowerCase();
+      let botResponse = '';
 
-      if (msgLower.includes('receta') || msgLower.includes('cocinar') || msgLower.includes('comer') || msgLower.includes('hambre')) {
-        const ingList = ingredients.length > 0 ? ingredients.slice(0, 3).join(', ') : 'tus ingredientes';
-        botResponse = `Revisando tu alacena en ${currentCity} (${ingredients.length} ingredientes registrados: ${ingList}). Te sugiero preparar un salteado anti-desperdicio o revisar el módulo 'Mi Refrigerador'.`;
-      } else if (msgLower.includes('gasto') || msgLower.includes('dinero') || msgLower.includes('cuenta') || msgLower.includes('50/50') || msgLower.includes('presupuesto')) {
-        const totalExp = expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0);
-        botResponse = `Tienen ${expenses.length} gastos compartidos registrados por un total de $${totalExp.toLocaleString()} en ${currentCity}. Recuerda que puedes exportar el reporte en CSV desde la sección de Finanzas.`;
-      } else if (msgLower.includes('mudanza') || msgLower.includes('renta') || msgLower.includes('contrato')) {
-        botResponse = `Para tu estancia en ${currentCity}, recuerda subir la copia de tu contrato a la Bóveda de RoomIA y usar nuestro Analizador Legal de Cláusulas de Arrendamiento.`;
-      } else if (msgLower.includes('evento') || msgLower.includes('ciudad') || msgLower.includes('planes')) {
-        botResponse = `En la sección 'Explorar Ciudad' puedes consultar la cartelera en vivo de ${currentCity} y generar un itinerario personalizado con IA según tus preferencias.`;
+      if (msgLower.includes('gasto') || msgLower.includes('dinero') || msgLower.includes('cuenta') || msgLower.includes('50/50') || msgLower.includes('presupuesto') || msgLower.includes('pagar')) {
+        const totalExp = (expenses || []).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
+        const halfExp = totalExp / 2;
+        botResponse = `💰 Resumen de Finanzas Compartidas (50/50):\n• Gastos registrados: ${expenses.length}\n• Total acumulado: $${totalExp.toLocaleString()} en ${currentCity}.\n• División 50/50: $${halfExp.toLocaleString()} por persona.\n\n💡 Tip: Puedes exportar el reporte en formato CSV desde el módulo de Finanzas.`;
+      } else if (msgLower.includes('mudanza') || msgLower.includes('renta') || msgLower.includes('contrato') || msgLower.includes('depósito')) {
+        botResponse = `📦 Asistente de Mudanza & Arrendamiento en ${currentCity}:\n• Recuerda usar nuestro Analizador de Contratos con IA para detectar cláusulas abusivas o depósitos no reembolsables.\n• Revisa la checklist de mudanza en el panel lateral para controlar tus trámites de servicios y salud.`;
+      } else if (msgLower.includes('evento') || msgLower.includes('ciudad') || msgLower.includes('planes') || msgLower.includes('salir')) {
+        botResponse = `📍 Cartelera Urbano en ${currentCity}:\nPuedes consultar los eventos destacados en la sección "Explorar Ciudad" y generar un itinerario guiado por IA según tu tiempo disponible.`;
+      } else {
+        const ingList = ingredients.length > 0 ? ingredients.slice(0, 3).join(', ') : 'tus ingredientes registrados';
+        botResponse = `🤖 Copiloto RoomIA (${currentCity}):\nHe procesado tu consulta sobre "${textToSend}".\n\nPuedo ayudarte con:\n1. 🍳 Sugerencias de cocina anti-desperdicio (alacena actual: ${ingredients.length} items).\n2. 💰 Balances de gastos 50/50 y presupuesto de vivienda.\n3. 📄 Análisis legal de contratos de alquiler y mudanza.`;
       }
 
       setMessages((prev) => [...prev, { sender: 'bot', text: botResponse }]);
       setLoading(false);
-    }, 500);
+    }, 450);
   };
 
   return (
@@ -170,26 +178,26 @@ export function AIAssistantWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Action Chips */}
-          <div style={{ padding: '0.4rem 0.8rem', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.4rem', overflowX: 'auto' }}>
+          {/* Quick Action Chips (Flex Wrap - Zero Horizontal Scrollbar) */}
+          <div style={{ padding: '0.5rem 0.8rem', background: '#ffffff', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
             <button 
               type="button" 
               onClick={() => handleSend('💡 ¿Qué cocino hoy?')}
-              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: 'var(--text-main)', fontSize: '0.72rem', padding: '0.35rem 0.6rem', borderRadius: '9999px', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 700 }}
+              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: 'var(--text-main)', fontSize: '0.72rem', padding: '0.3rem 0.55rem', borderRadius: '9999px', cursor: 'pointer', fontWeight: 700 }}
             >
               💡 ¿Qué cocino hoy?
             </button>
             <button 
               type="button" 
               onClick={() => handleSend('💰 Resumen de gastos 50/50')}
-              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: 'var(--text-main)', fontSize: '0.72rem', padding: '0.35rem 0.6rem', borderRadius: '9999px', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 700 }}
+              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: 'var(--text-main)', fontSize: '0.72rem', padding: '0.3rem 0.55rem', borderRadius: '9999px', cursor: 'pointer', fontWeight: 700 }}
             >
               💰 Gastos 50/50
             </button>
             <button 
               type="button" 
               onClick={() => handleSend('📋 Recomendaciones mudanza')}
-              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: 'var(--text-main)', fontSize: '0.72rem', padding: '0.35rem 0.6rem', borderRadius: '9999px', cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 700 }}
+              style={{ border: '1px solid #e2e8f0', background: '#f8fafc', color: 'var(--text-main)', fontSize: '0.72rem', padding: '0.3rem 0.55rem', borderRadius: '9999px', cursor: 'pointer', fontWeight: 700 }}
             >
               📋 Mudanza
             </button>
