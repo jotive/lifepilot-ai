@@ -5,8 +5,8 @@
 > **Proyecto Oficial para el Hackatón de Inteligencia Artificial (Código Facilito & AWS 2026)**  
 > **Autor:** [@jotive](https://github.com/jotive)  
 > **Repositorio GitHub:** [https://github.com/jotive/lifepilot-ai](https://github.com/jotive/lifepilot-ai)  
-> **🌐 Demo en Vivo (Enlace Público):** [https://roomia-pro.vercel.app](https://roomia-pro.vercel.app) *(reemplazar con tu dominio desplegado)*  
-> **🎬 Video de Presentación:** [Ver Video en YouTube / Loom](https://youtube.com) *(reemplazar con tu enlace público del video)*  
+> **🌐 Demo en Vivo (Enlace Público):** [https://hackathon-codigofacilito-2026jul.vercel.app](https://hackathon-codigofacilito-2026jul.vercel.app)  
+> **🎬 Video de Presentación:** [Ver Video en YouTube / Loom](https://youtube.com) *(añadir tu enlace del video)*  
 > **Reto Seleccionado:** 🌐 *Aplicaciones Web & Servicios Externos de IA*
 
 ---
