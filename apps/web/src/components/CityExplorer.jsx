@@ -5,29 +5,77 @@ import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency, formatMoney } from '../config/constants';
 
-const generateCuratedCityEvents = (city) => [
-  { 
-    title: `Festival de Arte & Luces 2026`, 
-    category: 'Cultural', 
-    description: `Exposición interactiva de arte digital y videomapping nocturno en ${city}.`, 
-    location: city, 
-    date: 'Este Fin de Semana' 
-  },
-  { 
-    title: `Ruta Gastronómica & Craft Beer`, 
-    category: 'Gastronomía', 
-    description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${city}.`, 
-    location: city, 
-    date: 'Viernes 20:00 hrs' 
-  },
-  { 
-    title: `Meetup de Expat & Tech Founders`, 
-    category: 'Networking', 
-    description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${city}.`, 
-    location: city, 
-    date: 'Jueves 19:00 hrs' 
+const CITY_EVENT_CATALOG = {
+  'Bogotá': [
+    { title: 'Festival Estéreo Picnic 2026', category: 'Cultural', description: 'El festival musical y de experiencias gastronómicas más grande de Colombia en el Parque Simón Bolívar.', location: 'Parque Simón Bolívar, Bogotá', date: 'Este Fin de Semana' },
+    { title: 'Ruta de Café Especial & Brunch en Chapinero', category: 'Gastronomía', description: 'Recorrido guiado de cata por las mejores cafeterías de origen de la Zona G y Chapinero Alto.', location: 'Zona G & Chapinero, Bogotá', date: 'Sábado 10:00 hrs' },
+    { title: 'Bogotá Tech & AI Founders Meetup', category: 'Networking', description: 'Encuentro de startups, desarrolladores de Inteligencia Artificial y nómadas digitales en la capital.', location: 'WeWork Parque 93, Bogotá', date: 'Jueves 19:00 hrs' },
+    { title: 'Noche de Museos en La Candelaria', category: 'Cultural', description: 'Recorrido nocturno por el Museo Botero, Museo del Oro y galerías independientes del centro histórico.', location: 'La Candelaria, Bogotá', date: 'Viernes 18:30 hrs' },
+    { title: 'Cocktails & Vinyl Sessions en Zona T', category: 'Vida Nocturna', description: 'Sesión de música en vinilo, DJ sets en vivo y coctelería de autor en las terrazas de la Zona Rosa.', location: 'Zona T / Zona Rosa, Bogotá', date: 'Viernes 21:00 hrs' },
+    { title: 'Feria de Diseño & Mercado Independiente', category: 'Cultural', description: 'Exposición de diseño local, moda sostenible, ilustración y gastronomía emergente en el Parque 93.', location: 'Parque de la 93, Bogotá', date: 'Domingo 11:00 hrs' }
+  ],
+  'Ciudad de México': [
+    { title: 'Exposición Nocturna en Museo Soumaya', category: 'Cultural', description: 'Visita guiada con proyecciones digitales y música de cámara en las galerías de Polanco.', location: 'Polanco, Ciudad de México', date: 'Este Fin de Semana' },
+    { title: 'Ruta Tacogourmet & Mezcal en la Roma', category: 'Gastronomía', description: 'Maridaje de tacos de culto y mezcales artesanales por la Roma Norte y Condesa.', location: 'Roma Norte, Ciudad de México', date: 'Viernes 20:00 hrs' },
+    { title: 'CDMX Tech & Expat Mixer', category: 'Networking', description: 'Networking bilingüe para emprendedores tech, freelancers internacionales e inversionistas.', location: 'Colonia Juárez, Ciudad de México', date: 'Jueves 19:30 hrs' },
+    { title: 'Picnic Nocturno & Jazz en Chapultepec', category: 'Cultural', description: 'Concierto de jazz en vivo al aire libre rodeado de naturaleza en el bosque.', location: 'Bosque de Chapultepec, CDMX', date: 'Sábado 19:00 hrs' },
+    { title: 'Rooftop Party & Synthwave Sessions', category: 'Vida Nocturna', description: 'Vista panorámica de la ciudad con DJ sets de música electrónica y coctelería.', location: 'Terraza Roma, CDMX', date: 'Sábado 22:00 hrs' },
+    { title: 'Bazar de Arte & Antigüedades en San Ángel', category: 'Cultural', description: 'Mercado tradicional al aire libre con pinturas, artesanías y objetos de colección.', location: 'San Ángel, CDMX', date: 'Sábado 11:00 hrs' }
+  ],
+  'Madrid': [
+    { title: 'Noche Abierta en el Museo del Prado', category: 'Cultural', description: 'Visita nocturna a las galerías del Prado con recitales de música en los claustros.', location: 'Paseo del Prado, Madrid', date: 'Este Fin de Semana' },
+    { title: 'Ruta de Tapas & Vinos por La Latina', category: 'Gastronomía', description: 'Degustación de tapas castizas, jamón ibérico de bellota y vinos de Rioja.', location: 'La Latina, Madrid', date: 'Viernes 20:00 hrs' },
+    { title: 'Madrid AI & Dev Summit', category: 'Networking', description: 'Ponencias sobre arquitectura agéntica de IA y networking en el Campus de Startups.', location: 'Google Campus, Madrid', date: 'Jueves 18:30 hrs' },
+    { title: 'Session de Flamenco & Coctelería en el Barrio de las Letras', category: 'Vida Nocturna', description: 'Tablao flamenco íntimo acompañado de tapas y cócteles de autor.', location: 'Barrio de las Letras, Madrid', date: 'Sábado 21:30 hrs' },
+    { title: 'Mercado de Motores & Conciertos Indies', category: 'Cultural', description: 'Feria vintage con food trucks, diseño independiente y música en directo.', location: 'Museo del Ferrocarril, Madrid', date: 'Sábado 12:00 hrs' },
+    { title: 'Musicales & Teatro en Gran Vía', category: 'Cultural', description: 'Espectáculos teatrales de clase mundial en los escenarios de Gran Vía.', location: 'Gran Vía, Madrid', date: 'Viernes 20:30 hrs' }
+  ],
+  'Buenos Aires': [
+    { title: 'Milonga Tradicional & Orquesta en Vivo', category: 'Cultural', description: 'Noche de baile de tango abierto con orquesta en directo en un bodegón histórico.', location: 'San Telmo, Buenos Aires', date: 'Este Fin de Semana' },
+    { title: 'Ruta de Asado & Cata de Malbec', category: 'Gastronomía', description: 'Experiencia gastronómica en las mejores parrillas y catas de cepas mendocinas.', location: 'Palermo Soho, Buenos Aires', date: 'Viernes 20:30 hrs' },
+    { title: 'BA Startups & Expat Meetup', category: 'Networking', description: 'Encuentro de nómadas digitales, creadores de contenido e ingenieros de software.', location: 'Palermo Hollywood, Buenos Aires', date: 'Jueves 19:00 hrs' },
+    { title: 'Noche de los Museos en Recoleta', category: 'Cultural', description: 'Exposiciones de arte moderno, instalaciones interactivas y proyecciones visuales.', location: 'Centro Cultural Recoleta, BA', date: 'Sábado 19:00 hrs' },
+    { title: 'Fiesta Cumbia & DJ Sets en Niceto', category: 'Vida Nocturna', description: 'Música tropical en vivo, electrónica alternativa y gran ambiente festivo.', location: 'Niceto Club, Buenos Aires', date: 'Sábado 23:30 hrs' },
+    { title: 'Feria de Artesanos de Plaza Francia', category: 'Cultural', description: 'Paseo al aire libre con puestos de platería, cuero y espectáculos callejeros.', location: 'Recoleta, Buenos Aires', date: 'Domingo 14:00 hrs' }
+  ],
+  'Santiago': [
+    { title: 'Ruta del Vino & Gastronomía en Lastarria', category: 'Gastronomía', description: 'Degustación de cepas Carmenere y Sauvignon blanc con alta cocina de autor.', location: 'Barrio Lastarria, Santiago', date: 'Este Fin de Semana' },
+    { title: 'Santiago AI & Innovation Forum', category: 'Networking', description: 'Conferencias sobre ecosistemas de Venture Capital e Inteligencia Artificial.', location: 'Providencia, Santiago', date: 'Jueves 18:30 hrs' },
+    { title: 'Noche Astronomía & Telescopios en el Cerro', category: 'Cultural', description: 'Sesión guiada por astrónomos sobre las luces panorámicas de Santiago.', location: 'Cerro San Cristóbal, Santiago', date: 'Sábado 20:00 hrs' },
+    { title: 'Pub Crawl & Música Indie en Bellavista', category: 'Vida Nocturna', description: 'Tocas de bandas locales independientes y pubs de cerveza artesanal.', location: 'Barrio Bellavista, Santiago', date: 'Viernes 22:00 hrs' },
+    { title: 'Feria de Diseño & Antigüedades en Barrio Italia', category: 'Cultural', description: 'Bazar de diseño de autor, librerías independientes y café al paso.', location: 'Barrio Italia, Santiago', date: 'Sábado 11:30 hrs' },
+    { title: 'Concierto Filarmónico en Teatro Municipal', category: 'Cultural', description: 'Presentación especial de la Orquesta Filarmónica de Santiago.', location: 'Centro Histórico, Santiago', date: 'Viernes 19:00 hrs' }
+  ],
+  'Lima': [
+    { title: 'Ruta Cevichera & Cata de Pisco Sour', category: 'Gastronomía', description: 'Degustación de cebiches marinos, tiraditos y coctelería con pisco peruano.', location: 'Miraflores & Barranco, Lima', date: 'Este Fin de Semana' },
+    { title: 'Noche de Arte & Galerías en Barranco', category: 'Cultural', description: 'Recorrido por el Puente de los Suspiros y galerías de arte contemporáneo.', location: 'Barranco, Lima', date: 'Viernes 19:00 hrs' },
+    { title: 'Lima Tech & Founders Mixer', category: 'Networking', description: 'Reunión de emprendedores fintech, desarrollo de software e inversionistas.', location: 'San Isidro, Lima', date: 'Jueves 19:00 hrs' },
+    { title: 'Peña Criolla en Vivo & Danza Traditional', category: 'Cultural', description: 'Espectáculo con guitarra, cajón peruano y valses criollos en vivo.', location: 'Centro Histórico, Lima', date: 'Sábado 21:00 hrs' },
+    { title: 'Sunset Rooftop & Electro Sessions frente al Mar', category: 'Vida Nocturna', description: 'Atardecer frente al Océano Pacífico con DJ en vivo y bebidas de autor.', location: 'Malecón de Miraflores, Lima', date: 'Viernes 18:00 hrs' },
+    { title: 'Feria de Artesanías Inca Market', category: 'Cultural', description: 'Exposición de textiles andinos, cerámica fina y joyería en plata.', location: 'Miraflores, Lima', date: 'Domingo 11:00 hrs' }
+  ],
+  'Medellín': [
+    { title: 'Recorrido Comuna 13: Arte, Rap & Breakdance', category: 'Cultural', description: 'Tour de historia y transformación social con artistas locales y muestra de hip hop.', location: 'Comuna 13, Medellín', date: 'Este Fin de Semana' },
+    { title: 'Cata de Cafés de Origen & Brunch en Provenza', category: 'Gastronomía', description: 'Experiencia sensorial probando los mejores granos antioqueños de especialidad.', location: 'Provenza, El Poblado, Medellín', date: 'Sábado 10:00 hrs' },
+    { title: 'Medellín AI & Tech Expat Community', category: 'Networking', description: 'Encuentro de nómadas digitales, ingenieros de IA y creadores de tecnología.', location: 'Ruta N / El Poblado, Medellín', date: 'Jueves 18:30 hrs' },
+    { title: 'Noche Urbana & Terrazas en Provenza', category: 'Vida Nocturna', description: 'Fiesta en terrazas con los DJs más reconocidos de la escena urbana y reggaeton.', location: 'El Poblado, Medellín', date: 'Viernes 22:00 hrs' },
+    { title: 'Festival Nocturno de Orquídeas & Luces', category: 'Cultural', description: 'Recorrido iluminado por las colecciones de flores y música acústica.', location: 'Jardín Botánico de Medellín', date: 'Viernes 19:00 hrs' },
+    { title: 'Mercado de Diseño Paisa & Artesanías', category: 'Cultural', description: 'Exposición de emprendimientos de moda, accesorios e ilustración local.', location: 'Parque Lleras, Medellín', date: 'Domingo 12:00 hrs' }
+  ]
+};
+
+const generateCuratedCityEvents = (city) => {
+  if (CITY_EVENT_CATALOG[city]) {
+    return CITY_EVENT_CATALOG[city];
   }
-];
+  // Generic fallback for any other city
+  return [
+    { title: `Festival de Arte & Luces ${city} 2026`, category: 'Cultural', description: `Exposición interactiva de arte digital y videomapping nocturno en ${city}.`, location: city, date: 'Este Fin de Semana' },
+    { title: `Ruta Gastronómica & Craft Beer ${city}`, category: 'Gastronomía', description: `Recorrido guiado por los mejores mercados gastronómicos y restaurantes de ${city}.`, location: city, date: 'Viernes 20:00 hrs' },
+    { title: `Meetup de Expat & Tech Founders ${city}`, category: 'Networking', description: `Encuentro informal de emprendedores, nómadas digitales y desarrolladores en ${city}.`, location: city, date: 'Jueves 19:00 hrs' },
+    { title: `Noche de Música en Vivo & Coctelería ${city}`, category: 'Vida Nocturna', description: `Sesión de música en vivo y coctelería de autor en la zona rosa de ${city}.`, location: city, date: 'Sábado 21:00 hrs' }
+  ];
+};
 
 export function CityExplorer({ currentCity, mode }) {
   const { language, tavilyApiKey, expenses, currencyOverride } = useRoomiaStore();
