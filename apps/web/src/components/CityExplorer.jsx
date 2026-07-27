@@ -218,13 +218,8 @@ export function CityExplorer({ currentCity, mode }) {
           <h2><i className="fa-solid fa-compass"></i> Radar Urbano de Eventos</h2>
           <p>Descubre experiencias seleccionadas y panoramas imperdibles para {user.name || 'ti'} en {currentCity}.</p>
         </div>
-        <div className="tavily-status-badge" style={{ background: eventMeta.cached ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255, 107, 74, 0.12)', color: eventMeta.cached ? '#059669' : 'var(--primary)' }}>
-          <i className={`fa-solid ${eventMeta.cached ? 'fa-bolt' : 'fa-satellite-dish'}`}></i>{' '}
-          {eventMeta.cached 
-            ? `Caché Diario DB (${currentCity}) — 0 Créditos Gastados Hoy`
-            : eventMeta.source === 'live_web'
-              ? `Tavily AI Live Web (${currentCity})`
-              : `Radar Urbano Activo (${currentCity})`}
+        <div className="tavily-status-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#059669' }}>
+          <i className="fa-solid fa-satellite-dish"></i> Live Radar Activo ({currentCity}) — Caché Diario DB
         </div>
       </div>
 
