@@ -88,6 +88,7 @@ export function CityExplorer({ currentCity, mode }) {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [events, setEvents] = useState(() => generateCuratedCityEvents(currentCity || 'Bogotá'));
+  const [eventMeta, setEventMeta] = useState({ source: 'curated', cached: true });
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -97,6 +98,7 @@ export function CityExplorer({ currentCity, mode }) {
 
     // Instantly update default curated events to match selected city
     setEvents(generateCuratedCityEvents(currentCity));
+    setEventMeta({ source: 'curated', cached: true });
 
     const fetchLiveEvents = async () => {
       setLoading(true);
@@ -114,11 +116,17 @@ export function CityExplorer({ currentCity, mode }) {
             url: r.url
           }));
           setEvents(formatted);
+          setEventMeta({
+            source: searchResults.source || 'live_web',
+            cached: searchResults.cached ?? false,
+            cacheDate: searchResults.cacheDate
+          });
         }
       } catch (err) {
         console.warn('Tavily search fallback to local city events:', err);
         if (isMounted) {
           setEvents(generateCuratedCityEvents(currentCity));
+          setEventMeta({ source: 'curated', cached: true });
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -210,8 +218,13 @@ export function CityExplorer({ currentCity, mode }) {
           <h2><i className="fa-solid fa-compass"></i> Radar Urbano de Eventos</h2>
           <p>Descubre experiencias seleccionadas y panoramas imperdibles para {user.name || 'ti'} en {currentCity}.</p>
         </div>
-        <div className="tavily-status-badge">
-          <i className="fa-solid fa-satellite-dish"></i> Live Radar Activo
+        <div className="tavily-status-badge" style={{ background: eventMeta.cached ? 'rgba(16, 185, 129, 0.12)' : 'rgba(255, 107, 74, 0.12)', color: eventMeta.cached ? '#059669' : 'var(--primary)' }}>
+          <i className={`fa-solid ${eventMeta.cached ? 'fa-bolt' : 'fa-satellite-dish'}`}></i>{' '}
+          {eventMeta.cached 
+            ? `Caché Diario DB (${currentCity}) — 0 Créditos Gastados Hoy`
+            : eventMeta.source === 'live_web'
+              ? `Tavily AI Live Web (${currentCity})`
+              : `Radar Urbano Activo (${currentCity})`}
         </div>
       </div>
 
