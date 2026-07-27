@@ -98,6 +98,7 @@ export function CityExplorer({ currentCity, mode }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [events, setEvents] = useState(() => generateCuratedCityEvents(currentCity || 'Bogotá'));
   const [eventMeta, setEventMeta] = useState({ source: 'curated', cached: true });
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -287,9 +288,19 @@ export function CityExplorer({ currentCity, mode }) {
           ) : (
             <div className="events-grid">
               {filteredEventsByCategory.map((evt, idx) => (
-                <div key={idx} className="event-card">
+                <div 
+                  key={idx} 
+                  className="event-card"
+                  onClick={() => setSelectedEvent(evt)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div>
-                    <span className="event-badge">{evt.category || 'Evento'}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <span className="event-badge">{evt.category || 'Evento'}</span>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 700 }}>
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i> Ver fuente
+                      </span>
+                    </div>
                     <h4 className="event-title">{evt.title}</h4>
                     <p className="event-snippet">{evt.snippet || evt.description}</p>
                   </div>
@@ -358,6 +369,66 @@ export function CityExplorer({ currentCity, mode }) {
           </div>
         </div>
       </div>
+
+      {/* EVENT DETAIL & SOURCE MODAL */}
+      {selectedEvent && (
+        <div className="modal-overlay active" onClick={() => setSelectedEvent(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="event-badge">{selectedEvent.category || 'Evento'}</span>
+                <h3 style={{ fontSize: '1.1rem', margin: 0, fontWeight: 800 }}>{selectedEvent.title}</h3>
+              </div>
+              <button className="close-btn" onClick={() => setSelectedEvent(null)}>&times;</button>
+            </div>
+
+            <div style={{ padding: '1rem 0' }}>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-main)', lineHeight: '1.6', marginBottom: '1.25rem' }}>
+                {selectedEvent.snippet || selectedEvent.description}
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <i className="fa-solid fa-location-dot text-coral"></i>
+                  <span>Ubicación: <strong>{selectedEvent.location || currentCity}</strong></span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', color: 'var(--text-main)', fontWeight: 600 }}>
+                  <i className="fa-solid fa-calendar text-coral"></i>
+                  <span>Fecha / Horario: <strong>{selectedEvent.date || 'Esta Semana'}</strong></span>
+                </div>
+              </div>
+
+              {selectedEvent.url ? (
+                <a
+                  href={selectedEvent.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary full-width"
+                  style={{ display: 'inline-flex', gap: '0.5rem', textDecoration: 'none', justifyContent: 'center' }}
+                >
+                  <i className="fa-solid fa-arrow-up-right-from-square"></i> Ver Publicación o Fuente Oficial
+                </a>
+              ) : (
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(`${selectedEvent.title} ${selectedEvent.location || currentCity}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary full-width"
+                  style={{ display: 'inline-flex', gap: '0.5rem', textDecoration: 'none', justifyContent: 'center' }}
+                >
+                  <i className="fa-solid fa-magnifying-glass"></i> Buscar Publicación & Fuente Oficial
+                </a>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary full-width" onClick={() => setSelectedEvent(null)}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
