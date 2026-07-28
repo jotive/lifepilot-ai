@@ -47,4 +47,11 @@ export class ApiService {
       body: JSON.stringify({ imageBase64 })
     });
   }
+
+  static async chatWithCopilot(messages, context) {
+    return request('/copilot/chat', {
+      method: 'POST',
+      body: JSON.stringify({ messages, context })
+    });
+  }
 }

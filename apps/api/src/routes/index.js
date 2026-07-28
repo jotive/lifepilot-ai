@@ -48,6 +48,19 @@ router.post('/api/v1/vision/receipt-scans', validateBody(receiptScanSchema), (re
 router.post('/api/v1/recipes/generate', validateBody(recipeGenerateSchema), (req, res, next) => recipeController.handleGenerateRecipes(req, res, next));
 router.post('/api/v1/itineraries/generate', validateBody(itineraryGenerateSchema), (req, res, next) => itineraryController.handleGenerateItinerary(req, res, next));
 
+router.post('/api/v1/copilot/chat', async (req, res, next) => {
+  const { messages, context } = req.body;
+  if (!messages || !Array.isArray(messages)) {
+    return ResponseUtil.error(res, 'Messages array is required', 400);
+  }
+  try {
+    const result = await copilotService.chatWithAgent(messages, context);
+    return ResponseUtil.success(res, result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/api/v1/contracts/analyze', (req, res) => {
   const { contractText } = req.body;
   if (!contractText) {

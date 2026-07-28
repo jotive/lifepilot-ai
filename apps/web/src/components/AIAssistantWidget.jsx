@@ -15,7 +15,7 @@ export function AIAssistantWidget() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const { currentCity, mode, ingredients, expenses } = useRoomiaStore();
+  const { currentCity, mode, ingredients, expenses, tasks, documents, currencyOverride } = useRoomiaStore();
   const { user } = useAuthStore();
 
   const scrollToBottom = () => {
@@ -32,61 +32,56 @@ export function AIAssistantWidget() {
     const textToSend = (customText || input).trim();
     if (!textToSend) return;
 
-    setMessages((prev) => [...prev, { sender: 'user', text: textToSend }]);
+    const userMessage = { sender: 'user', text: textToSend };
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     if (!customText) setInput('');
     setLoading(true);
 
-    const msgLower = textToSend.toLowerCase();
+    // Build real-time Session Context Harness for the AI Agent
+    const activeCurrency = currencyOverride || getCityCurrency(currentCity).code;
+    const contextHarness = {
+      user: { name: user.name || 'Expat', role: user.role || 'Residente' },
+      city: currentCity,
+      currency: activeCurrency,
+      mode,
+      ingredients,
+      expenses,
+      tasks,
+      documents
+    };
 
-    // 1. Consulta explícita de ingredientes en alacena
-    if (msgLower.includes('ingrediente') || msgLower.includes('alacena') || msgLower.includes('refrigerador') || msgLower.includes('que tengo')) {
-      setTimeout(() => {
-        const listStr = ingredients.length > 0 ? ingredients.map(i => `• ${i}`).join('\n') : '• Ningún ingrediente registrado por ahora.';
-        const botResponse = `🛒 Alacena Actual (${ingredients.length} items en ${currentCity}):\n${listStr}\n\n💡 Tip: Puedes agregar o escanear productos con la cámara en el módulo 'Mi Refrigerador'.`;
-        setMessages((prev) => [...prev, { sender: 'bot', text: botResponse }]);
+    try {
+      const responseData = await ApiService.chatWithCopilot(updatedMessages, contextHarness);
+      if (responseData && responseData.message) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'bot', text: responseData.message }
+        ]);
         setLoading(false);
-      }, 350);
-      return;
-    }
-
-    // 2. Solicitud de recetas / ideas para cocinar
-    if (msgLower.includes('cocin') || msgLower.includes('receta') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('menu')) {
-      try {
-        const actualIngredients = ingredients.length > 0 ? ingredients : ['Arroz', 'Pollo', 'Vegetales de estación'];
-        const res = await ApiService.generateRecipes(actualIngredients, mode, 'es');
-        if (res && res.recipes && res.recipes[0]) {
-          const recipe = res.recipes[0];
-          const stepsText = Array.isArray(recipe.steps) 
-            ? recipe.steps.map((step, i) => `${i + 1}. ${step}`).join('\n')
-            : (recipe.description || 'Picar ingredientes y saltear a fuego medio por 15 minutos.');
-
-          setMessages((prev) => [
-            ...prev,
-            { 
-              sender: 'bot', 
-              text: `💡 Sugerencia de Receta (${recipe.title}):\n⏱️ Tiempo: ${recipe.time || '20 min'} | 🏷️ ${recipe.badge || 'Anti-Desperdicio'}\n\n📋 Instrucciones:\n${stepsText}` 
-            }
-          ]);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn('Fallback receta local:', err);
+        return;
       }
+    } catch (err) {
+      console.warn('[CopilotAgent] Connection to API endpoint fallback activated:', err);
     }
 
-    // 3. Respuestas inteligentes para el resto de temáticas
+    // Direct Context Harness Agent Fallback (in case API is unreachable)
     setTimeout(() => {
+      const msgLower = textToSend.toLowerCase();
       let botResponse = '';
 
-      if (msgLower.includes('gasto') || msgLower.includes('dinero') || msgLower.includes('cuenta') || msgLower.includes('50/50') || msgLower.includes('presupuesto') || msgLower.includes('pagar')) {
+      if (msgLower.includes('ingrediente') || msgLower.includes('alacena') || msgLower.includes('refrigerador') || msgLower.includes('que tengo')) {
+        const listStr = ingredients.length > 0 ? ingredients.map(i => `• ${i}`).join('\n') : '• Ningún ingrediente registrado por ahora.';
+        botResponse = `🛒 Alacena Actual (${ingredients.length} items en ${currentCity}):\n${listStr}\n\n💡 Tip: Puedes agregar o escanear productos con la cámara en el módulo 'Mi Refrigerador'.`;
+      } else if (msgLower.includes('cocin') || msgLower.includes('receta') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('menu')) {
+        const ingList = ingredients.length > 0 ? ingredients.join(', ') : 'Arroz, Pollo y Vegetales';
+        botResponse = `🍳 Basado en tu alacena actual (${ingList}), te sugiero:\n\n💡 **Salteado Anti-Desperdicio Express**\n⏱️ Tiempo: 18 min | 🏷️ Económico\n\n📋 **Instrucciones:**\n1. Picar los ingredientes disponibles en cubos pequeños.\n2. Dorar en sartén con aceite y sal al gusto por 8 minutos.\n3. Servir en bowl acompañado de pan o ensalada fresca.`;
+      } else if (msgLower.includes('gasto') || msgLower.includes('dinero') || msgLower.includes('cuenta') || msgLower.includes('50/50') || msgLower.includes('presupuesto') || msgLower.includes('pagar')) {
         const totalExp = (expenses || []).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
         const halfExp = totalExp / 2;
-        botResponse = `💰 Resumen de Finanzas Compartidas (50/50):\n• Gastos registrados: ${expenses.length}\n• Total acumulado: $${totalExp.toLocaleString()} en ${currentCity}.\n• División 50/50: $${halfExp.toLocaleString()} por persona.\n\n💡 Tip: Puedes exportar el reporte en formato CSV desde la sección de Finanzas.`;
+        botResponse = `💰 Resumen de Finanzas Compartidas (50/50):\n• Gastos registrados: ${expenses.length}\n• Total acumulado: $${totalExp.toLocaleString()} ${activeCurrency} en ${currentCity}.\n• División 50/50: $${halfExp.toLocaleString()} ${activeCurrency} por persona.\n\n💡 Tip: Puedes exportar el reporte en formato CSV desde la sección de Finanzas.`;
       } else if (msgLower.includes('mudanza') || msgLower.includes('renta') || msgLower.includes('contrato') || msgLower.includes('depósito')) {
         botResponse = `📦 Asistente de Mudanza & Arrendamiento en ${currentCity}:\n• Recuerda usar nuestro Analizador de Contratos con IA para detectar cláusulas abusivas o depósitos no reembolsables.\n• Revisa la checklist de mudanza en el panel lateral para controlar tus trámites de servicios y salud.`;
-      } else if (msgLower.includes('evento') || msgLower.includes('ciudad') || msgLower.includes('planes') || msgLower.includes('salir')) {
-        botResponse = `📍 Cartelera Urbano en ${currentCity}:\nPuedes consultar los eventos destacados en la sección "Explorar Ciudad" y generar un itinerario guiado por IA según tu tiempo disponible.`;
       } else {
         const ingList = ingredients.length > 0 ? ingredients.slice(0, 3).join(', ') : 'tus ingredientes registrados';
         botResponse = `🤖 Copiloto RoomIA (${currentCity}):\nHe procesado tu consulta sobre "${textToSend}".\n\nPuedo ayudarte con:\n1. 🍳 Sugerencias de cocina anti-desperdicio (alacena actual: ${ingredients.length} items: ${ingList}).\n2. 💰 Balances de gastos 50/50 y presupuesto de vivienda.\n3. 📄 Análisis legal de contratos de alquiler y mudanza.`;
