@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { exportMedicalCardAsPNG, shareMedicalCardToWhatsApp } from '../utils/export.util';
 import { encryptDocumentHash } from '../utils/crypto.util';
+import { StorageUtil } from '../utils/storage.util';
 
 export function DocVault({ documents = [], currentCity, onAddDoc }) {
   const { language, removeDocument } = useRoomiaStore();
@@ -12,12 +13,21 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
   const t = translations[language] || translations.es;
 
   const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
-  const [healthForm, setHealthForm] = useState({
+
+  const defaultHealthForm = {
     fullName: user?.name || 'Titular de la Cuenta',
     bloodType: 'O+',
     allergies: 'Ninguna conocida',
     emergencyContact: 'Contacto de Emergencia (+57 300 123 4567)'
-  });
+  };
+
+  const [healthForm, setHealthForm] = useState(() => StorageUtil.get('roomia_health_form', defaultHealthForm));
+
+  const updateHealthForm = (field, value) => {
+    const updated = { ...healthForm, [field]: value };
+    setHealthForm(updated);
+    StorageUtil.set('roomia_health_form', updated);
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -125,25 +135,34 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
               <input 
                 type="text" 
                 value={healthForm.fullName} 
-                onChange={(e) => setHealthForm({ ...healthForm, fullName: e.target.value })} 
+                onChange={(e) => updateHealthForm('fullName', e.target.value)} 
               />
             </div>
 
             <div className="form-row">
               <div className="form-group">
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.bloodLabel}</label>
-                <input 
-                  type="text" 
-                  value={healthForm.bloodType} 
-                  onChange={(e) => setHealthForm({ ...healthForm, bloodType: e.target.value })} 
-                />
+                <select
+                  value={healthForm.bloodType}
+                  onChange={(e) => updateHealthForm('bloodType', e.target.value)}
+                  style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#0f172a', fontWeight: 600 }}
+                >
+                  <option value="O+">O Positivo (O+)</option>
+                  <option value="O-">O Negativo (O-)</option>
+                  <option value="A+">A Positivo (A+)</option>
+                  <option value="A-">A Negativo (A-)</option>
+                  <option value="B+">B Positivo (B+)</option>
+                  <option value="B-">B Negativo (B-)</option>
+                  <option value="AB+">AB Positivo (AB+)</option>
+                  <option value="AB-">AB Negativo (AB-)</option>
+                </select>
               </div>
               <div className="form-group">
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.allergiesLabel}</label>
                 <input 
                   type="text" 
                   value={healthForm.allergies} 
-                  onChange={(e) => setHealthForm({ ...healthForm, allergies: e.target.value })} 
+                  onChange={(e) => updateHealthForm('allergies', e.target.value)} 
                 />
               </div>
             </div>
@@ -153,7 +172,7 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
               <input 
                 type="text" 
                 value={healthForm.emergencyContact} 
-                onChange={(e) => setHealthForm({ ...healthForm, emergencyContact: e.target.value })} 
+                onChange={(e) => updateHealthForm('emergencyContact', e.target.value)} 
               />
             </div>
           </form>
