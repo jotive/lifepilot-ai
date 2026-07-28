@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { ApiService } from '../services/api.service';
+import { getCityCurrency } from '../config/constants';
 
 export function AIAssistantWidget() {
   const [isOpen, setIsOpen] = useState(false);
