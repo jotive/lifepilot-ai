@@ -121,13 +121,13 @@ REGLAS STRICTAS DEL HARNESS (LÍMITE DE DOMINIO DEL AGENTE):
     }
 
     // --- IN-DOMAIN TOPIC 3: Finances / 50-50 Expenses ---
-    if (msgLower.includes('gast') || msgLower.includes('diner') || msgLower.includes('cuent') || msgLower.includes('50/50') || msgLower.includes('presupuest') || msgLower.includes('pag') || msgLower.includes('saldo') || msgLower.includes('cuanto')) {
+    if (msgLower.includes('finanz') || msgLower.includes('gast') || msgLower.includes('diner') || msgLower.includes('cuent') || msgLower.includes('50/50') || msgLower.includes('presupuest') || msgLower.includes('pag') || msgLower.includes('saldo') || msgLower.includes('cuanto') || msgLower.includes('balance') || msgLower.includes('plata')) {
       const half = stats.totalExpenses / 2;
       return `💰 **Resumen de Finanzas Compartidas para ${user} (${city}):**\n• Registros de gastos: ${expenses.length} ítems.\n• Total acumulado: $${stats.totalExpenses.toLocaleString()} ${currency}.\n• Cuota 50/50 por persona: $${half.toLocaleString()} ${currency}.\n\n💡 Puedes ver el desglose detallado o exportar el reporte en formato CSV desde el módulo de Finanzas.`;
     }
 
     // --- IN-DOMAIN TOPIC 4: Pantry & Ingredients Inquiry ---
-    if (msgLower.includes('product') || msgLower.includes('ingredien') || msgLower.includes('alacen') || msgLower.includes('refrig') || msgLower.includes('que tengo') || msgLower.includes('teng')) {
+    if (msgLower.includes('product') || msgLower.includes('ingredien') || msgLower.includes('alacen') || msgLower.includes('refrig') || msgLower.includes('never') || msgLower.includes('alimen') || msgLower.includes('que tengo') || msgLower.includes('teng')) {
       if (ingredients.length === 0) {
         return `🛒 Hola ${user}, actualmente tu alacena en ${city} está vacía (0 alimentos registrados).\n\nPuedes ingresar a la pestaña 'Mi Refrigerador' para agregar ingredientes o tomarle una foto con la cámara.`;
       }
@@ -135,7 +135,7 @@ REGLAS STRICTAS DEL HARNESS (LÍMITE DE DOMINIO DEL AGENTE):
     }
 
     // --- IN-DOMAIN TOPIC 5: City Events & Exploration ---
-    if (msgLower.includes('event') || msgLower.includes('ciudad') || msgLower.includes('plan') || msgLower.includes('salir') || msgLower.includes('hacer') || msgLower.includes('cartelera')) {
+    if (msgLower.includes('event') || msgLower.includes('ciudad') || msgLower.includes('plan') || msgLower.includes('salir') || msgLower.includes('hacer') || msgLower.includes('cartelera') || msgLower.includes('ubicac') || msgLower.includes('donde')) {
       return `📍 **Exploración Urbana en ${city}:**\nPuedes consultar la cartelera cultural y gastronómica verificada en la sección 'Explorar Ciudad' y pedirle a la IA que cree tu itinerario guiado para el fin de semana.`;
     }
 
