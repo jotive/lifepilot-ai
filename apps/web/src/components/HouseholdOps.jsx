@@ -33,7 +33,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
     onAddExpense({
       desc: newDesc,
       amount: parseFloat(newAmount),
-      paidBy: 'Alex',
+      paidBy: userName,
       date: new Date().toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })
     });
     setNewDesc('');
@@ -81,9 +81,9 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
   const safeChores = Array.isArray(chores) ? chores : [];
 
   const totalExpenseSum = safeExpenses.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const alexTotal = safeExpenses.filter(e => e.paidBy === 'Alex').reduce((sum, item) => sum + (item.amount || 0), 0);
-  const partnerTotal = safeExpenses.filter(e => e.paidBy !== 'Alex').reduce((sum, item) => sum + (item.amount || 0), 0);
-  const splitBalance = (alexTotal - partnerTotal) / 2;
+  const userTotal = safeExpenses.filter(e => e.paidBy === userName || e.paidBy === 'Tú').reduce((sum, item) => sum + (item.amount || 0), 0);
+  const partnerTotal = safeExpenses.filter(e => e.paidBy !== userName && e.paidBy !== 'Tú').reduce((sum, item) => sum + (item.amount || 0), 0);
+  const splitBalance = (userTotal - partnerTotal) / 2;
 
   // Filter tasks into columns
   const todoTasks = safeChores.filter(c => (c.status || (c.completed ? 'done' : 'todo')) === 'todo');
@@ -411,7 +411,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                       <i className="fa-solid fa-receipt text-indigo"></i>
                       <div>
                         <strong style={{ display: 'block', fontSize: '0.92rem' }}>{exp.desc}</strong>
-                        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy || 'Alex'} • {exp.date || 'Hoy'}</span>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Pagado por {exp.paidBy || userName} • {exp.date || 'Hoy'}</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

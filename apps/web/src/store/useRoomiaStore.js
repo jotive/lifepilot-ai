@@ -103,7 +103,7 @@ export const useRoomiaStore = create((set, get) => ({
 
   randomizeTasks: () => {
     const mode = get().mode;
-    const people = mode === 'couple' ? ['Alex', 'Sam'] : ['Asignado a ti'];
+    const people = mode === 'couple' ? ['Tú', 'Mi Roomie / Pareja'] : ['Asignado a ti'];
     const updated = get().tasks.map(t => ({
       ...t,
       assignee: people[Math.floor(Math.random() * people.length)]

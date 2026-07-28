@@ -180,7 +180,7 @@ export function CityExplorer({ currentCity, mode }) {
 
   const handleGenerateItinerary = async () => {
     setLoading(true);
-    const userName = user.name && user.name !== 'Invitado' ? user.name : 'Alex';
+    const userName = user.name && user.name !== 'Invitado' ? user.name : 'Residente';
     try {
       const res = await ApiService.generateItinerary(events, currentCity, mode, language);
       setItinerary({

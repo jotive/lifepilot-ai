@@ -310,7 +310,7 @@ export function AuthModal() {
                         <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Nombre Completo</label>
                         <input 
                           type="text" 
-                          placeholder="Ej: Alex Morgan" 
+                          placeholder="Ej: Ana María Gómez" 
                           value={name} 
                           onChange={(e) => setName(e.target.value)} 
                           required

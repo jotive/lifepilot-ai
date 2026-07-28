@@ -16,7 +16,7 @@ export function exportFile(filename, content, mimeType = 'text/plain;charset=utf
 export function exportExpensesToCSV(expenses, city, currencyCode) {
   let csv = `ID,Descripcion,Monto,PagadoPor,Fecha,Ciudad,Moneda\n`;
   expenses.forEach((e, idx) => {
-    csv += `${idx + 1},"${e.desc || ''}",${e.amount || 0},"${e.paidBy || 'Alex'}","${e.date || 'Hoy'}","${city}","${currencyCode}"\n`;
+    csv += `${idx + 1},"${e.desc || ''}",${e.amount || 0},"${e.paidBy || 'Usuario'}","${e.date || 'Hoy'}","${city}","${currencyCode}"\n`;
   });
   exportFile(`roomia_gastos_${city.toLowerCase().replace(/\s+/g, '_')}.csv`, csv, 'text/csv;charset=utf-8;');
 }
@@ -62,7 +62,7 @@ export function exportMedicalCardAsPNG(healthData, city) {
   ctx.fillText('NOMBRE DEL PACIENTE / RESIDENTE:', 50, 165);
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(healthData.fullName || 'Alex Morgan', 50, 195);
+  ctx.fillText(healthData.fullName || 'Titular de la Cuenta', 50, 195);
 
   ctx.fillStyle = '#94a3b8';
   ctx.font = '14px "Plus Jakarta Sans", sans-serif';
