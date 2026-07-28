@@ -38,10 +38,22 @@ export function AIAssistantWidget() {
 
     const msgLower = textToSend.toLowerCase();
 
-    // 1. If asking about recipes or food
-    if (msgLower.includes('cocin') || msgLower.includes('receta') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('ingredien')) {
+    // 1. Consulta explícita de ingredientes en alacena
+    if (msgLower.includes('ingrediente') || msgLower.includes('alacena') || msgLower.includes('refrigerador') || msgLower.includes('que tengo')) {
+      setTimeout(() => {
+        const listStr = ingredients.length > 0 ? ingredients.map(i => `• ${i}`).join('\n') : '• Ningún ingrediente registrado por ahora.';
+        const botResponse = `🛒 Alacena Actual (${ingredients.length} items en ${currentCity}):\n${listStr}\n\n💡 Tip: Puedes agregar o escanear productos con la cámara en el módulo 'Mi Refrigerador'.`;
+        setMessages((prev) => [...prev, { sender: 'bot', text: botResponse }]);
+        setLoading(false);
+      }, 350);
+      return;
+    }
+
+    // 2. Solicitud de recetas / ideas para cocinar
+    if (msgLower.includes('cocin') || msgLower.includes('receta') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('menu')) {
       try {
-        const res = await ApiService.generateRecipes([textToSend, ...ingredients], mode, 'es');
+        const actualIngredients = ingredients.length > 0 ? ingredients : ['Arroz', 'Pollo', 'Vegetales de estación'];
+        const res = await ApiService.generateRecipes(actualIngredients, mode, 'es');
         if (res && res.recipes && res.recipes[0]) {
           const recipe = res.recipes[0];
           const stepsText = Array.isArray(recipe.steps) 
@@ -63,26 +75,26 @@ export function AIAssistantWidget() {
       }
     }
 
-    // 2. Intelligent responses for all other topics
+    // 3. Respuestas inteligentes para el resto de temáticas
     setTimeout(() => {
       let botResponse = '';
 
       if (msgLower.includes('gasto') || msgLower.includes('dinero') || msgLower.includes('cuenta') || msgLower.includes('50/50') || msgLower.includes('presupuesto') || msgLower.includes('pagar')) {
         const totalExp = (expenses || []).reduce((s, e) => s + parseFloat(e.amount || 0), 0);
         const halfExp = totalExp / 2;
-        botResponse = `💰 Resumen de Finanzas Compartidas (50/50):\n• Gastos registrados: ${expenses.length}\n• Total acumulado: $${totalExp.toLocaleString()} en ${currentCity}.\n• División 50/50: $${halfExp.toLocaleString()} por persona.\n\n💡 Tip: Puedes exportar el reporte en formato CSV desde el módulo de Finanzas.`;
+        botResponse = `💰 Resumen de Finanzas Compartidas (50/50):\n• Gastos registrados: ${expenses.length}\n• Total acumulado: $${totalExp.toLocaleString()} en ${currentCity}.\n• División 50/50: $${halfExp.toLocaleString()} por persona.\n\n💡 Tip: Puedes exportar el reporte en formato CSV desde la sección de Finanzas.`;
       } else if (msgLower.includes('mudanza') || msgLower.includes('renta') || msgLower.includes('contrato') || msgLower.includes('depósito')) {
         botResponse = `📦 Asistente de Mudanza & Arrendamiento en ${currentCity}:\n• Recuerda usar nuestro Analizador de Contratos con IA para detectar cláusulas abusivas o depósitos no reembolsables.\n• Revisa la checklist de mudanza en el panel lateral para controlar tus trámites de servicios y salud.`;
       } else if (msgLower.includes('evento') || msgLower.includes('ciudad') || msgLower.includes('planes') || msgLower.includes('salir')) {
         botResponse = `📍 Cartelera Urbano en ${currentCity}:\nPuedes consultar los eventos destacados en la sección "Explorar Ciudad" y generar un itinerario guiado por IA según tu tiempo disponible.`;
       } else {
         const ingList = ingredients.length > 0 ? ingredients.slice(0, 3).join(', ') : 'tus ingredientes registrados';
-        botResponse = `🤖 Copiloto RoomIA (${currentCity}):\nHe procesado tu consulta sobre "${textToSend}".\n\nPuedo ayudarte con:\n1. 🍳 Sugerencias de cocina anti-desperdicio (alacena actual: ${ingredients.length} items).\n2. 💰 Balances de gastos 50/50 y presupuesto de vivienda.\n3. 📄 Análisis legal de contratos de alquiler y mudanza.`;
+        botResponse = `🤖 Copiloto RoomIA (${currentCity}):\nHe procesado tu consulta sobre "${textToSend}".\n\nPuedo ayudarte con:\n1. 🍳 Sugerencias de cocina anti-desperdicio (alacena actual: ${ingredients.length} items: ${ingList}).\n2. 💰 Balances de gastos 50/50 y presupuesto de vivienda.\n3. 📄 Análisis legal de contratos de alquiler y mudanza.`;
       }
 
       setMessages((prev) => [...prev, { sender: 'bot', text: botResponse }]);
       setLoading(false);
-    }, 450);
+    }, 400);
   };
 
   return (
