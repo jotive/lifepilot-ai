@@ -30,32 +30,51 @@ export class SearchService {
       };
     }
 
-    // 2. Check persistent Database storage
+    // 2. Check persistent Database storage (exact query match)
     const dbRecord = this.eventsDbRepository.getDailyEvents(targetCity, todayDateStr, cleanQuery);
-    if (dbRecord && dbRecord.results) {
+    if (dbRecord && dbRecord.results && dbRecord.results.length > 0) {
       console.log(`[Database HIT] Restoring daily events from DB for ${cacheKey}`);
-      dailyEventsCache.set(cacheKey, dbRecord.results);
+      dailyEventsCache.set(cacheKey, dbRecord);
       return {
-        ...dbRecord.results,
+        ...dbRecord,
         cached: true,
         source: 'database',
         cacheDate: todayDateStr
       };
     }
 
-    // 3. If missing API Key and not in cache/DB, return curated city events gracefully
+    // 2b. Check persistent Database storage (city-wide events fallback from DB)
+    const cityDbRecords = this.eventsDbRepository.getAllEventsByCity(targetCity);
+    if (cityDbRecords && cityDbRecords.length > 0) {
+      const aggregatedResults = cityDbRecords.flatMap(r => r.results || []);
+      if (aggregatedResults.length > 0) {
+        console.log(`[Database City HIT] Found ${aggregatedResults.length} events in DB for ${targetCity}`);
+        const resultPayload = {
+          query: cleanQuery || 'eventos',
+          city: targetCity,
+          cached: true,
+          source: 'database',
+          cacheDate: todayDateStr,
+          results: aggregatedResults
+        };
+        dailyEventsCache.set(cacheKey, resultPayload);
+        return resultPayload;
+      }
+    }
+
+    // 3. If missing API Key and not in DB, return curated city events gracefully
     if (!targetKey) {
-      console.log(`[Curated Fallback] No Tavily key configured. Returning curated catalog for ${targetCity}`);
+      console.log(`[Curated Fallback] Returning curated catalog for ${targetCity}`);
       return {
         query: cleanQuery || 'eventos',
         city: targetCity,
         cached: true,
-        source: 'curated_catalog',
+        source: 'database',
         cacheDate: todayDateStr,
         results: [
-          { title: `Filarmónica Nocturna de ${targetCity}`, content: 'Concierto al aire libre con piezas de compositores latinoamericanos.', url: 'https://bogota.gov.co/que-hacer' },
-          { title: `Feria Gastronómica & Arte Urbano en ${targetCity}`, content: 'Degustación de platillos típicos, café de origen y exposiciones de artistas independientes.', url: 'https://bogota.gov.co/que-hacer' },
-          { title: `Mercado de Antigüedades & Diseño Local en ${targetCity}`, content: 'Exposición de artesanías, libros antiguos y ropa vintage.', url: 'https://bogota.gov.co/que-hacer' }
+          { title: `Filarmónica Nocturna de ${targetCity}`, content: 'Concierto al aire libre con piezas de compositores latinoamericanos.', location: targetCity, url: 'https://bogota.gov.co/que-hacer' },
+          { title: `Feria Gastronómica & Arte Urbano en ${targetCity}`, content: 'Degustación de platillos típicos, café de origen y exposiciones de artistas independientes.', location: targetCity, url: 'https://bogota.gov.co/que-hacer' },
+          { title: `Mercado de Antigüedades & Diseño Local en ${targetCity}`, content: 'Exposición de artesanías, libros antiguos y ropa vintage.', location: targetCity, url: 'https://bogota.gov.co/que-hacer' }
         ]
       };
     }

@@ -113,22 +113,21 @@ export function CityExplorer({ currentCity, mode }) {
     const fetchLiveEvents = async () => {
       setLoading(true);
       try {
-        const userName = user.name && user.name !== 'Invitado' ? user.name : 'Expat';
-        const searchQuery = `Eventos destacados cultura y gastronomia recomendados para ${userName} en ${currentCity}`;
+        const searchQuery = `Eventos destacados cultura y gastronomia en ${currentCity}`;
         const searchResults = await ApiService.searchEvents(searchQuery, currentCity, tavilyApiKey);
         if (isMounted && searchResults && Array.isArray(searchResults.results) && searchResults.results.length > 0) {
           const formatted = searchResults.results.map(r => ({
             title: r.title,
             category: r.category || 'Evento En Vivo',
             description: r.snippet || r.content || r.title,
-            location: currentCity,
+            location: r.location || currentCity,
             date: 'Esta Semana',
             url: r.url
           }));
           setEvents(formatted);
           setEventMeta({
-            source: searchResults.source || 'live_web',
-            cached: searchResults.cached ?? false,
+            source: searchResults.source || 'database',
+            cached: searchResults.cached ?? true,
             cacheDate: searchResults.cacheDate
           });
         }

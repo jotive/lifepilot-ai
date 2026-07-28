@@ -1,3 +1,76 @@
 {
-  "events": {}
+  "events": {
+    "bogotá_2026-07-28_default": {
+      "city": "Bogotá",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Festival Estéreo Picnic 2026", "category": "Cultural", "content": "El festival musical y de experiencias gastronómicas más grande de Colombia en el Parque Simón Bolívar.", "location": "Parque Simón Bolívar, Bogotá", "url": "https://bogota.gov.co/que-hacer" },
+        { "title": "Ruta de Café Especial & Brunch en Chapinero", "category": "Gastronomía", "content": "Recorrido guiado de cata por las mejores cafeterías de origen de la Zona G y Chapinero Alto.", "location": "Zona G & Chapinero, Bogotá", "url": "https://bogota.gov.co/que-hacer" },
+        { "title": "Bogotá Tech & AI Founders Meetup", "category": "Networking", "content": "Encuentro de startups, desarrolladores de Inteligencia Artificial y nómadas digitales en la capital.", "location": "WeWork Parque 93, Bogotá", "url": "https://bogota.gov.co/que-hacer" },
+        { "title": "Noche de Museos en La Candelaria", "category": "Cultural", "content": "Recorrido nocturno por el Museo Botero, Museo del Oro y galerías independientes del centro histórico.", "location": "La Candelaria, Bogotá", "url": "https://bogota.gov.co/que-hacer" },
+        { "title": "Cocktails & Vinyl Sessions en Zona T", "category": "Vida Nocturna", "content": "Sesión de música en vinilo, DJ sets en vivo y coctelería de autor en las terrazas de la Zona Rosa.", "location": "Zona T / Zona Rosa, Bogotá", "url": "https://bogota.gov.co/que-hacer" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    },
+    "ciudad de méxico_2026-07-28_default": {
+      "city": "Ciudad de México",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Exposición Nocturna en Museo Soumaya", "category": "Cultural", "content": "Visita guiada con proyecciones digitales y música de cámara en las galerías de Polanco.", "location": "Polanco, Ciudad de México", "url": "https://cdmx.gob.mx" },
+        { "title": "Ruta Tacogourmet & Mezcal en la Roma", "category": "Gastronomía", "content": "Maridaje de tacos de culto y mezcales artesanales por la Roma Norte y Condesa.", "location": "Roma Norte, Ciudad de México", "url": "https://cdmx.gob.mx" },
+        { "title": "CDMX Tech & Expat Mixer", "category": "Networking", "content": "Networking bilingüe para emprendedores tech, freelancers internacionales e inversionistas.", "location": "Colonia Juárez, Ciudad de México", "url": "https://cdmx.gob.mx" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    },
+    "madrid_2026-07-28_default": {
+      "city": "Madrid",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Noche Abierta en el Museo del Prado", "category": "Cultural", "content": "Visita nocturna a las galerías del Prado con recitales de música en los claustros.", "location": "Paseo del Prado, Madrid", "url": "https://madrid.es" },
+        { "title": "Ruta de Tapas & Vinos por La Latina", "category": "Gastronomía", "content": "Degustación de tapas castizas, jamón ibérico de bellota y vinos de Rioja.", "location": "La Latina, Madrid", "url": "https://madrid.es" },
+        { "title": "Madrid AI & Dev Summit", "category": "Networking", "content": "Ponencias sobre arquitectura agéntica de IA y networking en el Campus de Startups.", "location": "Google Campus, Madrid", "url": "https://madrid.es" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    },
+    "buenos aires_2026-07-28_default": {
+      "city": "Buenos Aires",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Milonga Tradicional & Orquesta en Vivo", "category": "Cultural", "content": "Noche de baile de tango abierto con orquesta en directo en un bodegón histórico.", "location": "San Telmo, Buenos Aires", "url": "https://buenosaires.gob.ar" },
+        { "title": "Ruta de Asado & Cata de Malbec", "category": "Gastronomía", "content": "Experiencia gastronómica en las mejores parrillas y catas de cepas mendocinas.", "location": "Palermo Soho, Buenos Aires", "url": "https://buenosaires.gob.ar" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    },
+    "santiago_2026-07-28_default": {
+      "city": "Santiago",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Ruta del Vino & Gastronomía en Lastarria", "category": "Gastronomía", "content": "Degustación de cepas Carmenere y Sauvignon blanc con alta cocina de autor.", "location": "Barrio Lastarria, Santiago", "url": "https://santiago.cl" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    },
+    "lima_2026-07-28_default": {
+      "city": "Lima",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Ruta Cevichera & Cata de Pisco Sour", "category": "Gastronomía", "content": "Degustación de cebiches marinos, tiraditos y coctelería con pisco peruano.", "location": "Miraflores & Barranco, Lima", "url": "https://munlima.gob.pe" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    },
+    "medellín_2026-07-28_default": {
+      "city": "Medellín",
+      "date": "2026-07-28",
+      "queryKey": "default",
+      "results": [
+        { "title": "Recorrido Comuna 13: Arte, Rap & Breakdance", "category": "Cultural", "content": "Tour de historia y transformación social con artistas locales y muestra de hip hop.", "location": "Comuna 13, Medellín", "url": "https://medellin.gov.co" }
+      ],
+      "savedAt": "2026-07-28T00:00:00.000Z"
+    }
+  }
 }
