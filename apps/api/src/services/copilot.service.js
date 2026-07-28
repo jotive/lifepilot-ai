@@ -22,15 +22,15 @@ CONTEXT HARNESS DE LA SESIÓN (ESTADO VIVO EN TIEMPO REAL):
 - Ciudad activa: ${city} (Moneda oficial: ${currency})
 - Modo de convivencia: ${mode}
 - Datos en tiempo real:
-  • Alacena/Refrigerador (${ingredients.length} items): ${ingredients.length > 0 ? ingredients.join(', ') : 'Sin alimentos registrados'}
+  • Alacena/Refrigerador (${ingredients.length} items): ${ingredients.length > 0 ? ingredients.join(', ') : 'Sin alimentos registrados (NEVERA VACÍA)'}
   • Finanzas Compartidas 50/50 (${expenses.length} ítems): Acumulado $${totalExpenses.toLocaleString()} ${currency} (Cuota por persona: $${(totalExpenses / 2).toLocaleString()} ${currency})
   • Mudanza & Trámites: ${completedTasks} de ${tasks.length} tareas completadas (${tasksPercent}% de avance)
 
 REGLAS STRICTAS DEL HARNESS (LÍMITE DE DOMINIO DEL AGENTE):
 1. Limítate EXCLUSIVAMENTE a responder sobre el hogar del usuario, sus finanzas 50/50, su alacena, recetas con sus ingredientes, mudanza y exploración de ${city}.
-2. Si el usuario realiza una consulta fuera de este dominio (por ejemplo: programación, Python, política, historia general, deportes ajenos u otros temas no relacionados con el hogar o la ciudad), responde amablemente:
+2. Si la alacena tiene 0 ingredientes, NO sugieras recetas con alimentos ficticios. Explica que la alacena está vacía e invita a registrar o escanear productos en 'Mi Refrigerador'.
+3. Si el usuario realiza una consulta fuera de este dominio (por ejemplo: programación, Python, política, historia general, deportes ajenos u otros temas no relacionados con el hogar o la ciudad), responde amablemente:
    "Como tu Copiloto RoomIA en ${city}, mi función está delimitada a la gestión de tu hogar, tus finanzas 50/50, tu alacena y tu mudanza. ¿En qué te puedo ayudar hoy sobre tu casa o tu estadía?"
-3. NUNCA respondas preguntas fuera del dominio del hogar o la ciudad.
 4. Responde de forma concisa, útil, empática y natural basada en la API de IA.`;
 
     const apiKey = customApiKey || envConfig.openaiApiKey || envConfig.groqApiKey || envConfig.openrouterApiKey || envConfig.geminiApiKey;
@@ -106,8 +106,13 @@ REGLAS STRICTAS DEL HARNESS (LÍMITE DE DOMINIO DEL AGENTE):
 
     // --- IN-DOMAIN TOPIC 1: Cooking / Recipes / Food ---
     if (msgLower.includes('cocin') || msgLower.includes('recet') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('menu') || msgLower.includes('cenar') || msgLower.includes('almorzar')) {
-      const ingList = ingredients.length > 0 ? ingredients.join(', ') : 'Arroz, Pollo y Vegetales de estación';
-      return `🍳 **Sugerencia de Cocina para ${user} en ${city}:**\nBasado en tu alacena actual (${ingList}), te recomiendo:\n\n💡 **Salteado Express Anti-Desperdicio**\n⏱️ Tiempo: 18 min | 🏷️ Rendimiento Económico\n\n📋 **Instrucciones:**\n1. Picar los ingredientes disponibles en cubos medianos.\n2. Sazonar y dorar en sartén con un hilo de aceite a fuego medio por 8 min.\n3. Servir caliente acompañado de pan tostado o ensalada fresca.\n\n¿Deseas registrar nuevos alimentos en 'Mi Refrigerador'?`;
+      if (ingredients.length === 0) {
+        return `🍳 **Hola ${user}, tu refrigerador en ${city} está vacío por ahora (0 ingredientes registrados).**\n\nNo tengo alimentos guardados para sugerirte una receta real. Te recomiendo:\n1. 🛒 Ingresar a la pestaña **'Mi Refrigerador'** y escribir los ingredientes que tienes.\n2. 📸 Tomar una foto o escanear el recibo de compra con la cámara.\n3. 💡 Una vez agregados, me pides recetas y las prepararemos exclusivamente con tus productos.`;
+      }
+
+      const mainIng = ingredients[0];
+      const secIng = ingredients[1] || 'tus vegetales disponibles';
+      return `🍳 **Sugerencia de Cocina Exclusiva con tus ${ingredients.length} Ingredientes Registrados en ${city}:**\nBasado únicamente en lo que tienes en tu refrigerador (${ingredients.join(', ')}):\n\n💡 **Salteado Anti-Desperdicio con ${mainIng}**\n⏱️ Tiempo: 15 min | 🏷️ 100% de tu alacena real\n\n📋 **Instrucciones:**\n1. Picar ${mainIng} y ${secIng} en cubos medianos.\n2. Sazonar con sal y dorar en sartén a fuego medio por 8 minutos.\n3. Servir caliente sin necesidad de hacer compras ni gastar dinero extra.`;
     }
 
     // --- IN-DOMAIN TOPIC 2: Relocation / Mudanza / Contracts ---
@@ -144,7 +149,7 @@ REGLAS STRICTAS DEL HARNESS (LÍMITE DE DOMINIO DEL AGENTE):
       return `¡Hola ${user}! 👋 Soy tu Copiloto RoomIA en ${city}.\n\n¿En qué te puedo ayudar hoy con tu alacena, finanzas 50/50 o planes de mudanza?`;
     }
 
-    // --- STRICT HARNESS BOUNDARY: Decline Out-of-Scope Questions (e.g. Python, sports, political history, etc.) ---
+    // --- STRICT HARNESS BOUNDARY: Decline Out-of-Scope Questions ---
     return `Como tu Copiloto RoomIA en ${city}, mi función está delimitada a la gestión de tu hogar, tus finanzas 50/50, tu alacena y tu mudanza. ¿En qué te puedo ayudar hoy sobre tu casa o tu estadía?`;
   }
 }
