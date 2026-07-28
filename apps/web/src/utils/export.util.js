@@ -78,12 +78,16 @@ export function exportMedicalCardAsPNG(healthData, city) {
   ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
   ctx.fillText(healthData.allergies || 'Ninguna', 380, 275);
 
+  const contactText = healthData.contactName 
+    ? `${healthData.contactName} (${healthData.contactPhone || 'Sin teléfono'})` 
+    : (healthData.emergencyContact || 'Contacto no registrado');
+
   ctx.fillStyle = '#94a3b8';
   ctx.font = '14px "Plus Jakarta Sans", sans-serif';
   ctx.fillText('CONTACTO DE EMERGENCIA EN LA CIUDAD:', 50, 335);
   ctx.fillStyle = '#10b981';
   ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(healthData.emergencyContact || 'Contacto no registrado', 50, 365);
+  ctx.fillText(contactText, 50, 365);
 
   // Footer Badge
   ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -101,12 +105,16 @@ export function exportMedicalCardAsPNG(healthData, city) {
 }
 
 export function shareMedicalCardToWhatsApp(healthData, city) {
+  const contactText = healthData.contactName 
+    ? `${healthData.contactName} (${healthData.contactPhone || 'Sin teléfono'})` 
+    : (healthData.emergencyContact || 'Contacto no registrado');
+
   const text = `🚨 *FICHA MÉDICA DE EMERGENCIA ROOMIA* 🚨
 ----------------------------------------
 👤 *Paciente:* ${healthData.fullName}
 🩸 *Tipo de Sangre:* ${healthData.bloodType}
 ⚠️ *Alergias/Condiciones:* ${healthData.allergies}
-📞 *Contacto de Emergencia:* ${healthData.emergencyContact}
+📞 *Contacto de Emergencia:* ${contactText}
 📍 *Ciudad:* ${city}
 ----------------------------------------
 _Documento generado por RoomIA Copilot_`;

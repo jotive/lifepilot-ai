@@ -14,19 +14,23 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
 
   const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
 
+  const storageKey = user?.email ? `roomia_health_form_${user.email}` : 'roomia_health_form';
+
   const defaultHealthForm = {
     fullName: user?.name || 'Titular de la Cuenta',
     bloodType: 'O+',
     allergies: 'Ninguna conocida',
-    emergencyContact: 'Contacto de Emergencia (+57 300 123 4567)'
+    contactName: 'María Morgan',
+    contactPhone: '+57 300 123 4567'
   };
 
-  const [healthForm, setHealthForm] = useState(() => StorageUtil.get('roomia_health_form', defaultHealthForm));
+  const [healthForm, setHealthForm] = useState(() => StorageUtil.get(storageKey, defaultHealthForm));
+  const [customAllergy, setCustomAllergy] = useState('');
 
   const updateHealthForm = (field, value) => {
     const updated = { ...healthForm, [field]: value };
     setHealthForm(updated);
-    StorageUtil.set('roomia_health_form', updated);
+    StorageUtil.set(storageKey, updated);
   };
 
   const handleFileUpload = async (e) => {
@@ -157,23 +161,69 @@ export function DocVault({ documents = [], currentCity, onAddDoc }) {
                   <option value="AB-">AB Negativo (AB-)</option>
                 </select>
               </div>
+
               <div className="form-group">
                 <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.allergiesLabel}</label>
-                <input 
-                  type="text" 
-                  value={healthForm.allergies} 
-                  onChange={(e) => updateHealthForm('allergies', e.target.value)} 
-                />
+                <select
+                  value={healthForm.allergies === customAllergy ? 'Otra' : healthForm.allergies}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === 'Otra') {
+                      updateHealthForm('allergies', customAllergy || 'Especificar alergia');
+                    } else {
+                      updateHealthForm('allergies', val);
+                    }
+                  }}
+                  style={{ width: '100%', padding: '0.6rem 0.9rem', borderRadius: '12px', border: '1px solid #cbd5e1', background: '#ffffff', color: '#0f172a', fontWeight: 600 }}
+                >
+                  <option value="Ninguna conocida">Ninguna conocida</option>
+                  <option value="Penicilina / Antibióticos">Penicilina / Antibióticos</option>
+                  <option value="Sulfas">Sulfas</option>
+                  <option value="Polen / Ácaros / Polvo">Polen / Ácaros / Polvo</option>
+                  <option value="Frutos Secos / Cacahuates">Frutos Secos / Cacahuates</option>
+                  <option value="Lácteos / Lactosa">Lácteos / Lactosa</option>
+                  <option value="Mariscos / Pescados">Mariscos / Pescados</option>
+                  <option value="Látex">Látex</option>
+                  <option value="Aspirina / AINEs">Aspirina / AINEs</option>
+                  <option value="Asma / Resp.">Asma / Resp.</option>
+                  <option value="Otra">Otra (Especificar...)</option>
+                </select>
               </div>
             </div>
 
-            <div className="form-group">
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>{t.emergencyContactLabel}</label>
-              <input 
-                type="text" 
-                value={healthForm.emergencyContact} 
-                onChange={(e) => updateHealthForm('emergencyContact', e.target.value)} 
-              />
+            {healthForm.allergies.includes('Especificar') && (
+              <div className="form-group" style={{ marginTop: '0.5rem' }}>
+                <input 
+                  type="text" 
+                  placeholder="Escribe tu alergia o condición especial..."
+                  value={customAllergy} 
+                  onChange={(e) => {
+                    setCustomAllergy(e.target.value);
+                    updateHealthForm('allergies', e.target.value);
+                  }} 
+                />
+              </div>
+            )}
+
+            <div className="form-row" style={{ marginTop: '0.5rem' }}>
+              <div className="form-group">
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>Contacto de Emergencia (Nombre)</label>
+                <input 
+                  type="text" 
+                  placeholder="Ej: María Morgan"
+                  value={healthForm.contactName || ''} 
+                  onChange={(e) => updateHealthForm('contactName', e.target.value)} 
+                />
+              </div>
+              <div className="form-group">
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>Teléfono de Emergencia</label>
+                <input 
+                  type="tel" 
+                  placeholder="Ej: +57 300 123 4567"
+                  value={healthForm.contactPhone || ''} 
+                  onChange={(e) => updateHealthForm('contactPhone', e.target.value)} 
+                />
+              </div>
             </div>
           </form>
         </div>
