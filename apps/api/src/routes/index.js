@@ -3,6 +3,7 @@ import { SearchController } from '../controllers/search.controller.js';
 import { VisionController } from '../controllers/vision.controller.js';
 import { RecipeController } from '../controllers/recipe.controller.js';
 import { ItineraryController } from '../controllers/itinerary.controller.js';
+import { CopilotService } from '../services/copilot.service.js';
 import { ContractAnalyzerService } from '../services/contract.service.js';
 import { ResponseUtil } from '../utils/response.util.js';
 import { SUPPORTED_CITIES, APP_NAME } from '../config/constants.js';
@@ -17,8 +18,9 @@ const searchController = new SearchController();
 const visionController = new VisionController();
 const recipeController = new RecipeController();
 const itineraryController = new ItineraryController();
+const copilotService = new CopilotService();
 
-// In-memory Realtime Channels Store for cross-device roomie sync
+// Realtime Store for multi-device sync
 const realtimeStore = new Map();
 
 const validateBody = (schema) => (req, res, next) => {
@@ -30,7 +32,8 @@ const validateBody = (schema) => (req, res, next) => {
   next();
 };
 
-router.get('/health', (req, res) => {
+// Health Check
+router.get(['/health', '/api/v1/health'], (req, res) => {
   return ResponseUtil.success(res, {
     status: 'online',
     environment: envConfig.environment,
@@ -38,17 +41,24 @@ router.get('/health', (req, res) => {
   });
 });
 
-router.get('/api/v1/cities', (req, res) => {
+// Supported Cities
+router.get(['/cities', '/api/v1/cities'], (req, res) => {
   return ResponseUtil.success(res, { cities: SUPPORTED_CITIES });
 });
 
-router.post('/api/v1/events/search', validateBody(eventSearchSchema), (req, res, next) => searchController.handleTavilySearch(req, res, next));
-router.post('/api/v1/vision/fridge-scans', validateBody(fridgeScanSchema), (req, res, next) => visionController.handleFridgeScan(req, res, next));
-router.post('/api/v1/vision/receipt-scans', validateBody(receiptScanSchema), (req, res, next) => visionController.handleReceiptScan(req, res, next));
-router.post('/api/v1/recipes/generate', validateBody(recipeGenerateSchema), (req, res, next) => recipeController.handleGenerateRecipes(req, res, next));
-router.post('/api/v1/itineraries/generate', validateBody(itineraryGenerateSchema), (req, res, next) => itineraryController.handleGenerateItinerary(req, res, next));
+// Event Search
+router.post(['/events/search', '/api/v1/events/search'], validateBody(eventSearchSchema), (req, res, next) => searchController.handleTavilySearch(req, res, next));
 
-const handleCopilotChat = async (req, res, next) => {
+// Vision Scans
+router.post(['/vision/fridge-scans', '/api/v1/vision/fridge-scans'], validateBody(fridgeScanSchema), (req, res, next) => visionController.handleFridgeScan(req, res, next));
+router.post(['/vision/receipt-scans', '/api/v1/vision/receipt-scans'], validateBody(receiptScanSchema), (req, res, next) => visionController.handleReceiptScan(req, res, next));
+
+// Recipe & Itinerary Generator
+router.post(['/recipes/generate', '/api/v1/recipes/generate'], validateBody(recipeGenerateSchema), (req, res, next) => recipeController.handleGenerateRecipes(req, res, next));
+router.post(['/itineraries/generate', '/api/v1/itineraries/generate'], validateBody(itineraryGenerateSchema), (req, res, next) => itineraryController.handleGenerateItinerary(req, res, next));
+
+// Copilot AI Agent Chat
+router.post(['/copilot/chat', '/api/v1/copilot/chat'], async (req, res, next) => {
   const { messages, context } = req.body;
   if (!messages || !Array.isArray(messages)) {
     return ResponseUtil.error(res, 'Messages array is required', 400);
@@ -59,12 +69,10 @@ const handleCopilotChat = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
+});
 
-router.post('/api/v1/copilot/chat', handleCopilotChat);
-router.post('/copilot/chat', handleCopilotChat);
-
-router.post('/api/v1/contracts/analyze', (req, res) => {
+// Contract Analyzer
+router.post(['/contracts/analyze', '/api/v1/contracts/analyze'], (req, res) => {
   const { contractText } = req.body;
   if (!contractText) {
     return ResponseUtil.error(res, 'Contract text is required for analysis', 400);
@@ -73,8 +81,8 @@ router.post('/api/v1/contracts/analyze', (req, res) => {
   return ResponseUtil.success(res, result);
 });
 
-// AUTHENTICATION & PASSWORD RECOVERY ENDPOINTS
-router.post('/api/v1/auth/forgot-password', (req, res) => {
+// Auth & Password Recovery
+router.post(['/auth/forgot-password', '/api/v1/auth/forgot-password'], (req, res) => {
   const { email } = req.body;
   if (!email || !email.includes('@')) {
     return ResponseUtil.error(res, 'Se requiere un correo electrónico válido', 400);
@@ -87,7 +95,7 @@ router.post('/api/v1/auth/forgot-password', (req, res) => {
   });
 });
 
-router.post('/api/v1/auth/reset-password', (req, res) => {
+router.post(['/auth/reset-password', '/api/v1/auth/reset-password'], (req, res) => {
   const { email, newPassword, resetToken } = req.body;
   if (!email || !newPassword || newPassword.length < 6) {
     return ResponseUtil.error(res, 'La nueva contraseña debe tener al menos 6 caracteres', 400);
@@ -99,8 +107,8 @@ router.post('/api/v1/auth/reset-password', (req, res) => {
   });
 });
 
-// REALTIME CLOUD SYNC ENDPOINTS (Distances Sync)
-router.post('/api/v1/realtime/broadcast', (req, res) => {
+// Realtime Cloud Sync
+router.post(['/realtime/broadcast', '/api/v1/realtime/broadcast'], (req, res) => {
   const { pairCode, channelKey, payload } = req.body;
   if (!pairCode || !channelKey) {
     return ResponseUtil.error(res, 'pairCode and channelKey are required', 400);
@@ -115,7 +123,7 @@ router.post('/api/v1/realtime/broadcast', (req, res) => {
   return ResponseUtil.success(res, { synced: true, pairCode, channelKey });
 });
 
-router.get('/api/v1/realtime/sync/:pairCode', (req, res) => {
+router.get(['/realtime/sync/:pairCode', '/api/v1/realtime/sync/:pairCode'], (req, res) => {
   const { pairCode } = req.params;
   const room = realtimeStore.get(pairCode);
   if (!room) {
