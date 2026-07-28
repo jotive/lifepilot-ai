@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { useRoomiaStore } from '../store/useRoomiaStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { getCityCurrency, formatMoney } from '../config/constants';
 import { exportExpensesToCSV } from '../utils/export.util';
 
 export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, onToggleChore }) {
   const { language, currentCity, currencyOverride, addTask, removeTask, removeExpense, updateTaskStatus, updateTaskAssignee, randomizeTasks } = useRoomiaStore();
+  const { user } = useAuthStore();
+
+  const userName = user?.isLoggedIn && user?.name ? user.name : 'Tú';
+  const partnerName = mode === 'couple' ? 'Mi Roomie / Pareja' : 'Compañero';
+
   const t = translations[language] || translations.es;
   const defaultCurrency = getCityCurrency(currentCity);
   const activeCurrencyCode = currencyOverride || defaultCurrency.code;
@@ -18,7 +24,7 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
 
   // Task creation form state
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskAssignee, setNewTaskAssignee] = useState(mode === 'couple' ? 'Alex' : 'Asignado a ti');
+  const [newTaskAssignee, setNewTaskAssignee] = useState(userName);
   const [newTaskFreq, setNewTaskFreq] = useState('Semanal');
 
   const handleAddExpense = (e) => {
@@ -146,9 +152,9 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
               <div className="form-group" style={{ margin: 0 }}>
                 <label>Responsable</label>
                 <select value={newTaskAssignee} onChange={(e) => setNewTaskAssignee(e.target.value)}>
-                  <option value="Alex">👤 Alex</option>
-                  <option value="Sam">👤 Sam (Roomie/Pareja)</option>
-                  <option value="Ambos">👥 Ambos Equitativo</option>
+                  <option value={userName}>👤 {userName} (Tú)</option>
+                  <option value={partnerName}>👤 {partnerName}</option>
+                  <option value="Ambos Equitativo">👥 Ambos Equitativo</option>
                 </select>
               </div>
 
@@ -218,9 +224,9 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                           aria-label="Cambiar Responsable"
                           style={{ padding: '2px 6px', fontSize: '0.78rem', width: 'auto', borderRadius: '8px' }}
                         >
-                          <option value="Alex">👤 Alex</option>
-                          <option value="Sam">👤 Sam</option>
-                          <option value="Ambos">👥 Ambos</option>
+                          <option value={userName}>👤 {userName} (Tú)</option>
+                          <option value={partnerName}>👤 {partnerName}</option>
+                          <option value="Ambos Equitativo">👥 Ambos Equitativo</option>
                         </select>
 
                         <button 
@@ -283,9 +289,9 @@ export function HouseholdOps({ expenses = [], chores = [], mode, onAddExpense, o
                           aria-label="Cambiar Responsable"
                           style={{ padding: '2px 6px', fontSize: '0.78rem', width: 'auto', borderRadius: '8px' }}
                         >
-                          <option value="Alex">👤 Alex</option>
-                          <option value="Sam">👤 Sam</option>
-                          <option value="Ambos">👥 Ambos</option>
+                          <option value={userName}>👤 {userName} (Tú)</option>
+                          <option value={partnerName}>👤 {partnerName}</option>
+                          <option value="Ambos Equitativo">👥 Ambos Equitativo</option>
                         </select>
 
                         <div style={{ display: 'flex', gap: '4px' }}>

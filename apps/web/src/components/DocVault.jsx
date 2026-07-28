@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { ContractAnalyzerModal } from './ContractAnalyzerModal';
 import { useRoomiaStore } from '../store/useRoomiaStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { translations } from '../config/i18n';
 import { exportMedicalCardAsPNG, shareMedicalCardToWhatsApp } from '../utils/export.util';
 import { encryptDocumentHash } from '../utils/crypto.util';
 
 export function DocVault({ documents = [], currentCity, onAddDoc }) {
   const { language, removeDocument } = useRoomiaStore();
+  const { user } = useAuthStore();
   const t = translations[language] || translations.es;
 
   const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
   const [healthForm, setHealthForm] = useState({
-    fullName: 'Alex Morgan',
+    fullName: user?.name || 'Titular de la Cuenta',
     bloodType: 'O+',
-    allergies: 'Penicilina, Polvo',
-    emergencyContact: 'María Morgan (+52 55 1234 5678)'
+    allergies: 'Ninguna conocida',
+    emergencyContact: 'Contacto de Emergencia (+57 300 123 4567)'
   });
 
   const handleFileUpload = async (e) => {
