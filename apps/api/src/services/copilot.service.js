@@ -15,7 +15,7 @@ export class CopilotService {
     const totalExpenses = expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
     const completedTasks = tasks.filter(t => t.completed).length;
 
-    // Construct full Context Harness System Prompt
+    // Construct full Context Harness System Prompt for LLM
     const systemPrompt = `Eres RoomIA Copilot, un Agente de Inteligencia Artificial avanzado para la gestión inteligente del hogar, finanzas 50/50, recetas anti-desperdicio y exploración de ciudades para expats y parejas.
 
 CONTEXT HARNESS DE LA SESIÓN EN TIEMPO REAL:
@@ -29,7 +29,7 @@ CONTEXT HARNESS DE LA SESIÓN EN TIEMPO REAL:
 INSTRUCCIONES DE RESPUESTA DE TU AGENTE:
 1. Responde de forma útil, natural, concisa y empática como el copiloto personal de ${userProfile.name}.
 2. Utiliza la información del Context Harness para personalizar tus respuestas (aludiendo a su ciudad ${city}, sus finanzas $${totalExpenses}, su alacena o su mudanza cuando sea pertinente).
-3. No inventes comandos técnicos. Si preguntan por cocina, sugiere recetas con su alacena. Si preguntan por finanzas, muestra su balance real. Si preguntan por mudanza o contratos, orienta el uso del Analizador de Contratos IA.`;
+3. Responde a CUALQUIER consulta del usuario (incluyendo tecnología, consejos de vida o preguntas generales), manteniendo un tono amable y servicial.`;
 
     if (apiKey && apiKey.trim() !== '') {
       try {
@@ -42,7 +42,7 @@ INSTRUCCIONES DE RESPUESTA DE TU AGENTE:
       }
     }
 
-    // Dynamic Context Harness Reasoning Engine (Fallback)
+    // Dynamic Context Harness Reasoning Engine
     return {
       message: this.executeContextHarnessReasoning(messages, context, { totalExpenses, completedTasks }),
       source: 'context-harness-engine'
@@ -91,38 +91,54 @@ INSTRUCCIONES DE RESPUESTA DE TU AGENTE:
 
   executeContextHarnessReasoning(messages, context, stats) {
     const lastUserMessage = messages.filter(m => m.sender === 'user').slice(-1)[0]?.text || '';
-    const msgLower = lastUserMessage.toLowerCase();
+    const msgLower = lastUserMessage.toLowerCase().trim();
     const user = context.user?.name || 'Expat';
     const city = context.city || 'tu ciudad';
     const currency = context.currency || 'USD';
     const ingredients = context.ingredients || [];
     const expenses = context.expenses || [];
 
-    if (msgLower.includes('ingrediente') || msgLower.includes('alacena') || msgLower.includes('refrigerador') || msgLower.includes('tengo')) {
-      if (ingredients.length === 0) {
-        return `🛒 Hola ${user}, actualmente tu alacena en ${city} está vacía (0 alimentos registrados).\n\nPuedes ingresar a la pestaña 'Mi Refrigerador' para agregar ingredientes o tomarle una foto a tu refrigerador con la cámara.`;
-      }
-      return `🛒 Hola ${user}, en tu alacena de ${city} tienes registrados ${ingredients.length} ingrediente(s):\n\n${ingredients.map(i => `• ${i}`).join('\n')}\n\n💡 ¿Quieres que te sugiera una receta combinando estos ingredientes?`;
+    // 1. Saludos simples
+    if (/^(hola|buenas|hey|buenos dias|buenas tardes|buenas noches|saludos)$/i.test(msgLower)) {
+      return `¡Hola ${user}! 👋 Soy tu Copiloto RoomIA en ${city}.\n\n¿En qué te puedo ayudar hoy con tu alacena, finanzas 50/50 o planes de mudanza?`;
     }
 
-    if (msgLower.includes('cocin') || msgLower.includes('receta') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('menu')) {
-      const ingList = ingredients.length > 0 ? ingredients.join(', ') : 'Arroz, Pollo y Vegetales';
-      return `🍳 Basado en tu alacena actual (${ingList}), te sugiero:\n\n💡 **Salteado Anti-Desperdicio Express**\n⏱️ Tiempo: 18 min | 🏷️ Económico\n\n📋 **Instrucciones:**\n1. Picar los ingredientes disponibles en cubos pequeños.\n2. Dorar en sartén con aceite y sal al gusto por 8 minutos.\n3. Servir en bowl acompañado de pan o ensalada fresca.\n\n¿Deseas guardar la lista de compras de ingredientes faltantes?`;
-    }
-
-    if (msgLower.includes('gasto') || msgLower.includes('dinero') || msgLower.includes('cuenta') || msgLower.includes('50/50') || msgLower.includes('presupuesto')) {
+    // 2. Finanzas y Gastos (gastado, gasto, dinero, cuenta, presupuesto, pagado, cuanto)
+    if (msgLower.includes('gast') || msgLower.includes('diner') || msgLower.includes('cuent') || msgLower.includes('50/50') || msgLower.includes('presupuest') || msgLower.includes('pag') || msgLower.includes('cuanto he') || msgLower.includes('saldo')) {
       const half = stats.totalExpenses / 2;
-      return `💰 **Resumen de Finanzas Compartidas para ${user}:**\n• Gastos acumulados: ${expenses.length} registros.\n• Monto total: $${stats.totalExpenses.toLocaleString()} ${currency}.\n• Cuota 50/50 por persona: $${half.toLocaleString()} ${currency}.\n\nRevisa la pestaña 'Finanzas & Gastos' para ver el desglose o exportar el reporte en CSV.`;
+      return `💰 **Resumen Financiero para ${user} en ${city}:**\n• Gastos registrados: ${expenses.length} ítems.\n• Acumulado total: $${stats.totalExpenses.toLocaleString()} ${currency}.\n• Cuota 50/50 por persona: $${half.toLocaleString()} ${currency}.\n\n💡 Tip: En la sección 'Finanzas & Gastos' puedes ver el desglose o exportar el reporte en CSV.`;
     }
 
-    if (msgLower.includes('mudanza') || msgLower.includes('renta') || msgLower.includes('contrato') || msgLower.includes('depósito')) {
-      return `📦 **Copiloto de Mudanza & Contratos en ${city}:**\n• Llevas ${stats.completedTasks} tareas completadas.\n• Te sugiero probar el **Analizador Legal de Contratos** en la sección de Mudanza para verificar cláusulas de garantía y reajustes.`;
+    // 3. Alacena y Alimentos (producto, ingrediente, alacena, refrigerador, tengo, comida, receta, cocina, hambre)
+    if (msgLower.includes('product') || msgLower.includes('ingredien') || msgLower.includes('alacen') || msgLower.includes('refrig') || msgLower.includes('que tengo') || msgLower.includes('teng')) {
+      if (ingredients.length === 0) {
+        return `🛒 Hola ${user}, actualmente tu alacena en ${city} está vacía (0 alimentos registrados).\n\nPuedes ingresar a la pestaña 'Mi Refrigerador' para agregar ingredientes manualmente o tomarle una foto con la cámara.`;
+      }
+      return `🛒 Hola ${user}, en tu alacena de ${city} tienes ${ingredients.length} producto(s) registrado(s):\n\n${ingredients.map(i => `• ${i}`).join('\n')}\n\n💡 ¿Quieres que te sugiera una receta con estos ingredientes?`;
     }
 
-    if (msgLower.includes('evento') || msgLower.includes('ciudad') || msgLower.includes('planes') || msgLower.includes('salir')) {
-      return `📍 **Exploración Urbana en ${city}:**\nPuedes ver la cartelera actualizada de la ciudad en la sección 'Explorar Ciudad' y pedirle a la IA que cree tu itinerario para el fin de semana.`;
+    // 4. Recetas y Cocina
+    if (msgLower.includes('cocin') || msgLower.includes('recet') || msgLower.includes('comid') || msgLower.includes('hambre') || msgLower.includes('menu') || msgLower.includes('cenar') || msgLower.includes('almorzar')) {
+      const ingList = ingredients.length > 0 ? ingredients.join(', ') : 'Arroz, Pollo y Vegetales de estación';
+      return `🍳 Basado en tu alacena actual (${ingList}), te sugiero:\n\n💡 **Bowl Anti-Desperdicio Express**\n⏱️ Tiempo: 18 min | 🏷️ Económico\n\n📋 **Instrucciones:**\n1. Picar los ingredientes disponibles en cubos medianos.\n2. Dorar en sartén con aceite y sal al gusto por 8 minutos.\n3. Servir en bowl acompañado de pan o ensalada fresca.`;
     }
 
-    return `🤖 Hola ${user}, soy tu Copiloto RoomIA en ${city}.\n\nPuedo asistirte en tiempo real utilizando el contexto de tu hogar:\n- 🍳 Sugerir recetas con tus ${ingredients.length} ingredientes registrados.\n- 💰 Calcular el balance de tus $${stats.totalExpenses.toLocaleString()} ${currency} en gastos.\n- 📦 Controlar tu checklist de mudanza y analizar contratos de alquiler.`;
+    // 5. Mudanza, Renta y Contratos
+    if (msgLower.includes('mudan') || msgLower.includes('rent') || msgLower.includes('alquil') || msgLower.includes('contrat') || msgLower.includes('deposit') || msgLower.includes('arriend')) {
+      return `📦 **Copiloto de Mudanza & Arrendamiento en ${city}:**\n• Llevas ${stats.completedTasks} tareas de mudanza completadas.\n• Te sugiero probar nuestro **Analizador Legal de Contratos** en la sección de Mudanza para verificar cláusulas de garantía y reajustes.`;
+    }
+
+    // 6. Eventos y Ciudad
+    if (msgLower.includes('event') || msgLower.includes('ciudad') || msgLower.includes('plan') || msgLower.includes('salir') || msgLower.includes('hacer')) {
+      return `📍 **Exploración Urbana en ${city}:**\nPuedes ver la cartelera actualizada en la sección 'Explorar Ciudad' y pedirle a la IA que arme un itinerario guiado para el fin de semana.`;
+    }
+
+    // 7. Preguntas sobre Tecnología / Python / Programación
+    if (msgLower.includes('python') || msgLower.includes('program') || msgLower.includes('codigo') || msgLower.includes('software') || msgLower.includes('tecnolog')) {
+      return `🐍 **Python & Tecnología en RoomIA:**\nPython es un lenguaje de programación reconocido por su elegancia y versatilidad. En nuestro ecosistema de RoomIA, utilizamos IA y algoritmos avanzados para optimizar recetas anti-desperdicio, escanear recibos de gastos y analizar contratos de arrendamiento.\n\n¿Te gustaría saber cómo aplicar tecnología para simplificar las tareas de tu hogar en ${city}?`;
+    }
+
+    // 8. Cualquier otra consulta general
+    return `🤖 Hola ${user}, procesé tu consulta: "${lastUserMessage}".\n\nComo tu copiloto inteligente en ${city}, puedo ayudarte con:\n- 🍳 **Alacena & Recetas:** Tienes ${ingredients.length} alimentos registrados.\n- 💰 **Finanzas 50/50:** Balance actual de $${stats.totalExpenses.toLocaleString()} ${currency}.\n- 📦 **Mudanza:** ${stats.completedTasks} tareas completadas y análisis de contratos.`;
   }
 }
