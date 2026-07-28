@@ -1,15 +1,25 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
 async function request(endpoint, options = {}) {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options
-  });
-  const data = await response.json();
-  if (!data.success) {
-    throw new Error(data.error?.message || 'API request failed');
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      ...options
+    });
+    clearTimeout(timeoutId);
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error?.message || 'API request failed');
+    }
+    return data.data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
-  return data.data;
 }
 
 export class ApiService {
